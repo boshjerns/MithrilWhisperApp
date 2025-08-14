@@ -805,6 +805,7 @@ class VoiceAssistant {
 
       return {
         hotkey: this.store.get('hotkey', 'Alt+Space'),
+        assistantHotkey: this.store.get('assistantHotkey', 'F2'),
         model: this.store.get('model', effectiveModel),
         sensitivity: this.store.get('sensitivity', 0.5),
         cleanup: this.store.get('cleanup', true),
@@ -815,6 +816,12 @@ class VoiceAssistant {
         availableModels,
         audioDucking: this.store.get('audioDucking', { enabled: true, duckPercent: 90 }),
       };
+    });
+
+    ipcMain.handle('set-settings-mode', (event, isInSettings) => {
+      // Disable/enable recording while in settings to prevent accidental hotkey triggers
+      this.isInSettingsMode = isInSettings;
+      console.log('⚙️ Settings mode:', isInSettings ? 'ENABLED (recording disabled)' : 'DISABLED (recording enabled)');
     });
 
     ipcMain.handle('save-settings', (event, settings) => {
@@ -994,6 +1001,10 @@ class VoiceAssistant {
   async startRecording() {
     if (this.isRecording) {
       console.log('Already recording, ignoring start request');
+      return false;
+    }
+    if (this.isInSettingsMode) {
+      console.log('🚫 Recording blocked: in settings mode (hotkey configuration)');
       return false;
     }
     if (!this.authUser) {
@@ -1340,6 +1351,10 @@ class VoiceAssistant {
   // === Assistant recording control ===
   async startAssistantRecording() {
     if (this.isAssistantRecording) return false;
+    if (this.isInSettingsMode) {
+      console.log('🚫 Assistant recording blocked: in settings mode (hotkey configuration)');
+      return false;
+    }
     if (!this.authUser) return false;
     try {
       this.isAssistantRecording = true;

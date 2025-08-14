@@ -244,41 +244,113 @@ function AppInner() {
       
       audioProcessor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
-        // Compute RMS to detect silence
+        // Compute RMS to detect silence for visual feedback only
         let sum = 0;
         for (let i = 0; i < inputData.length; i++) { const v = inputData[i]; sum += v * v; }
         const rms = Math.sqrt(sum / inputData.length);
         
-        // Convert float32 [-1,1] to PCM s16le with light gain to avoid ultra-low amplitudes
-        const gain = 1.5; // gentle boost to avoid near-zero signals
-        const int16Data = new Int16Array(inputData.length);
-        for (let i = 0; i < inputData.length; i++) {
-          let s = inputData[i] * gain;
-          if (s > 1) s = 1; if (s < -1) s = -1;
-          int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-        }
-        const buffer = new Uint8Array(int16Data.buffer);
-        ipcRenderer.send('audio-data-chunk', Array.from(buffer));
+        // 🎙️ Visual feedback only - no more IPC chunk sending!
+        console.log('🎤 Audio level (RMS):', rms.toFixed(6), 'Length:', inputData.length);
+        
+        // Note: Audio data now captured by MediaRecorder instead of IPC chunks
+        // This fixes the Mac production build audio issue
       };
       
       source.connect(audioProcessor);
       audioProcessor.connect(audioContext.destination);
       
-      // Still create MediaRecorder for compatibility but don't use its data
-      // Some macOS builds require mimeType
-      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=pcm' });
-      mediaRecorder.ondataavailable = () => {};
+      // 🎯 PROPER MAC APPROACH: AudioWorklet + PCM streaming (no file conversion!)
+      // This completely avoids the IPC file transfer issues
+      console.log('🚀 Using AudioWorklet for direct PCM streaming...');
+      
+      // Load the AudioWorklet processor
+      try {
+        await audioContext.audioWorklet.addModule('data:text/javascript;charset=utf-8,' + 
+          encodeURIComponent(`
+            class RecorderProcessor extends AudioWorkletProcessor {
+              constructor() {
+                super();
+                this.isRecording = false;
+                this.port.onmessage = (event) => {
+                  if (event.data.command === 'start') {
+                    this.isRecording = true;
+                  } else if (event.data.command === 'stop') {
+                    this.isRecording = false;
+                  }
+                };
+              }
+              
+              process(inputs) {
+                if (!this.isRecording) return true;
+                
+                const input = inputs[0];
+                if (input && input[0] && input[0].length > 0) {
+                  // Convert Float32 PCM to Int16 for Whisper (16kHz mono)
+                  const float32Data = input[0]; // First channel
+                  const int16Data = new Int16Array(float32Data.length);
+                  
+                  for (let i = 0; i < float32Data.length; i++) {
+                    // Convert [-1,1] float to [-32768,32767] int16 with strong gain
+                    let sample = float32Data[i] * 8.0; // Strong boost for Mac microphone capture
+                    sample = Math.max(-1, Math.min(1, sample)); // Clamp
+                    int16Data[i] = sample < 0 ? sample * 32768 : sample * 32767;
+                  }
+                  
+                  // Send small PCM chunks directly to main process
+                  this.port.postMessage({
+                    type: 'audioData',
+                    data: int16Data,
+                    length: int16Data.length
+                  });
+                }
+                return true;
+              }
+            }
+            registerProcessor('recorder-processor', RecorderProcessor);
+          `)
+        );
+        console.log('✅ AudioWorklet processor loaded');
+      } catch (error) {
+        console.error('❌ Failed to load AudioWorklet:', error);
+        throw error;
+      }
+      
+      // Create AudioWorklet node
+      const workletNode = new AudioWorkletNode(audioContext, 'recorder-processor');
+      
+      // Handle PCM data from worklet
+      workletNode.port.onmessage = (event) => {
+        if (event.data.type === 'audioData') {
+          // Send small PCM chunks directly via IPC (much faster than big files!)
+          ipcRenderer.send('audio-pcm-chunk', {
+            data: Array.from(event.data.data),
+            length: event.data.length,
+            sampleRate: 16000,
+            channels: 1
+          });
+        }
+      };
+      
+      // Connect audio graph: Microphone → Worklet → Destination
+      source.connect(workletNode);
+      workletNode.connect(audioContext.destination);
+      
+      // Create dummy MediaRecorder for compatibility (but don't use it)
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       
       mediaRecorder.onstart = () => {
-        console.log('MediaRecorder started');
+        console.log('✅ AudioWorklet recording started (streaming PCM directly)');
+        workletNode.port.postMessage({ command: 'start' });
         ipcRenderer.send('audio-recording-started');
       };
       
       mediaRecorder.onstop = () => {
-        console.log('MediaRecorder stopped');
+        console.log('🛑 AudioWorklet recording stopped');
+        workletNode.port.postMessage({ command: 'stop' });
         ipcRenderer.send('audio-recording-stopped');
         
-        // Stop all tracks
+        // Cleanup
+        workletNode.disconnect();
         stream.getTracks().forEach(track => track.stop());
       };
       

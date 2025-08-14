@@ -52,14 +52,37 @@ curl -L -o ggml-small.en.bin https://huggingface.co/ggerganov/whisper.cpp/resolv
 
 #### 3. Environment Configuration
 
+The system automatically detects which mode to run based on your environment variables:
+
+**🏠 LOCAL DEVELOPMENT MODE (Recommended for GitHub setup)**
 ```bash
 # Copy environment template
 cp .env.example .env
 
-# Edit .env with your settings (optional for basic transcription)
-# SUPABASE_URL=your_supabase_url_for_assistant_features
-# SUPABASE_ANON_KEY=your_supabase_key_for_assistant_features
-# OPENAI_API_KEY=your_openai_key_for_assistant_features
+# Add only your OpenAI key - that's it!
+echo "OPENAI_API_KEY=your_openai_api_key_here" > .env
+
+# What you get:
+# ✅ Full transcription (Whisper.cpp)
+# ✅ Assistant features (direct OpenAI API calls)
+# ✅ No authentication required
+# ✅ No telemetry/database
+# ✅ Works completely locally
+```
+
+**🚀 PRODUCTION MODE (DMG installer only)**
+```bash
+# For official DMG builds only - requires proprietary backend
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+# (OpenAI key handled server-side)
+```
+
+**📝 TRANSCRIPTION-ONLY MODE**
+```bash
+# No environment variables needed
+# Basic transcription works out of the box
+# Assistant features will show helpful setup instructions
 ```
 
 #### 4. Run Development Server
@@ -70,6 +93,20 @@ npm run dev
 ```
 
 ### ⚙️ Development Configuration
+
+#### System Modes & Authentication
+
+The app automatically creates a **local developer account** (`developer@localhost`) when running in local mode. This provides:
+
+- **No sign-in required**: Immediate access to all features
+- **Privacy-first**: No telemetry sent to external servers  
+- **Full functionality**: All features work identically to production
+- **Offline operation**: Works completely without internet (except assistant)
+
+**Mode Detection:**
+- **Local Mode**: Only `OPENAI_API_KEY` set → Mock auth, direct OpenAI calls
+- **Production Mode**: `SUPABASE_URL` + `SUPABASE_ANON_KEY` set → Real auth, proprietary backend
+- **Transcription-Only**: No keys → Mock auth, assistant disabled
 
 #### Available Whisper Models
 
@@ -93,7 +130,7 @@ npm run dev
 
 #### Development Features
 - **HUD Display**: Recording status overlay
-- **Usage Tracking**: Optional Supabase integration for analytics
+- **Local-Only Analytics**: Usage tracking stays on device
 - **Debug Logging**: Console output for troubleshooting
 - **Hot Reload**: Automatic restart on code changes
 

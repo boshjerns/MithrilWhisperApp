@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const cfg = (data?.value as any) ?? {};
     const safe = {
       model: cfg.model ?? "o4-mini",
-      max_output_tokens: cfg.max_output_tokens ?? 800,
+      max_output_tokens: cfg.max_output_tokens ?? 4000,
       hudTheme: cfg.hudTheme ?? "violet",
       features: cfg.features ?? {},
     };

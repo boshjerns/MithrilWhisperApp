@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     const payload = {
       model: body.model ?? "o4-mini",
       stream: body.stream ?? true,
-      max_output_tokens: body.max_output_tokens ?? 800,
+      max_output_tokens: body.max_output_tokens ?? 4000,
       input: body.input,
       text: body.text ?? { format: { type: "text" } },
       reasoning: body.reasoning ?? { effort: "medium", summary: "auto" },

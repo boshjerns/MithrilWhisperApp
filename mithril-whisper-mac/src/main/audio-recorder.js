@@ -166,6 +166,8 @@ class AudioRecorder extends EventEmitter {
     
     // Remove existing listeners to avoid duplicates
     ipcMain.removeAllListeners('audio-data-chunk');
+    ipcMain.removeAllListeners('audio-file-complete');  // Legacy file-based handler
+    ipcMain.removeAllListeners('audio-pcm-chunk');      // New streaming PCM handler
     ipcMain.removeAllListeners('audio-recording-started');
     ipcMain.removeAllListeners('audio-recording-stopped');
     ipcMain.removeAllListeners('audio-recording-error');
@@ -177,7 +179,29 @@ class AudioRecorder extends EventEmitter {
       this.emit('speechRecognitionResult', result);
     });
     
-    // Handle audio data chunks
+    // 🎯 PROPER MAC APPROACH: Handle streaming PCM chunks (no file conversion!)
+    ipcMain.on('audio-pcm-chunk', (event, chunkData) => {
+      if (this.isRecording && chunkData && chunkData.data && chunkData.data.length > 0) {
+        // Convert directly to Buffer - this is already Int16 PCM!
+        const pcmBuffer = Buffer.from(new Int16Array(chunkData.data).buffer);
+        
+        // Add to our chunks collection
+        this.audioChunks.push(pcmBuffer);
+        this.emit('audioData', pcmBuffer);
+        
+        // Log progress periodically (every 50 chunks to avoid spam)
+        if (this.audioChunks.length % 50 === 0) {
+          const totalBytes = this.audioChunks.reduce((sum, chunk) => sum + chunk.length, 0);
+          console.log('🎵 PCM streaming progress: chunks=', this.audioChunks.length, 'totalBytes=', totalBytes);
+        }
+
+        // Reset silence timer when we get any data
+        if (this.silenceTimer) { clearTimeout(this.silenceTimer); }
+        this.silenceTimer = setTimeout(() => { this.emit('silenceDetected'); }, this.silenceThreshold);
+      }
+    });
+    
+    // Handle audio data chunks (legacy fallback)
     ipcMain.on('audio-data-chunk', (event, audioBuffer) => {
       if (this.isRecording && audioBuffer && audioBuffer.length > 0) {
         const chunk = Buffer.from(audioBuffer);
@@ -300,6 +324,57 @@ class AudioRecorder extends EventEmitter {
         console.error('Error cleaning up app temp root:', error);
       }
     }
+  }
+
+  // Convert audio file to WAV format for Whisper processing
+  async convertAudioToWav(inputPath, wavPath) {
+    const { spawn } = require('child_process');
+    const fs = require('fs');
+    
+    console.log('🔄 Converting audio to WAV:', inputPath, '→', wavPath);
+    
+    return new Promise((resolve, reject) => {
+      // 🎯 SKIP ffmpeg, go straight to macOS afconvert (more reliable on Mac)
+      console.log('🍎 Using macOS afconvert (native Mac tool)...');
+      
+      const afconvert = spawn('afconvert', [
+        '-f', 'WAVE',           // Output format: WAV
+        '-d', 'LEI16@16000',    // 16-bit little-endian PCM @ 16kHz
+        '-c', '1',              // 1 channel (mono)
+        inputPath,              // Input file
+        wavPath                 // Output file
+      ]);
+      
+      let stderr = '';
+      
+      afconvert.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      afconvert.on('close', (code) => {
+        console.log('🎵 afconvert finished with code:', code);
+        console.log('afconvert stderr:', stderr);
+        
+        if (code === 0) {
+          if (fs.existsSync(wavPath)) {
+            const stats = fs.statSync(wavPath);
+            console.log('✅ Audio conversion successful! WAV size:', stats.size, 'bytes');
+            resolve();
+          } else {
+            console.error('❌ WAV file not created despite success code');
+            reject(new Error('WAV file not created'));
+          }
+        } else {
+          console.error('❌ afconvert failed with code:', code);
+          reject(new Error(`afconvert failed with code: ${code}. stderr: ${stderr}`));
+        }
+      });
+      
+      afconvert.on('error', (error) => {
+        console.error('❌ afconvert spawn error:', error);
+        reject(error);
+      });
+    });
   }
 
   // Update settings

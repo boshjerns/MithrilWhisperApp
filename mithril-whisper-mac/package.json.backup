@@ -87,10 +87,6 @@
         "filter": [
           "**/*"
         ]
-      },
-      {
-        "from": "build/mac-resources/key-injector",
-        "to": "key-injector"
       }
     ],
     "mac": {
@@ -101,9 +97,7 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "notarize": {
-        "teamId": "D763V8H675"
-      },
+      "notarize": false,
       "extendInfo": {
         "NSMicrophoneUsageDescription": "Used to transcribe your speech.",
         "NSAppleEventsUsageDescription": "Used to paste transcriptions into the frontmost app via System Events."

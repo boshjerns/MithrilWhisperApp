@@ -31,13 +31,13 @@ Deno.serve(async (req) => {
     if (authError || !userData?.user) return new Response("Unauthorized", { status: 401 });
 
     // Use comprehensive rate limiting for config requests (more restrictive)
-    const { data: rateLimitResult, error: rateLimitError } = await supabase
-      .rpc("check_api_rate_limit", {
-        user_uuid: userData.user.id,
-        api_action: "get-config",
-        max_requests: 10,  // 10 requests max
-        window_minutes: 60 // per hour (60 minutes)
-      });
+      const { data: rateLimitResult, error: rateLimitError } = await supabase
+    .rpc("check_api_rate_limit", {
+      user_uuid: userData.user.id,
+      api_action: "get-config",
+      max_requests: 50,  // 50 requests max (increased for development)
+      window_minutes: 60 // per hour (60 minutes)
+    });
 
     if (rateLimitError) {
       console.error("Rate limit check failed:", rateLimitError);

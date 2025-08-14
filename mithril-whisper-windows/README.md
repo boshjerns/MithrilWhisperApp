@@ -58,8 +58,9 @@ Mithril Whisper keeps everything local by bundling Whisper.cpp directly into the
 
 ### How Models Are Packaged:
 - **Whisper.cpp Binaries**: Pre-compiled binaries included in `whisper-cpp/` directory
-- **Model Files**: GGML format models (`.bin` files) bundled with the installer
-- **Auto-Detection**: App automatically finds bundled models in multiple locations:
+- **Bundled Model**: `ggml-tiny-q5_1.bin` (30MB) included for immediate functionality
+- **Additional Models**: Download larger models manually for better accuracy
+- **Auto-Detection**: App automatically finds all models in multiple locations:
   - `extraResources/whisper-cpp/` (production builds)
   - `app.asar.unpacked/whisper-cpp/` (fallback)
   - Local `whisper-cpp/` (development)
@@ -133,9 +134,39 @@ Say "whisper [your request]" during recording to activate the AI assistant:
 
 ### Model Selection
 
-Bundled Whisper models (no download required):
-- **tiny-q5_1**: Fastest, basic accuracy (~16MB) - Quantized for optimal performance
-- **base.en**: Good balance (~140MB) - **Recommended** - English-only model with better accuracy
+**Bundled Model (no download required):**
+- **tiny-q5_1**: Fastest, basic accuracy (~16MB) - Quantized for optimal performance - **Included in repository**
+
+**Optional Models (manual download):**
+- **base.en**: Good balance (~140MB) - English-only model with better accuracy
+- **small**: Better accuracy (~250MB) - Supports multiple languages  
+- **medium**: High accuracy (~750MB) - Professional quality
+- **large**: Best accuracy (~1.5GB) - Maximum quality
+
+#### How to Download Additional Models
+
+1. **Download Models**:
+   ```bash
+   # Navigate to your whisper-cpp directory
+   cd MITHRILWHISPER/mithril-whisper-windows/whisper-cpp
+   
+   # Download base.en model (recommended)
+   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin -o ggml-base.en.bin
+   
+   # Or download small model
+   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin -o ggml-small.bin
+   ```
+
+2. **Alternative Download Sources**:
+   - **Hugging Face**: [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp/tree/main)
+   - **Direct Links**:
+     - [ggml-base.en.bin](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin) (140MB)
+     - [ggml-small.bin](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin) (250MB)
+
+3. **Select Model in App**:
+   - Launch Mithril Whisper
+   - Go to **Settings** → **Model Selection**
+   - Choose your downloaded model from the dropdown
 
 ### OpenAI Integration (Optional)
 

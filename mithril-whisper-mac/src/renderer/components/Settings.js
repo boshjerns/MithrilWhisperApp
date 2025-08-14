@@ -328,7 +328,7 @@ function Settings({ settings, onChange }) {
             Allow assistant to replace selection in apps (inject on replace)
           </label>
           <div className="setting-description">
-            When enabled, assistant responses with ACTION: replace will paste into the current app. Otherwise they will stay in the chat window.
+            When enabled, assistant replacement requests will paste into the current app. Otherwise they will stay in the chat window.
           </div>
         </div>
 

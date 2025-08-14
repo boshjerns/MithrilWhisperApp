@@ -102,97 +102,29 @@ async function getFrontmostAppBundleId() {
   return '';
 }
 
-async function handleAssistantQuery(userPrompt, context) {
-  try {
-    // DUAL MODE SYSTEM:
-    // 1. Production Mode: Use Supabase Edge Function (your proprietary system) 
-    // 2. Local Mode: Direct OpenAI API calls (for GitHub/local development)
-    
-    const supabaseUrl = process.env.SUPABASE_URL || '';
-    const jwt = this.accessToken || '';
-    const openaiKey = process.env.OPENAI_API_KEY || '';
-    
-    const useLocalMode = !supabaseUrl || !jwt;
-    
-    if (useLocalMode && !openaiKey) {
-      if (this.assistantWindow) {
-        this.assistantWindow.webContents.send('assistant:error', 
-          'LOCAL MODE: Add your OpenAI API key to .env file\nExample: OPENAI_API_KEY=sk-...'
-        );
-      }
-      return;
-    }
-    
-    if (useLocalMode) {
-      console.log('🔗 LOCAL MODE: Direct OpenAI API calls');
-      await handleLocalAssistantQuery.call(this, userPrompt, context, openaiKey);
-    } else {
-      console.log('🏢 PRODUCTION MODE: Supabase Edge Function');
-      await handleSupabaseAssistantQuery.call(this, userPrompt, context, supabaseUrl, jwt);
-    }
-  } catch (error) {
-    console.error('Assistant query error:', error);
-    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
-      this.assistantWindow.webContents.send('assistant:error', String(error.message || error));
-    }
+// Environment detection for dual-mode system
+function getAssistantMode() {
+  const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
+  const hasOpenAI = !!process.env.OPENAI_API_KEY;
+  
+  if (hasSupabase) {
+    return { mode: 'production', requiresAuth: true };
+  } else if (hasOpenAI) {
+    return { mode: 'local', requiresAuth: false };
+  } else {
+    return { mode: 'disabled', requiresAuth: false };
   }
 }
 
-// LOCAL MODE: Direct OpenAI API calls (for GitHub/local development)
-async function handleLocalAssistantQuery(userPrompt, context, openaiKey) {
-  const selection = (context && context.selectedText) ? String(context.selectedText) : '';
-  let defaultAction = 'summarize';
-  const lower = userPrompt.toLowerCase();
-  
-  // Enhanced intent detection for three actions
-  if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
-    defaultAction = 'replace';
-  } else if (/(output|generate|create|write|build|make|produce|print|display)/.test(lower) || 
-             /^(show me|give me|provide) (a|an|the|some)/.test(lower)) {
-    if (!/^(tell me|explain|what|how|why|describe|define|summarize)/.test(lower)) {
-      defaultAction = 'inject';
-    }
-  }
-  
-  const systemPrompt = [
-    'You are a fast coding assistant embedded in a voice tool.',
-    'You get a USER instruction and optionally a SELECTION (text/code).',
-    'Decide one of three actions:',
-    ' - inject: when the user asks to generate/output new content to insert at cursor.',
-    ' - replace: when the user asks to change/improve/generate content to substitute the selection.',
-    ' - summarize: when the user asks to explain/summarize/comment on the selection or topic.',
-    'OUTPUT PROTOCOL:',
-    ' 1) First line MUST be exactly: ACTION: inject  OR  ACTION: replace  OR  ACTION: summarize',
-    ' 2) Then the content only:',
-    '    - If inject/replace: output ONLY the new content, no explanations',
-    '    - If summarize: provide explanation/summary',
-    'Examples:',
-    ' - "create an HTML page about cats" → ACTION: inject',
-    ' - "generate a Python function" → ACTION: inject',
-    ' - "output a JSON object" → ACTION: inject',
-    ' - "replace this function with a better version" → ACTION: replace', 
-    ' - "tell me a poem" → ACTION: summarize',
-    ' - "explain what this code does" → ACTION: summarize',
-    ' - "what is machine learning?" → ACTION: summarize',
-  ].join('\n');
-
-  const selectionSnippet = selection ? selection.substring(0, 4000) : '';
-  const sanitizedUserPrompt = (userPrompt || '');
-  
-  // Show assistant window
-  this.createAssistantWindow && this.createAssistantWindow();
-  if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
-    this.assistantWindow.showInactive();
-    this.assistantWindow.webContents.send('assistant:stream-start', {
-      status: 'processing',
-      hasSelection: !!selectionSnippet,
-      userPrompt: sanitizedUserPrompt,
-    });
+// Direct OpenAI API call for local development mode
+async function callOpenAIDirectly(systemPrompt, userPrompt, model = 'gpt-4o-mini', maxTokens = 4000) {
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (!openaiKey) {
+    throw new Error('OpenAI API key not found in environment');
   }
 
-  console.log('🔗 LOCAL: Calling OpenAI directly with gpt-4o-mini');
+  console.log('🏠 Local mode: Calling OpenAI API directly');
   
-  // Direct OpenAI API call
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -200,129 +132,104 @@ async function handleLocalAssistantQuery(userPrompt, context, openaiKey) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') },
-        { role: 'user', content: sanitizedUserPrompt }
-      ],
-      max_tokens: 800,
+      model: model,
       stream: true,
+      max_tokens: maxTokens,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
       temperature: 0.7
     })
   });
 
-  if (!response.ok || !response.body) {
-    const text = await (response.text ? response.text() : Promise.resolve(''));
+  if (!response.ok) {
+    const text = await response.text();
     throw new Error(`OpenAI API error ${response.status}: ${text}`);
   }
 
-  // Handle streaming response (same logic as Supabase mode)
-  let decidedAction = null;
-  let buffer = '';
-  const tryDecide = () => {
-    if (decidedAction) return;
-    const firstLine = buffer.split(/\r?\n/)[0] || '';
-    const m = firstLine.match(/ACTION:\s*(inject|replace|summarize)/i);
-    if (m) decidedAction = m[1].toLowerCase();
-  };
-  
-  const sendToken = (text) => {
-    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
-      this.assistantWindow.webContents.send('assistant:stream-token', { text });
-    }
-  };
-
-  const finalize = async () => {
-    let finalText = buffer.replace(/^ACTION:\s*(inject|replace|summarize)\s*\r?\n/i, '');
-    if (!decidedAction) decidedAction = defaultAction;
-    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
-      this.assistantWindow.webContents.send('assistant:stream-end', { action: decidedAction, text: finalText });
-    }
-    
-    // Injection logic (same as production mode)
-    const allowAssistantInject = this.store.get('assistantInjectOnReplace', false);
-    if ((decidedAction === 'inject') || (decidedAction === 'replace' && selection && allowAssistantInject)) {
-      await this.injectText(finalText);
-    }
-    this.updateHUDStatus('idle', { connected: true });
-  };
-
-  // Parse streaming response
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split('\n');
-      
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          if (data === '[DONE]') continue;
-          
-          try {
-            const parsed = JSON.parse(data);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              buffer += content;
-              sendToken(content);
-              tryDecide();
-            }
-          } catch (_) {}
-        }
-      }
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  
-  await finalize();
+  return response;
 }
 
-// PRODUCTION MODE: Supabase Edge Function (your proprietary system)
-async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jwt) {
-  const selection = (context && context.selectedText) ? String(context.selectedText) : '';
-  let defaultAction = 'summarize';
-  const lower = userPrompt.toLowerCase();
-  
-  // Enhanced intent detection for three actions
-  if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
-    defaultAction = 'replace';
-  } else if (/(output|generate|create|write|build|make|produce|print|display)/.test(lower) || 
-             /^(show me|give me|provide) (a|an|the|some)/.test(lower)) {
-    // More precise: only inject for clear output/generation requests
-    // Avoid "tell me", "explain", "what is" etc.
-    if (!/^(tell me|explain|what|how|why|describe|define|summarize)/.test(lower)) {
-      defaultAction = 'inject';
+async function handleAssistantQuery(userPrompt, context) {
+  try {
+    const { mode, requiresAuth } = getAssistantMode();
+    
+    // Handle different modes
+    if (mode === 'disabled') {
+      if (this.assistantWindow) {
+        this.assistantWindow.webContents.send('assistant:error', 'Assistant disabled: No API keys configured. Add OPENAI_API_KEY to .env for local mode.');
+      }
+      return;
     }
-  }
-  
-  const systemPrompt = [
-      'You are a fast coding assistant embedded in a voice tool.',
-      'You get a USER instruction and optionally a SELECTION (text/code).',
-      'Decide one of three actions:',
-      ' - inject: when the user wants you to generate/create/output new content to be placed at their cursor.',
-      ' - replace: when the user asks to change/improve/generate content to substitute the selection.',
-      ' - summarize: when the user asks to explain/summarize/comment on the selection or topic.',
-      'OUTPUT PROTOCOL:',
-      ' 1) First line MUST be exactly: ACTION: inject  OR  ACTION: replace  OR  ACTION: summarize',
-      ' 2) Then the content only:',
-      '    - If inject: output ONLY the generated content, ready to be placed. No commentary, no backticks unless part of the content.',
-      '    - If replace: output ONLY the replacement content, no commentary, no backticks unless part of the content.',
-      '    - If summarize: output a concise explanation; code blocks only if essential for explanation.',
-      'Examples:',
-      ' - "create an HTML page about cats" → ACTION: inject',
-      ' - "generate a Python function" → ACTION: inject',
-      ' - "output a JSON object" → ACTION: inject',
-      ' - "replace this function with a better version" → ACTION: replace', 
-      ' - "tell me a poem" → ACTION: summarize',
-      ' - "explain what this code does" → ACTION: summarize',
-      ' - "what is machine learning?" → ACTION: summarize',
-      'Constraints: Be brief and helpful. Keep under 800 tokens. No preambles.',
+    
+    // Production mode: requires Supabase authentication
+    if (mode === 'production') {
+      const supabaseUrl = process.env.SUPABASE_URL || '';
+      const jwt = this.accessToken || '';
+      if (!supabaseUrl || !jwt) {
+        if (this.assistantWindow) {
+          this.assistantWindow.webContents.send('assistant:error', 'Not authenticated or missing Supabase URL');
+        }
+        return;
+      }
+    }
+    
+    // Local mode: no authentication required, just OpenAI key
+    console.log(`🔧 Assistant mode: ${mode} (auth required: ${requiresAuth})`)
+    const selection = (context && context.selectedText) ? String(context.selectedText) : '';
+    let defaultAction = 'summarize';
+    const lower = userPrompt.toLowerCase();
+    
+    // Enhanced intent detection for three actions
+    if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit|improve)/.test(lower)) {
+      defaultAction = 'replace';
+    } else if (
+      // Strong generation keywords
+      /(output|generate|create|write|build|make|produce|print|display|code|function|class|component|method|script|file|document|app|game|website|page)/.test(lower) ||
+      // Programming language keywords  
+      /(html|css|javascript|python|java|cpp|sql|json|xml|yaml|markdown|react|vue|angular)/.test(lower) ||
+      // Generation phrases
+      /^(show me|give me|provide|write me|make me|create me|generate me) (a|an|the|some)/.test(lower) ||
+      /(write|create|make|generate|build|produce) (a|an|the|some|my)/.test(lower) ||
+      // Direct requests for content
+      /^(create|write|make|generate|build|produce|code|develop)/.test(lower)
+    ) {
+      // More precise: only inject for clear output/generation requests
+      // Avoid conversational queries like questions, explanations, etc.
+      if (!/^(tell me|explain|what|how|why|describe|define|summarize|can you|could you|would you|will you|do you|are you|is there|where|when|who|help me understand|walk me through)/.test(lower) &&
+          !/\?$/.test(userPrompt.trim()) &&
+          !/(explain|description|tutorial|guide|help|learn|understand|meaning|definition)/.test(lower)) {
+        defaultAction = 'inject';
+      }
+    }
+    
+    const systemPrompt = [
+      'You are a coding assistant that responds based on detected user intent.',
+      '',
+      'RESPONSE RULES:',
+      `INTENT DETECTED: ${defaultAction.toUpperCase()}`,
+      '',
+      defaultAction === 'inject' || defaultAction === 'replace' ? [
+        '🔧 OUTPUT MODE: PURE CONTENT ONLY',
+        ' - Output ONLY the requested content, nothing else',
+        ' - No explanations, instructions, or conversational text',
+        ' - No "Save this as..." or "Run with..." comments',
+        ' - No backticks unless part of the actual content',
+        ' - Content should be ready to paste/inject directly'
+      ].join('\n') : [
+        '💬 CONVERSATION MODE: HELPFUL EXPLANATION',
+        ' - Provide helpful conversational responses',
+        ' - Include explanations and context as needed',
+        ' - Use normal conversational tone'
+      ].join('\n'),
+      '',
+      'EXAMPLES:',
+      ' - "create a Python game" → [Pure Python code only]',
+      ' - "generate HTML form" → [Pure HTML only]', 
+      ' - "replace this function" → [Pure improved code only]',
+      ' - "explain this code" → [Conversational explanation]',
+      ' - "what is recursion?" → [Conversational educational response]',
     ].join('\n');
 
     const selectionSnippet = selection && selection.length > 0 ? selection.slice(0, 8000) : '';
@@ -337,53 +244,61 @@ async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jw
         });
       }
 
-    const model = this.assistantModel || 'o4-mini';
+    const model = this.assistantModel || (mode === 'production' ? 'o4-mini' : 'gpt-4o-mini');
     const maxTokens = this.assistantMaxTokens || 800;
 
-    const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-    console.log('Assistant: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
-    const response = await fetch(assistantUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model,
-        stream: true,
-        max_output_tokens: maxTokens,
-        input: [
-          { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-          { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-        ],
-        text: { format: { type: 'text' } },
-        reasoning: { effort: 'medium', summary: 'auto' },
-        tools: [],
-        store: true
-      })
-    });
+    let response;
+    
+    if (mode === 'production') {
+      // Production mode: Use Supabase Edge Function
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const jwt = this.accessToken;
+      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
+      console.log('🚀 Production mode: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
+      
+      response = await fetch(assistantUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          stream: true,
+          max_output_tokens: maxTokens,
+          input: [
+            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
+            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
+          ],
+          text: { format: { type: 'text' } },
+          reasoning: { effort: 'medium', summary: 'auto' },
+          tools: [],
+          store: true
+        })
+      });
+    } else {
+      // Local mode: Call OpenAI API directly  
+      console.log('🏠 Local mode: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
+      const fullSystemPrompt = systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '');
+      response = await callOpenAIDirectly(fullSystemPrompt, sanitizedUserPrompt, model, maxTokens);
+    }
 
     if (!response.ok || !response.body) {
       const text = await (response.text ? response.text() : Promise.resolve(''));
       throw new Error(`OpenAI response error ${response.status}: ${text}`);
     }
 
-      let decidedAction = null;
     let buffer = '';
-    const tryDecide = () => {
-      if (decidedAction) return;
-      const firstLine = buffer.split(/\r?\n/)[0] || '';
-      const m = firstLine.match(/ACTION:\s*(inject|replace|summarize)/i);
-      if (m) decidedAction = m[1].toLowerCase();
-    };
+    // Use intent detection instead of parsing AI response for actions
+    const decidedAction = defaultAction;
     const sendToken = (text) => {
       if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
         this.assistantWindow.webContents.send('assistant:stream-token', text);
       }
     };
       const finalize = async () => {
-      let finalText = buffer.replace(/^ACTION:\s*(inject|replace|summarize)\s*\r?\n/i, '');
-      if (!decidedAction) decidedAction = defaultAction;
+      // No need to strip ACTION prefix since we don't use it anymore
+      let finalText = buffer;
       if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
         this.assistantWindow.webContents.send('assistant:stream-end', { action: decidedAction, text: finalText });
       }
@@ -437,7 +352,7 @@ async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jw
     };
 
     const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('text/event-stream')) {
+    if (contentType.includes('text/event-stream') || contentType.includes('text/plain')) {
       const reader = response.body.getReader ? response.body.getReader() : null;
       if (reader) {
         const decoder = new TextDecoder('utf-8');
@@ -446,34 +361,10 @@ async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jw
           const { value, done } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-          chunk.split(/\n\n/).forEach((block) => {
-            const trimmed = block.trim();
-            if (!trimmed) return;
-            const lines = trimmed.split(/\n/);
-            const eventLine = lines.find(l => l.startsWith('event:'));
-            if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
-            const dataLine = lines.find(l => l.startsWith('data:'));
-            if (!dataLine) return;
-            const data = dataLine.replace(/^data:\s*/, '');
-            if (data === '[DONE]') return;
-            try {
-              const json = JSON.parse(data);
-              let delta = '';
-              if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-              else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-              if (delta) {
-                buffer += delta;
-                if (buffer.length < 200) tryDecide();
-                sendToken(delta);
-              }
-            } catch (_) {}
-          });
-        }
-      } else {
-        await new Promise((resolve, reject) => {
-          let lastEvent = '';
-          response.body.on('data', (value) => {
-            const chunk = value.toString('utf8');
+          
+          // Process streaming response differently based on mode
+          if (mode === 'production') {
+            // Supabase Edge Function format (OpenAI Realtime API format)
             chunk.split(/\n\n/).forEach((block) => {
               const trimmed = block.trim();
               if (!trimmed) return;
@@ -496,6 +387,73 @@ async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jw
                 }
               } catch (_) {}
             });
+          } else {
+            // Standard OpenAI Chat Completions streaming format
+            chunk.split(/\n/).forEach((line) => {
+              const trimmed = line.trim();
+              if (!trimmed || !trimmed.startsWith('data: ')) return;
+              const data = trimmed.replace(/^data:\s*/, '');
+              if (data === '[DONE]') return;
+              try {
+                const json = JSON.parse(data);
+                const delta = json.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                  buffer += delta;
+                  if (buffer.length < 200) tryDecide();
+                  sendToken(delta);
+                }
+              } catch (_) {}
+            });
+          }
+        }
+      } else {
+        await new Promise((resolve, reject) => {
+          let lastEvent = '';
+          response.body.on('data', (value) => {
+            const chunk = value.toString('utf8');
+            
+            if (mode === 'production') {
+              // Supabase Edge Function format
+              chunk.split(/\n\n/).forEach((block) => {
+                const trimmed = block.trim();
+                if (!trimmed) return;
+                const lines = trimmed.split(/\n/);
+                const eventLine = lines.find(l => l.startsWith('event:'));
+                if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
+                const dataLine = lines.find(l => l.startsWith('data:'));
+                if (!dataLine) return;
+                const data = dataLine.replace(/^data:\s*/, '');
+                if (data === '[DONE]') return;
+                try {
+                  const json = JSON.parse(data);
+                  let delta = '';
+                  if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                  else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                  if (delta) {
+                    buffer += delta;
+                    if (buffer.length < 200) tryDecide();
+                    sendToken(delta);
+                  }
+                } catch (_) {}
+              });
+            } else {
+              // Standard OpenAI streaming format
+              chunk.split(/\n/).forEach((line) => {
+                const trimmed = line.trim();
+                if (!trimmed || !trimmed.startsWith('data: ')) return;
+                const data = trimmed.replace(/^data:\s*/, '');
+                if (data === '[DONE]') return;
+                try {
+                  const json = JSON.parse(data);
+                  const delta = json.choices?.[0]?.delta?.content || '';
+                  if (delta) {
+                    buffer += delta;
+                    if (buffer.length < 200) tryDecide();
+                    sendToken(delta);
+                  }
+                } catch (_) {}
+              });
+            }
           });
           response.body.on('end', resolve);
           response.body.on('error', reject);
@@ -504,14 +462,18 @@ async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jw
     } else {
       const full = await response.json();
       let content = '';
-      if (Array.isArray(full.output_text)) content = full.output_text.join('');
-      else if (typeof full.output_text === 'string') content = full.output_text;
+      if (mode === 'production') {
+        // Supabase format
+        if (Array.isArray(full.output_text)) content = full.output_text.join('');
+        else if (typeof full.output_text === 'string') content = full.output_text;
+      } else {
+        // OpenAI format
+        content = full.choices?.[0]?.message?.content || '';
+      }
       buffer = content || '';
       tryDecide();
       if (buffer) sendToken(buffer);
     }
-
-      await finalize();
   } catch (error) {
     console.error('Assistant OpenAI error:', error);
     if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
@@ -877,7 +839,7 @@ class VoiceAssistant {
           isProcessing = false;
         }
       });
-      } catch (error) {
+    } catch (error) {
         console.error(`❌ Failed to register hotkey "${hotkey}":`, error.message);
         // Reset to default if registration fails
         hotkey = 'Alt+Space';
@@ -1511,7 +1473,7 @@ class VoiceAssistant {
       }
 
       if (process.platform === 'darwin') {
-        // macOS: robust, least-intrusive injection strategy
+        // macOS: Mac-native text injection using CGEventPost (no Accessibility permissions needed)
         const mode = (this.store && this.store.get('injectionMode')) || 'auto';
         const original = clipboard.readText();
         clipboard.writeText(text || '');
@@ -1526,26 +1488,27 @@ class VoiceAssistant {
         try { this.assistantWindow && this.assistantWindow.hide && this.assistantWindow.hide(); } catch (_) {}
         // Keep main window hidden during paste to prevent focus changes
 
-        // 1) Activate the captured frontmost app if known, then paste via System Events
-        const activation = this.frontAppId
-          ? `try
-               tell application id "${this.frontAppId}" to activate
-             end try\n`
-          : (this.frontAppName
-             ? `try
-                  tell application "${this.frontAppName.replace(/"/g, '\\"')}" to activate
-                end try\n`
-             : '');
-        const osaScript = `
-          ${activation}
-          delay 0.06
-          tell application id "com.apple.systemevents" to keystroke "v" using command down
-        `;
-        const osa = spawn('osascript', ['-e', osaScript]);
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        await new Promise((resolve) => osa.on('close', resolve));
+        // Use our native key-injector (CGEventPost) instead of osascript
+        // In development, fall back to osascript since key-injector is only in production builds
+        const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+        
+        if (isDev) {
+          console.log('🎯 Development mode: using osascript fallback');
+          const osaScript = `tell application "System Events" to keystroke "v" using command down`;
+          const osa = spawn('osascript', ['-e', osaScript]);
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => osa.on('close', resolve));
+        } else {
+          const keyInjectorPath = path.join(process.resourcesPath, 'key-injector');
+          console.log('🎯 Production mode: using native key injector:', keyInjectorPath);
+          
+          const keyInjector = spawn(keyInjectorPath, ['paste']);
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => keyInjector.on('close', resolve));
+        }
+        
         // Give paste time to complete before restoring clipboard to avoid truncation
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        await new Promise((resolve) => setTimeout(resolve, 400));
         restore();
         return true;
       }

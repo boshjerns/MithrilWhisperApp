@@ -1,110 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { TerminalIcon } from './Icons';
+import React from 'react';
 
-const { ipcRenderer } = window.require('electron');
-
-// Custom window control icons
-const MinimizeIcon = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <path d="M4 8h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
-
-const MaximizeIcon = ({ size = 16, isMaximized = false }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    {isMaximized ? (
-      // Restore icon
-      <>
-        <rect x="3" y="5" width="8" height="8" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-        <path d="M5 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-      </>
-    ) : (
-      // Maximize icon
-      <rect x="3" y="3" width="10" height="10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-    )}
-  </svg>
-);
-
-const CloseIcon = ({ size = 16 }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
-
+// Mac-optimized title bar with ASCII art
 function TitleBar() {
-  const [isMaximized, setIsMaximized] = useState(false);
-
-  useEffect(() => {
-    // Get initial maximized state
-    const checkMaximized = async () => {
-      const maximized = await ipcRenderer.invoke('window-is-maximized');
-      setIsMaximized(maximized);
-    };
-    
-    checkMaximized();
-
-    // Listen for window state changes
-    const handleMaximize = () => setIsMaximized(true);
-    const handleUnmaximize = () => setIsMaximized(false);
-
-    // Note: These events might not be available, so we'll poll instead
-    const interval = setInterval(checkMaximized, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  const handleMinimize = () => {
-    ipcRenderer.invoke('window-minimize');
-  };
-
-  const handleMaximize = () => {
-    ipcRenderer.invoke('window-maximize');
-  };
-
-  const handleClose = () => {
-    ipcRenderer.invoke('window-close');
-  };
+  // Compact ASCII art for title bar
+  const compactMithrilArt = `███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
+████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
+██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
+██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
+██║ ╚═╝ ██║██║   ██║   ██║  ██║██║  ██║██║███████╗
+╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝`;
 
   return (
-    <div className="title-bar">
-      {/* Draggable area */}
-      <div className="title-bar-drag-region">
-        <div className="title-bar-title">
-          <TerminalIcon size={16} />
-          <span>mithril whisper</span>
+    <>
+      <div className="mac-title-bar">
+        {/* Left side: Space for native macOS controls (red, yellow, green buttons) */}
+        <div className="mac-title-bar-left">
+          {/* This area is reserved for native macOS traffic light buttons */}
+        </div>
+        
+        {/* Center: Draggable region */}
+        <div className="mac-title-bar-drag-region">
+          {/* Intentionally empty - serves as draggable area */}
+        </div>
+        
+        {/* Right side: ASCII art title */}
+        <div className="mac-title-bar-right">
+          <div className="mac-title-content">
+            <pre className="mac-title-ascii">{compactMithrilArt}</pre>
+            <div className="mac-subtitle">WHISPER</div>
+          </div>
         </div>
       </div>
 
-      {/* Window controls */}
-      <div className="title-bar-controls">
-        <button 
-          className="title-bar-button minimize"
-          onClick={handleMinimize}
-          title="Minimize"
-        >
-          <MinimizeIcon />
-        </button>
-        
-        <button 
-          className="title-bar-button maximize"
-          onClick={handleMaximize}
-          title={isMaximized ? "Restore" : "Maximize"}
-        >
-          <MaximizeIcon isMaximized={isMaximized} />
-        </button>
-        
-        <button 
-          className="title-bar-button close"
-          onClick={handleClose}
-          title="Close"
-        >
-          <CloseIcon />
-        </button>
-      </div>
-    </div>
+      <style jsx>{`
+        .mac-title-bar {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          width: 100%;
+          background: rgba(0, 8, 20, 0.95);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          -webkit-app-region: drag;
+          padding: 0;
+        }
+
+        .mac-title-bar-left {
+          width: 80px;
+          height: 100%;
+          flex-shrink: 0;
+          /* Reserve space for native macOS controls */
+        }
+
+        .mac-title-bar-drag-region {
+          flex: 1;
+          height: 100%;
+          /* This area allows window dragging */
+        }
+
+        .mac-title-bar-right {
+          padding-right: 20px;
+          flex-shrink: 0;
+          -webkit-app-region: no-drag;
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
+
+        .mac-title-content {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .mac-title-ascii {
+          font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+          font-size: 3px;
+          line-height: 0.8;
+          color: #58a6ff;
+          text-shadow: 0 0 4px rgba(88, 166, 255, 0.3);
+          margin: 0;
+          white-space: pre;
+          transform: scale(0.8);
+          transform-origin: center;
+          opacity: 0.9;
+        }
+
+        .mac-subtitle {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 11px;
+          font-weight: 600;
+          color: #58a6ff;
+          letter-spacing: 1px;
+          opacity: 0.8;
+          margin-left: 4px;
+        }
+
+        /* Responsive scaling for smaller windows */
+        @media (max-width: 500px) {
+          .mac-title-ascii {
+            font-size: 2.5px;
+            transform: scale(0.7);
+          }
+          .mac-subtitle {
+            font-size: 9px;
+          }
+        }
+
+        @media (max-width: 350px) {
+          .mac-title-ascii {
+            font-size: 2px;
+            transform: scale(0.6);
+          }
+          .mac-subtitle {
+            font-size: 8px;
+          }
+        }
+      `}</style>
+    </>
   );
 }
 
-export default TitleBar; 
+export default TitleBar;

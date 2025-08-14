@@ -117,6 +117,29 @@ export const InfoIcon = ({ size, className }) => (
   </Icon>
 );
 
+// Chevron Left Icon
+export const ChevronLeftIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <polyline points="15 18 9 12 15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// Chevron Right Icon
+export const ChevronRightIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <polyline points="9 18 15 12 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// More Horizontal Icon (three dots)
+export const MoreHorizontalIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <circle cx="12" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="19" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="5" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
 // Export all icons
 export default {
   MicrophoneIcon,
@@ -131,5 +154,8 @@ export default {
   CopyIcon,
   PasteIcon,
   PowerIcon,
-  InfoIcon
+  InfoIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoreHorizontalIcon
 }; 

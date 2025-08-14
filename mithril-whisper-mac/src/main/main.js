@@ -559,10 +559,10 @@ class VoiceAssistant {
     this.mainWindow = new BrowserWindow({
       width: 400,
       height: 600,
-      frame: false, // Remove default title bar
-      titleBarStyle: 'hidden', // Cross-platform hidden title bar
+      frame: true, // Use native frame on macOS
+      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden', // macOS-specific title bar
       backgroundColor: '#000814', // Match our background color
-      title: 'mithril whisper',
+      title: 'MITHRIL WHISPER',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
@@ -571,6 +571,12 @@ class VoiceAssistant {
       },
       show: false,
       icon: path.join(__dirname, '../../logo1.ico'),
+      // macOS-specific window appearance
+      ...(process.platform === 'darwin' && {
+        trafficLightPosition: { x: 20, y: 18 }, // Position native controls
+        transparent: false,
+        vibrancy: 'dark',
+      }),
     });
 
     if (isDev) {

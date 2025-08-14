@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { supabase } from '../auth/supabaseClient';
 import { HistoryIcon, InfoIcon } from './Icons';
+import Pagination from './Pagination';
 
 function formatNumber(n) {
   try {
@@ -24,6 +25,8 @@ export default function UsageHistory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rows, setRows] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const load = async () => {
     if (!user) {
@@ -77,7 +80,19 @@ export default function UsageHistory() {
     return { sessions, userChars, aiChars, userWords, aiWords, avgUserChars, avgAiChars, avgUserWords, avgAiWords };
   }, [rows]);
 
-  const lastTwenty = useMemo(() => rows.slice(0, 20), [rows]);
+  // Pagination logic
+  const paginatedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return rows.slice(startIndex, endIndex);
+  }, [rows, currentPage, itemsPerPage]);
+
+  const handlePageChange = (page, newItemsPerPage) => {
+    if (newItemsPerPage && newItemsPerPage !== itemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+    }
+    setCurrentPage(page);
+  };
 
   return (
     <div className="usage-history">
@@ -124,12 +139,12 @@ export default function UsageHistory() {
           </div>
 
           <div className="glass-card">
-            <div className="input-label" style={{ marginBottom: 8 }}>Recent sessions</div>
+            <div className="input-label" style={{ marginBottom: 8 }}>Usage sessions</div>
             <div className="history-list">
-              {lastTwenty.length === 0 && (
+              {paginatedRows.length === 0 && (
                 <div className="terminal-text" style={{ opacity: 0.8 }}>No assistant usage yet</div>
               )}
-              {lastTwenty.map((r) => {
+              {paginatedRows.map((r) => {
                 const md = r.metadata || {};
                 const uw = Number(md.user_words || 0) || Math.round((r.transcript_chars_original || 0) / 5);
                 const aw = Number(md.assistant_words || 0) || Math.round((r.transcript_chars_cleaned || 0) / 5);
@@ -157,6 +172,14 @@ export default function UsageHistory() {
                 );
               })}
             </div>
+
+            {/* Pagination for usage sessions */}
+            <Pagination
+              currentPage={currentPage}
+              totalItems={rows.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+            />
           </div>
         </>
       )}

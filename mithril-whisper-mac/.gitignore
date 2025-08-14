@@ -52,7 +52,6 @@ settings.json
 transcriptions.json
 
 # Whisper.cpp binaries and models (user will download these)
-whisper-cpp/
 *.bin
 
 # Audio files

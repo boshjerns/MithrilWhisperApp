@@ -70,7 +70,7 @@ class SecureFileSystem {
       
       // Other apps' data - FORBIDDEN
       path.join(homedir, 'Library/Containers/**'),
-      path.join(homedir, 'Library/Application Support/**'), // Block others, allow only ours
+      // Block other apps' Application Support but allow our own (handled in allowed paths)
       
       // System sensitive files - FORBIDDEN
       '/etc/**',
@@ -100,24 +100,31 @@ class SecureFileSystem {
     try {
       const normalizedPath = path.resolve(targetPath);
       
-      // First check if it's explicitly blocked
+      // PRIORITY 1: Always allow our own app support directory
+      const appPath = app ? app.getPath('userData') : '';
+      if (appPath && normalizedPath.startsWith(appPath)) {
+        console.log(`✅ ALLOWED: App data directory access: ${normalizedPath}`);
+        return true;
+      }
+      
+      // PRIORITY 2: Allow development paths (Downloads folder when in development)
+      if (normalizedPath.includes('Downloads/MITHRILWHISPER/mithril-whisper-mac')) {
+        console.log(`✅ ALLOWED: Development directory access: ${normalizedPath}`);
+        return true;
+      }
+      
+      // PRIORITY 3: Check if it matches other allowed patterns
+      for (const allowedPattern of this.allowedPaths) {
+        if (this.matchesPattern(normalizedPath, allowedPattern)) {
+          return true;
+        }
+      }
+      
+      // PRIORITY 4: Now check if it's explicitly blocked
       for (const blockedPattern of this.blockedPaths) {
         if (this.matchesPattern(normalizedPath, blockedPattern)) {
           console.warn(`🚫 BLOCKED ACCESS: ${normalizedPath} (matched blocked pattern: ${blockedPattern})`);
           return false;
-        }
-      }
-      
-      // Special case: Allow our own app support directory even though we block others
-      const appPath = app ? app.getPath('userData') : '';
-      if (appPath && normalizedPath.startsWith(appPath)) {
-        return true;
-      }
-      
-      // Check if it matches allowed patterns
-      for (const allowedPattern of this.allowedPaths) {
-        if (this.matchesPattern(normalizedPath, allowedPattern)) {
-          return true;
         }
       }
       

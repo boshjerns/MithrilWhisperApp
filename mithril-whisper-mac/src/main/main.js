@@ -104,40 +104,204 @@ async function getFrontmostAppBundleId() {
 
 async function handleAssistantQuery(userPrompt, context) {
   try {
+    // DUAL MODE SYSTEM:
+    // 1. Production Mode: Use Supabase Edge Function (your proprietary system) 
+    // 2. Local Mode: Direct OpenAI API calls (for GitHub/local development)
+    
     const supabaseUrl = process.env.SUPABASE_URL || '';
     const jwt = this.accessToken || '';
     const openaiKey = process.env.OPENAI_API_KEY || '';
     
-    // Check if we can use either Supabase (production) or direct OpenAI (local dev)
-    const useSupabase = !!(supabaseUrl && jwt);
-    const useDirectOpenAI = !!(openaiKey && !useSupabase);
+    const useLocalMode = !supabaseUrl || !jwt;
     
-    if (!useSupabase && !useDirectOpenAI) {
+    if (useLocalMode && !openaiKey) {
       if (this.assistantWindow) {
         this.assistantWindow.webContents.send('assistant:error', 
-          'Assistant requires either:\n• Supabase authentication (production), or\n• OPENAI_API_KEY in .env (local development)');
+          'LOCAL MODE: Add your OpenAI API key to .env file\nExample: OPENAI_API_KEY=sk-...'
+        );
       }
       return;
     }
     
-    console.log(`🤖 Assistant mode: ${useSupabase ? 'Supabase (production)' : 'Direct OpenAI (local dev)'}`);
-    const selection = (context && context.selectedText) ? String(context.selectedText) : '';
-    let defaultAction = 'summarize';
-    const lower = userPrompt.toLowerCase();
-    
-    // Enhanced intent detection for three actions
-    if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
-      defaultAction = 'replace';
-    } else if (/(output|generate|create|write|build|make|produce|print|display)/.test(lower) || 
-               /^(show me|give me|provide) (a|an|the|some)/.test(lower)) {
-      // More precise: only inject for clear output/generation requests
-      // Avoid "tell me", "explain", "what is" etc.
-      if (!/^(tell me|explain|what|how|why|describe|define|summarize)/.test(lower)) {
-        defaultAction = 'inject';
-      }
+    if (useLocalMode) {
+      console.log('🔗 LOCAL MODE: Direct OpenAI API calls');
+      await handleLocalAssistantQuery.call(this, userPrompt, context, openaiKey);
+    } else {
+      console.log('🏢 PRODUCTION MODE: Supabase Edge Function');
+      await handleSupabaseAssistantQuery.call(this, userPrompt, context, supabaseUrl, jwt);
+    }
+  } catch (error) {
+    console.error('Assistant query error:', error);
+    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
+      this.assistantWindow.webContents.send('assistant:error', String(error.message || error));
+    }
+  }
+}
+
+// LOCAL MODE: Direct OpenAI API calls (for GitHub/local development)
+async function handleLocalAssistantQuery(userPrompt, context, openaiKey) {
+  const selection = (context && context.selectedText) ? String(context.selectedText) : '';
+  let defaultAction = 'summarize';
+  const lower = userPrompt.toLowerCase();
+  
+  // Enhanced intent detection for three actions
+  if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
+    defaultAction = 'replace';
+  } else if (/(output|generate|create|write|build|make|produce|print|display)/.test(lower) || 
+             /^(show me|give me|provide) (a|an|the|some)/.test(lower)) {
+    if (!/^(tell me|explain|what|how|why|describe|define|summarize)/.test(lower)) {
+      defaultAction = 'inject';
+    }
+  }
+  
+  const systemPrompt = [
+    'You are a fast coding assistant embedded in a voice tool.',
+    'You get a USER instruction and optionally a SELECTION (text/code).',
+    'Decide one of three actions:',
+    ' - inject: when the user asks to generate/output new content to insert at cursor.',
+    ' - replace: when the user asks to change/improve/generate content to substitute the selection.',
+    ' - summarize: when the user asks to explain/summarize/comment on the selection or topic.',
+    'OUTPUT PROTOCOL:',
+    ' 1) First line MUST be exactly: ACTION: inject  OR  ACTION: replace  OR  ACTION: summarize',
+    ' 2) Then the content only:',
+    '    - If inject/replace: output ONLY the new content, no explanations',
+    '    - If summarize: provide explanation/summary',
+    'Examples:',
+    ' - "create an HTML page about cats" → ACTION: inject',
+    ' - "generate a Python function" → ACTION: inject',
+    ' - "output a JSON object" → ACTION: inject',
+    ' - "replace this function with a better version" → ACTION: replace', 
+    ' - "tell me a poem" → ACTION: summarize',
+    ' - "explain what this code does" → ACTION: summarize',
+    ' - "what is machine learning?" → ACTION: summarize',
+  ].join('\n');
+
+  const selectionSnippet = selection ? selection.substring(0, 4000) : '';
+  const sanitizedUserPrompt = (userPrompt || '');
+  
+  // Show assistant window
+  this.createAssistantWindow && this.createAssistantWindow();
+  if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
+    this.assistantWindow.showInactive();
+    this.assistantWindow.webContents.send('assistant:stream-start', {
+      status: 'processing',
+      hasSelection: !!selectionSnippet,
+      userPrompt: sanitizedUserPrompt,
+    });
+  }
+
+  console.log('🔗 LOCAL: Calling OpenAI directly with gpt-4o-mini');
+  
+  // Direct OpenAI API call
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openaiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') },
+        { role: 'user', content: sanitizedUserPrompt }
+      ],
+      max_tokens: 800,
+      stream: true,
+      temperature: 0.7
+    })
+  });
+
+  if (!response.ok || !response.body) {
+    const text = await (response.text ? response.text() : Promise.resolve(''));
+    throw new Error(`OpenAI API error ${response.status}: ${text}`);
+  }
+
+  // Handle streaming response (same logic as Supabase mode)
+  let decidedAction = null;
+  let buffer = '';
+  const tryDecide = () => {
+    if (decidedAction) return;
+    const firstLine = buffer.split(/\r?\n/)[0] || '';
+    const m = firstLine.match(/ACTION:\s*(inject|replace|summarize)/i);
+    if (m) decidedAction = m[1].toLowerCase();
+  };
+  
+  const sendToken = (text) => {
+    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
+      this.assistantWindow.webContents.send('assistant:stream-token', { text });
+    }
+  };
+
+  const finalize = async () => {
+    let finalText = buffer.replace(/^ACTION:\s*(inject|replace|summarize)\s*\r?\n/i, '');
+    if (!decidedAction) decidedAction = defaultAction;
+    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
+      this.assistantWindow.webContents.send('assistant:stream-end', { action: decidedAction, text: finalText });
     }
     
-    const systemPrompt = [
+    // Injection logic (same as production mode)
+    const allowAssistantInject = this.store.get('assistantInjectOnReplace', false);
+    if ((decidedAction === 'inject') || (decidedAction === 'replace' && selection && allowAssistantInject)) {
+      await this.injectText(finalText);
+    }
+    this.updateHUDStatus('idle', { connected: true });
+  };
+
+  // Parse streaming response
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              buffer += content;
+              sendToken(content);
+              tryDecide();
+            }
+          } catch (_) {}
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  
+  await finalize();
+}
+
+// PRODUCTION MODE: Supabase Edge Function (your proprietary system)
+async function handleSupabaseAssistantQuery(userPrompt, context, supabaseUrl, jwt) {
+  const selection = (context && context.selectedText) ? String(context.selectedText) : '';
+  let defaultAction = 'summarize';
+  const lower = userPrompt.toLowerCase();
+  
+  // Enhanced intent detection for three actions
+  if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
+    defaultAction = 'replace';
+  } else if (/(output|generate|create|write|build|make|produce|print|display)/.test(lower) || 
+             /^(show me|give me|provide) (a|an|the|some)/.test(lower)) {
+    // More precise: only inject for clear output/generation requests
+    // Avoid "tell me", "explain", "what is" etc.
+    if (!/^(tell me|explain|what|how|why|describe|define|summarize)/.test(lower)) {
+      defaultAction = 'inject';
+    }
+  }
+  
+  const systemPrompt = [
       'You are a fast coding assistant embedded in a voice tool.',
       'You get a USER instruction and optionally a SELECTION (text/code).',
       'Decide one of three actions:',
@@ -176,56 +340,28 @@ async function handleAssistantQuery(userPrompt, context) {
     const model = this.assistantModel || 'o4-mini';
     const maxTokens = this.assistantMaxTokens || 800;
 
-    let response;
-    
-    if (useSupabase) {
-      // Production mode: Use Supabase Edge function
-      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-      console.log('🔥 Assistant: calling Supabase Edge function', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
-      response = await fetch(assistantUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          max_output_tokens: maxTokens,
-          input: [
-            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-          ],
-          text: { format: { type: 'text' } },
-          reasoning: { effort: 'medium', summary: 'auto' },
-          tools: [],
-          store: true
-        })
-      });
-    } else {
-      // Local development mode: Direct OpenAI API call
-      console.log('🏠 Assistant: calling OpenAI directly (local dev mode)', 'model=', model, 'maxTokens=', maxTokens);
-      response = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openaiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          max_output_tokens: maxTokens,
-          input: [
-            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-          ],
-          text: { format: { type: 'text' } },
-          reasoning: { effort: 'medium', summary: 'auto' },
-          tools: [],
-          store: true
-        })
-      });
-    }
+    const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
+    console.log('Assistant: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
+    const response = await fetch(assistantUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        stream: true,
+        max_output_tokens: maxTokens,
+        input: [
+          { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
+          { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
+        ],
+        text: { format: { type: 'text' } },
+        reasoning: { effort: 'medium', summary: 'auto' },
+        tools: [],
+        store: true
+      })
+    });
 
     if (!response.ok || !response.body) {
       const text = await (response.text ? response.text() : Promise.resolve(''));

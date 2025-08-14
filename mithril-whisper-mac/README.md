@@ -52,29 +52,15 @@ curl -L -o ggml-small.en.bin https://huggingface.co/ggerganov/whisper.cpp/resolv
 
 #### 3. Environment Configuration
 
-The app supports **two modes** for maximum flexibility:
-
-**🏠 Local Development Mode (Recommended for GitHub setup)**
 ```bash
-# Create .env file with just your OpenAI key
-echo "OPENAI_API_KEY=your_openai_api_key_here" > .env
+# Copy environment template
+cp .env.example .env
 
-# That's it! No Supabase setup needed for local development
-# The assistant will call OpenAI directly using your key
+# Edit .env with your settings (optional for basic transcription)
+# SUPABASE_URL=your_supabase_url_for_assistant_features
+# SUPABASE_ANON_KEY=your_supabase_key_for_assistant_features
+# OPENAI_API_KEY=your_openai_key_for_assistant_features
 ```
-
-**🔥 Production Mode (Used in DMG installer)**
-```bash
-# If you want to use the full proprietary backend (optional)
-# SUPABASE_URL=your_supabase_project_url
-# SUPABASE_ANON_KEY=your_supabase_anon_key
-# OPENAI_API_KEY=not_needed_with_supabase
-```
-
-**🎯 How It Works:**
-- **No API keys**: Basic transcription works (Whisper.cpp only)
-- **OpenAI key only**: Assistant features work directly with OpenAI
-- **Supabase setup**: Full proprietary system with analytics (advanced)
 
 #### 4. Run Development Server
 

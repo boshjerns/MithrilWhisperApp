@@ -51,19 +51,22 @@ out/
 settings.json
 transcriptions.json
 
-# Whisper.cpp binaries and models (user will download these)
-whisper-cpp/
-*.bin
-
-# Audio files
+# Audio files (exclude user recordings)
 *.wav
 *.mp3
 *.m4a
 *.flac
 
-# Windows specific
-*.exe
-*.dll
+# Windows specific (exclude build artifacts but keep whisper binaries)
+# *.exe  - COMMENTED OUT to include whisper.exe, main.exe etc.
+# *.dll  - COMMENTED OUT to include whisper.dll, SDL2.dll etc.
+
+# Note: whisper-cpp/ directory and small *.bin files are INCLUDED to bundle models
+# Exclude large model files that exceed GitHub's 100MB limit
+ggml-base.en.bin
+ggml-small*.bin
+ggml-medium*.bin
+ggml-large*.bin
 
 # Temporary files
 tmp/

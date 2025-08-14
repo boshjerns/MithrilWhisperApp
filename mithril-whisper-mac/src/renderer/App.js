@@ -445,6 +445,7 @@ function AppInner() {
             onStopRecording={handleStopRecording}
             onToggleRecording={handleToggleRecording}
             hotkey={settings.hotkey}
+            assistantHotkey={settings.assistantHotkey}
             disabled={!user}
           />
         )}

@@ -67,6 +67,7 @@ body::before { display: none; }
   flex-direction: column;
   position: relative;
   z-index: 1;
+  padding-top: 40px; /* Space for fixed title bar */
 }
 
 /* Glass Panel Mixin */
@@ -120,33 +121,7 @@ body::before { display: none; }
   gap: 12px;
 }
 
-/* mithril whisper ASCII block treatment */
-.mythril-ascii {
-  font-family: 'JetBrains Mono', monospace;
-  white-space: pre;
-  line-height: 0.9;
-  color: var(--primary-bright);
-  text-shadow: 0 0 0 rgba(0,0,0,0), 0 0 12px rgba(88,166,255,0.2);
-  border: 1px solid rgba(255,255,255,0.08);
-  outline: 1px solid rgba(0,0,0,0.6);
-  padding: 6px 8px;
-  border-radius: 10px;
-  background: var(--bg-surface);
-  display: inline-block;
-  transform: scale(0.7);
-  transform-origin: top left;
-}
-
-/* Allow responsive downscaling for smaller windows */
-@media (max-width: 1200px) {
-  .mythril-ascii { transform: scale(0.6); }
-}
-@media (max-width: 900px) {
-  .mythril-ascii { transform: scale(0.5); }
-}
-@media (max-width: 700px) {
-  .mythril-ascii { transform: scale(0.4); }
-}
+/* ASCII art styles moved to TitleBar component */
 
 /* Terminal Prompt Style */
 .app-header h1::before { content: ''; }
@@ -716,16 +691,19 @@ body::before { display: none; }
   animation: scan 4s ease-in-out infinite;
 }
 
+/* Old title bar styles - commented out for Mac-optimized design
 .title-bar-drag-region {
   flex: 1;
   height: 100%;
   display: flex;
   align-items: center;
   padding-left: 16px;
-  -webkit-app-region: drag; /* Make this area draggable */
+  -webkit-app-region: drag;
   cursor: move;
 }
+*/
 
+/* Old title bar title and controls styles - commented out for Mac design
 .title-bar-title {
   display: flex;
   align-items: center;
@@ -741,9 +719,11 @@ body::before { display: none; }
 .title-bar-controls {
   display: flex;
   height: 100%;
-  -webkit-app-region: no-drag; /* Prevent dragging on controls */
+  -webkit-app-region: no-drag;
 }
+*/
 
+/* Old title bar button styles - commented out for Mac design
 .title-bar-button {
   width: 46px;
   height: 100%;
@@ -758,7 +738,9 @@ body::before { display: none; }
   position: relative;
   font-family: inherit;
 }
+*/
 
+/* Old title bar button interaction styles - commented out for Mac design
 .title-bar-button::before {
   content: '';
   position: absolute;
@@ -795,16 +777,9 @@ body::before { display: none; }
 .title-bar-button:active {
   transform: scale(0.95);
 }
+*/
 
-/* Adjust app layout for custom title bar */
-.app {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-  overflow: hidden; /* Prevent scrollbars on frameless window */
-}
+/* Duplicate app class removed - Mac title bar spacing handled above */
 
 /* Update app header to account for title bar */
 .app-header {

@@ -438,15 +438,6 @@ function AppInner() {
       </div>
 
       <div className="content">
-        {/* mithril whisper ASCII mark */}
-        {currentTab === 'controls' && (
-          <pre className="mythril-ascii">{`███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
-████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
-██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
-██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
-██║ ╚═╝ ██║██║   ██║   ██║  ██║██║  ██║██║███████╗
-╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝`}</pre>
-        )}
         {currentTab === 'controls' && (
           <RecordingControls
             isRecording={isRecording}

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { HistoryIcon, CopyIcon, PasteIcon, PowerIcon } from './Icons';
+import Pagination from './Pagination';
 
 function TranscriptionHistory({ transcriptions, onInjectText, onClear }) {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const formatTimestamp = (timestamp) => {
     return new Date(timestamp).toLocaleString();
@@ -20,6 +23,21 @@ function TranscriptionHistory({ transcriptions, onInjectText, onClear }) {
 
   const toggleDetails = (id) => {
     setSelectedItem(selectedItem === id ? null : id);
+  };
+
+  // Pagination logic
+  const paginatedTranscriptions = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return transcriptions.slice(startIndex, endIndex);
+  }, [transcriptions, currentPage, itemsPerPage]);
+
+  const handlePageChange = (page, newItemsPerPage) => {
+    if (newItemsPerPage && newItemsPerPage !== itemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+    }
+    setCurrentPage(page);
+    setSelectedItem(null); // Close any open details when changing pages
   };
 
   if (transcriptions.length === 0) {
@@ -52,7 +70,7 @@ function TranscriptionHistory({ transcriptions, onInjectText, onClear }) {
       </div>
 
       <div className="history-list">
-        {transcriptions.map((item) => (
+        {paginatedTranscriptions.map((item) => (
           <div key={item.id} className="glass-card" style={{ cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', padding: '0' }} onClick={() => toggleDetails(item.id)}>
               <div className="history-time" style={{ width: '140px', flexShrink: 0 }}>
@@ -115,8 +133,16 @@ function TranscriptionHistory({ transcriptions, onInjectText, onClear }) {
               </div>
             )}
           </div>
-        ))}
+        )        )}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={transcriptions.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
 
       <div className="history-footer">
         <div className="history-stats">

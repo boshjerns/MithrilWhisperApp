@@ -104,15 +104,23 @@ async function getFrontmostAppBundleId() {
 
 async function handleAssistantQuery(userPrompt, context) {
   try {
-    // Require signed-in user and Supabase URL to call secure Edge function
     const supabaseUrl = process.env.SUPABASE_URL || '';
     const jwt = this.accessToken || '';
-    if (!supabaseUrl || !jwt) {
+    const openaiKey = process.env.OPENAI_API_KEY || '';
+    
+    // Check if we can use either Supabase (production) or direct OpenAI (local dev)
+    const useSupabase = !!(supabaseUrl && jwt);
+    const useDirectOpenAI = !!(openaiKey && !useSupabase);
+    
+    if (!useSupabase && !useDirectOpenAI) {
       if (this.assistantWindow) {
-        this.assistantWindow.webContents.send('assistant:error', 'Not authenticated or missing Supabase URL');
+        this.assistantWindow.webContents.send('assistant:error', 
+          'Assistant requires either:\n• Supabase authentication (production), or\n• OPENAI_API_KEY in .env (local development)');
       }
       return;
     }
+    
+    console.log(`🤖 Assistant mode: ${useSupabase ? 'Supabase (production)' : 'Direct OpenAI (local dev)'}`);
     const selection = (context && context.selectedText) ? String(context.selectedText) : '';
     let defaultAction = 'summarize';
     const lower = userPrompt.toLowerCase();
@@ -168,28 +176,56 @@ async function handleAssistantQuery(userPrompt, context) {
     const model = this.assistantModel || 'o4-mini';
     const maxTokens = this.assistantMaxTokens || 800;
 
-    const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-    console.log('Assistant: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
-    const response = await fetch(assistantUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model,
-        stream: true,
-        max_output_tokens: maxTokens,
-        input: [
-          { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-          { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-        ],
-        text: { format: { type: 'text' } },
-        reasoning: { effort: 'medium', summary: 'auto' },
-        tools: [],
-        store: true
-      })
-    });
+    let response;
+    
+    if (useSupabase) {
+      // Production mode: Use Supabase Edge function
+      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
+      console.log('🔥 Assistant: calling Supabase Edge function', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
+      response = await fetch(assistantUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          stream: true,
+          max_output_tokens: maxTokens,
+          input: [
+            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
+            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
+          ],
+          text: { format: { type: 'text' } },
+          reasoning: { effort: 'medium', summary: 'auto' },
+          tools: [],
+          store: true
+        })
+      });
+    } else {
+      // Local development mode: Direct OpenAI API call
+      console.log('🏠 Assistant: calling OpenAI directly (local dev mode)', 'model=', model, 'maxTokens=', maxTokens);
+      response = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openaiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          stream: true,
+          max_output_tokens: maxTokens,
+          input: [
+            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
+            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
+          ],
+          text: { format: { type: 'text' } },
+          reasoning: { effort: 'medium', summary: 'auto' },
+          tools: [],
+          store: true
+        })
+      });
+    }
 
     if (!response.ok || !response.body) {
       const text = await (response.text ? response.text() : Promise.resolve(''));

@@ -1040,12 +1040,41 @@ class VoiceAssistant {
         console.log(`📝 Stored ${key}:`, settings[key]);
       });
       
-      // Update hotkey if changed
+      // Update hotkey if changed - properly unregister old hotkey first
       if (settings.hotkey !== this.hotkey) {
+        const oldHotkey = this.hotkey;
+        console.log(`🔄 Hotkey change: "${oldHotkey}" → "${settings.hotkey}"`);
+        
+        // Unregister the OLD hotkey before setting the new one
+        try { 
+          if (oldHotkey) {
+            globalShortcut.unregister(oldHotkey);
+            console.log(`🗑️ Unregistered old hotkey: ${oldHotkey}`);
+          }
+        } catch (e) {
+          console.warn('Failed to unregister old hotkey:', e.message);
+        }
+        
+        // Now update to the new hotkey and register it
         this.hotkey = settings.hotkey;
         this.setupGlobalHotkey();
       }
+      
       if (settings.assistantHotkey && settings.assistantHotkey !== this.assistantHotkey) {
+        const oldAssistantHotkey = this.assistantHotkey;
+        console.log(`🔄 Assistant hotkey change: "${oldAssistantHotkey}" → "${settings.assistantHotkey}"`);
+        
+        // Unregister the OLD assistant hotkey before setting the new one
+        try { 
+          if (oldAssistantHotkey) {
+            globalShortcut.unregister(oldAssistantHotkey);
+            console.log(`🗑️ Unregistered old assistant hotkey: ${oldAssistantHotkey}`);
+          }
+        } catch (e) {
+          console.warn('Failed to unregister old assistant hotkey:', e.message);
+        }
+        
+        // Now update to the new hotkey and register it
         this.assistantHotkey = settings.assistantHotkey;
         this.store.set('assistantHotkey', this.assistantHotkey);
         this.setupAssistantHotkey();

@@ -13,6 +13,36 @@
 - **100% Local Processing**: No internet required for transcription, complete privacy
 - **Apple Silicon Optimized**: Native M-series chip acceleration with Metal
 
+## 🔒 Privacy & Data Protection
+
+**Your voice and data stay private with enterprise-grade security measures:**
+
+### Audio Privacy
+- **🎙️ Zero Persistence**: Audio files are immediately deleted after transcription (typically within 2-5 seconds)
+- **🏠 Local Processing**: Whisper.cpp runs entirely on your device - audio never leaves your machine
+- **🗂️ Session Isolation**: Each recording uses unique temporary directories (`/tmp/mithril-whisper/{session-id}/`)
+- **🧹 Multi-Layer Cleanup**: Four independent deletion mechanisms ensure no audio remnants
+
+### Technical Safeguards
+```bash
+# Audio lifecycle (all local):
+Recording → Temp File → Whisper.cpp → Transcription → Immediate Deletion
+└─ /tmp/mithril-whisper/{pid}-{timestamp}/recording_{time}.wav (deleted instantly)
+```
+
+- **📁 Temp Storage**: Files stored in OS temp directories with automatic cleanup
+- **⏱️ Time Limits**: Even if cleanup fails, 24-hour auto-deletion removes any strays  
+- **🚫 Build Exclusion**: Audio files explicitly excluded from app distributions
+- **🔐 Session Scoped**: Process isolation prevents cross-session data access
+
+### Optional Cloud Features
+- **Assistant Mode**: Only transcribed *text* (never audio) sent to secure backend when using AI features
+- **Rate Limited**: Enterprise-grade throttling prevents abuse (30 req/min, 500/day per user)
+- **Row-Level Security**: Database policies ensure users only access their own data
+- **Authentication**: JWT tokens and multi-factor validation for all API requests
+
+**Bottom Line**: Your voice recordings are processed locally and deleted immediately. Only if you choose to use AI assistant features is the resulting *text* securely transmitted for processing.
+
 ### 📋 Development Requirements
 
 - **macOS**: 10.15 (Catalina) or later

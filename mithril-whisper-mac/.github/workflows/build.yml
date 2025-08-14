@@ -1,0 +1,30 @@
+name: Build Windows
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      NODE_ENV: production
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Package (Windows)
+        run: npm run package:win
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mithril-whisper-win
+          path: dist/**
+

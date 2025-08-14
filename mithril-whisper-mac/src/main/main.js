@@ -365,27 +365,39 @@ async function handleAssistantQuery(userPrompt, context) {
           // Process streaming response differently based on mode
           if (mode === 'production') {
             // Supabase Edge Function format (OpenAI Realtime API format)
+            console.log('🔍 Production chunk received:', chunk);
             chunk.split(/\n\n/).forEach((block) => {
               const trimmed = block.trim();
               if (!trimmed) return;
+              console.log('🔍 Processing block:', trimmed);
               const lines = trimmed.split(/\n/);
               const eventLine = lines.find(l => l.startsWith('event:'));
-              if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
+              if (eventLine) {
+                lastEvent = eventLine.replace(/^event:\s*/, '');
+                console.log('🔍 Event:', lastEvent);
+              }
               const dataLine = lines.find(l => l.startsWith('data:'));
               if (!dataLine) return;
               const data = dataLine.replace(/^data:\s*/, '');
               if (data === '[DONE]') return;
+              console.log('🔍 Data:', data);
               try {
                 const json = JSON.parse(data);
+                console.log('🔍 Parsed JSON:', json);
                 let delta = '';
                 if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
                 else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                else if (json.content_part && json.content_part.text) delta = json.content_part.text;
+                else if (json.delta && typeof json.delta === 'string') delta = json.delta;
                 if (delta) {
+                  console.log('🔍 Sending delta:', delta);
                   buffer += delta;
                   if (buffer.length < 200) tryDecide();
                   sendToken(delta);
                 }
-              } catch (_) {}
+              } catch (e) {
+                console.log('🔍 JSON parse error:', e.message, 'for data:', data);
+              }
             });
           } else {
             // Standard OpenAI Chat Completions streaming format
@@ -888,23 +900,31 @@ class VoiceAssistant {
     console.log(`🎯 Setting up assistant hotkey: ${hotkey}`);
     let lastHotkeyTime = 0;
     let isProcessing = false;
-    const debounceTime = 800; // Increased debounce to prevent double-presses
-
+    const quickDebounceTime = 150; // Short debounce for rapid double-presses
+    
     let success = false;
     try {
       success = globalShortcut.register(hotkey, async () => {
         const now = Date.now();
         const timeSinceLastHotkey = now - lastHotkeyTime;
+        const currentState = this.isAssistantRecording;
         
-        // Strong debouncing to prevent double-presses
-        if (timeSinceLastHotkey < debounceTime) {
-          console.log(`🚫 Debounced assistant key: ignoring press (${timeSinceLastHotkey}ms ago)`);
+        // Smart debouncing: Allow quick stop actions, prevent only rapid duplicates
+        if (timeSinceLastHotkey < quickDebounceTime && !currentState) {
+          // Only debounce start actions (not stop actions)
+          console.log(`🚫 Debounced assistant start: ignoring press (${timeSinceLastHotkey}ms ago)`);
           return;
         }
         
-        // Prevent overlapping operations
-        if (isProcessing || this.isRecording) {
-          console.log('🚫 Assistant hotkey ignored - other recording in progress');
+        // Don't block stop actions - only block if another operation is actively running
+        if (isProcessing && timeSinceLastHotkey < quickDebounceTime) {
+          console.log('🚫 Assistant hotkey: operation already in progress');
+          return;
+        }
+        
+        // Block regular recording but allow assistant operations
+        if (this.isRecording && !currentState) {
+          console.log('🚫 Assistant hotkey ignored - regular recording in progress');
           return;
         }
         
@@ -912,7 +932,6 @@ class VoiceAssistant {
         isProcessing = true;
         
         try {
-          const currentState = this.isAssistantRecording;
           console.log('🎯 Assistant hotkey pressed. isAssistantRecording:', currentState);
           
           if (currentState) {
@@ -927,10 +946,10 @@ class VoiceAssistant {
         } catch (err) {
           console.error('Assistant hotkey error:', err);
         } finally {
-          // Add extra delay before allowing next hotkey press
+          // Quick reset for responsive UX
           setTimeout(() => {
             isProcessing = false;
-          }, 200);
+          }, 50); // Much shorter delay
         }
       });
     } catch (error) {

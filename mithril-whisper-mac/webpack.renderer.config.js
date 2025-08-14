@@ -72,8 +72,8 @@ module.exports = {
       inject: 'body',
     }),
     new webpack.DefinePlugin({
-      'process.env.SUPABASE_URL': JSON.stringify('https://gufxxfaukitqghidmzef.supabase.co'),
-      'process.env.SUPABASE_ANON_KEY': JSON.stringify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Znh4ZmF1a2l0cWdoaWRtemVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MDIwNTMsImV4cCI6MjA3MDM3ODA1M30.JdKlLwq7Sw9xR27NwyFKCP_R0X7HughlShleL8sxl18'),
+      // Removed hardcoded Supabase credentials for security
+      // Users will need to provide their own OpenAI API key for assistant features
       'process.env.APP_VERSION': JSON.stringify(process.env.npm_package_version || '0.0.0'),
     }),
   ],

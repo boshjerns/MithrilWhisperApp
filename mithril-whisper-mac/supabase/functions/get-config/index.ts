@@ -10,15 +10,22 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Require authentication for get-config
+  const auth = req.headers.get("Authorization");
+  if (!auth) return new Response("Unauthorized", { status: 401 });
+
   try {
     const url = Deno.env.get("SUPABASE_URL")!;
     const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const auth = req.headers.get("Authorization") ?? "";
-
+    
     const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
     const supabase = createClient(url, anon, {
       global: { headers: { Authorization: auth } },
     });
+
+    // Validate the JWT token first
+    const { data: userData, error: authError } = await supabase.auth.getUser();
+    if (authError || !userData?.user) return new Response("Unauthorized", { status: 401 });
 
     const { data, error } = await supabase
       .from("app_config")

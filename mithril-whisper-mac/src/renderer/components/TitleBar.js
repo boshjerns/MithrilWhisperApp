@@ -32,7 +32,7 @@ function TitleBar() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .mac-title-bar {
           display: flex;
           align-items: center;

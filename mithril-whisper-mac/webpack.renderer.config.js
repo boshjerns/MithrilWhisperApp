@@ -71,6 +71,11 @@ module.exports = {
       filename: 'assistant-chat.html',
       inject: 'body',
     }),
+    new webpack.ProvidePlugin({
+      global: 'global', // Fix 'global is not defined' error
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser',
+    }),
     new webpack.DefinePlugin({
       'process.env.SUPABASE_URL': JSON.stringify('https://gufxxfaukitqghidmzef.supabase.co'),
       'process.env.SUPABASE_ANON_KEY': JSON.stringify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Znh4ZmF1a2l0cWdoaWRtemVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MDIwNTMsImV4cCI6MjA3MDM3ODA1M30.JdKlLwq7Sw9xR27NwyFKCP_R0X7HughlShleL8sxl18'),
@@ -79,6 +84,11 @@ module.exports = {
   ],
   resolve: {
     extensions: ['.js', '.jsx'],
+    fallback: {
+      global: require.resolve('global/window'),
+      process: require.resolve('process/browser'),
+      buffer: require.resolve('buffer'),
+    },
   },
   devServer: {
     port: Number(process.env.DEV_SERVER_PORT || 37843),

@@ -121,7 +121,7 @@ function RecordingControls({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .homepage-header {
           text-align: center;
           margin-bottom: 2rem;

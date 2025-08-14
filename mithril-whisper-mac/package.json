@@ -33,15 +33,18 @@
     "@babel/preset-env": "^7.23.0",
     "@babel/preset-react": "^7.22.0",
     "babel-loader": "^9.1.3",
+    "buffer": "^6.0.3",
     "concurrently": "^8.2.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "dotenv": "^17.2.1",
     "electron": "^27.0.0",
-    "electron-osx-sign": "^0.6.0",
     "electron-builder": "^24.6.4",
+    "electron-osx-sign": "^0.6.0",
+    "global": "^4.4.0",
     "html-webpack-plugin": "^5.5.3",
     "png-to-ico": "^2.1.8",
+    "process": "^0.11.10",
     "style-loader": "^3.3.3",
     "vitest": "^1.6.0",
     "wait-on": "^7.0.1",
@@ -76,6 +79,9 @@
       "LICENSE*",
       "logo1.ico"
     ],
+    "extraMetadata": {
+      "PrivacyInfo": "build/PrivacyInfo.xcprivacy"
+    },
     "asarUnpack": [
       "node_modules/win-audio/**",
       "whisper-cpp/**"
@@ -94,7 +100,9 @@
       }
     ],
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "category": "public.app-category.productivity",
       "icon": "build/icon.icns",
       "hardenedRuntime": true,

@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const fs = require('fs').promises;
+const secureFS = require('./secure-fs'); // Use secure file system wrapper
+const fs = secureFS; // For async operations
 const { app } = require('electron');
 
 class WhisperLocal {

@@ -17,6 +17,12 @@
 
 **Your voice and data stay private with enterprise-grade security measures:**
 
+### 🛡️ **App Sandbox Security (NEW)**
+- **📦 Sandboxed Environment**: App runs in isolated container - **cannot access your Documents, Desktop, or Downloads**
+- **🚫 No File System Access**: Blocked from reading other applications' data or system files
+- **🌐 Network Restrictions**: Limited to declared domains only (OpenAI, Supabase, Hugging Face)
+- **⛔ Privilege Containment**: Even if compromised, attacker gains no system access
+
 ### Audio Privacy
 - **🎙️ Zero Persistence**: Audio files are immediately deleted after transcription (typically within 2-5 seconds)
 - **🏠 Local Processing**: Whisper.cpp runs entirely on your device - audio never leaves your machine
@@ -25,15 +31,33 @@
 
 ### Technical Safeguards
 ```bash
-# Audio lifecycle (all local):
+# Sandboxed Audio Lifecycle (Completely Isolated):
 Recording → Temp File → Whisper.cpp → Transcription → Immediate Deletion
 └─ /tmp/mithril-whisper/{pid}-{timestamp}/recording_{time}.wav (deleted instantly)
+└─ App Container: ~/Library/Containers/com.voiceassistant.whisper/
 ```
 
-- **📁 Temp Storage**: Files stored in OS temp directories with automatic cleanup
+- **📁 Container Storage**: All app data confined to isolated sandbox container
 - **⏱️ Time Limits**: Even if cleanup fails, 24-hour auto-deletion removes any strays  
 - **🚫 Build Exclusion**: Audio files explicitly excluded from app distributions
-- **🔐 Session Scoped**: Process isolation prevents cross-session data access
+- **🔐 Process Isolation**: Zero access to other apps' data or user files
+- **📋 Privacy Manifest**: Explicit declaration of all data usage (PrivacyInfo.xcprivacy)
+
+### File Access Restrictions
+```bash
+✅ ALLOWED ACCESS:
+  - App settings and preferences (sandboxed)
+  - Temporary audio files (/tmp/mithril-whisper/ only)
+  - Bundled Whisper models (read-only)
+  - App logs (sandboxed container)
+
+❌ BLOCKED ACCESS:
+  - User Documents, Desktop, Downloads
+  - Other applications' data
+  - System files and directories
+  - Camera, location, contacts
+  - Browser history or bookmarks
+```
 
 ### Optional Cloud Features
 - **Assistant Mode**: Only transcribed *text* (never audio) sent to secure backend when using AI features
@@ -41,7 +65,7 @@ Recording → Temp File → Whisper.cpp → Transcription → Immediate Deletion
 - **Row-Level Security**: Database policies ensure users only access their own data
 - **Authentication**: JWT tokens and multi-factor validation for all API requests
 
-**Bottom Line**: Your voice recordings are processed locally and deleted immediately. Only if you choose to use AI assistant features is the resulting *text* securely transmitted for processing.
+**Bottom Line**: Your voice recordings are processed locally and deleted immediately. The app is sandboxed to prevent any access to your personal files. Only if you choose to use AI assistant features is the resulting *text* securely transmitted for processing.
 
 ### 📋 Development Requirements
 

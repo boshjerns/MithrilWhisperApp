@@ -122,7 +122,7 @@ const Pagination = ({
         </select>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .pagination-container {
           display: flex;
           align-items: center;
@@ -246,3 +246,4 @@ const Pagination = ({
 };
 
 export default Pagination;
+

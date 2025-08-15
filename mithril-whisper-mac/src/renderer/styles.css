@@ -962,4 +962,143 @@ body::before { display: none; }
 .enterprise-contact .contact-icon {
   margin-right: 0.75rem;
   color: currentColor;
+}
+
+/* Enhanced Social Links Grid */
+.social-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(58, 134, 255, 0.04));
+  border: 1px solid rgba(88, 166, 255, 0.15);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-link-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.6), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.social-link-card:hover::before {
+  transform: translateX(100%);
+}
+
+.social-link-card:hover {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.12), rgba(58, 134, 255, 0.06));
+  border-color: rgba(88, 166, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(88, 166, 255, 0.15);
+}
+
+.social-link-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.social-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.social-platform {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.social-handle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  opacity: 0.9;
+}
+
+.external-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.social-link-card:hover .external-icon {
+  opacity: 1;
+}
+
+/* Security Note Styling */
+.security-note {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 10px;
+  border-left: 4px solid #f59e0b;
+}
+
+.security-note p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.security-note strong {
+  color: var(--text-primary);
+}
+
+/* Enhanced About Page Colors */
+.about-container {
+  background: linear-gradient(135deg, rgba(0, 8, 20, 0.4), rgba(0, 12, 24, 0.2));
+  border-radius: 16px;
+  border: 1px solid rgba(88, 166, 255, 0.1);
+}
+
+.faq-item {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.05), rgba(58, 134, 255, 0.02));
+  border: 1px solid rgba(88, 166, 255, 0.12);
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(58, 134, 255, 0.04));
+  border-color: rgba(88, 166, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Platform-specific social link colors */
+.social-link-card.github:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(124, 58, 237, 0.04));
+}
+
+.social-link-card.twitter:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.04));
+}
+
+.social-link-card.linkedin:hover {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(22, 163, 74, 0.04));
+}
+
+.social-link-card.email:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.04));
 } 

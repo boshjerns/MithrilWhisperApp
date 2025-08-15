@@ -44,22 +44,48 @@ function About() {
           <p>This application was created by <strong>Josh Berns</strong> (boshjerns), a software engineer specializing in AI, security, and enterprise solutions.</p>
           <div className="creator-links">
             <h4>Connect with me:</h4>
-            <div className="social-links">
-              <a href="https://github.com/boshjerns" target="_blank" rel="noopener noreferrer" className="social-link github">
-                <GitHubIcon size={20} className="social-icon" />
-                <span>GitHub: @boshjerns</span>
+            <div className="social-links-grid">
+              <a href="https://github.com/boshjerns" target="_blank" rel="noopener noreferrer" className="social-link-card github">
+                <div className="social-link-content">
+                  <GitHubIcon size={24} className="social-icon" />
+                  <div className="social-info">
+                    <span className="social-platform">GitHub</span>
+                    <span className="social-handle">@boshjerns</span>
+                  </div>
+                </div>
+                <ExternalLinkIcon size={16} className="external-icon" />
               </a>
-              <a href="https://twitter.com/boshjerns" target="_blank" rel="noopener noreferrer" className="social-link twitter">
-                <TwitterIcon size={20} className="social-icon" />
-                <span>Twitter: @boshjerns</span>
+              
+              <a href="https://twitter.com/boshjerns" target="_blank" rel="noopener noreferrer" className="social-link-card twitter">
+                <div className="social-link-content">
+                  <TwitterIcon size={24} className="social-icon" />
+                  <div className="social-info">
+                    <span className="social-platform">Twitter</span>
+                    <span className="social-handle">@boshjerns</span>
+                  </div>
+                </div>
+                <ExternalLinkIcon size={16} className="external-icon" />
               </a>
-              <a href="https://linkedin.com/in/joshberns" target="_blank" rel="noopener noreferrer" className="social-link linkedin">
-                <LinkedInIcon size={20} className="social-icon" />
-                <span>LinkedIn: Josh Berns</span>
+              
+              <a href="https://linkedin.com/in/joshberns" target="_blank" rel="noopener noreferrer" className="social-link-card linkedin">
+                <div className="social-link-content">
+                  <LinkedInIcon size={24} className="social-icon" />
+                  <div className="social-info">
+                    <span className="social-platform">LinkedIn</span>
+                    <span className="social-handle">Josh Berns</span>
+                  </div>
+                </div>
+                <ExternalLinkIcon size={16} className="external-icon" />
               </a>
-              <a href="mailto:josh@mithril.dev" className="social-link email">
-                <MailIcon size={20} className="social-icon" />
-                <span>josh@mithril.dev</span>
+              
+              <a href="mailto:josh@mithril.dev" className="social-link-card email">
+                <div className="social-link-content">
+                  <MailIcon size={24} className="social-icon" />
+                  <div className="social-info">
+                    <span className="social-platform">Email</span>
+                    <span className="social-handle">josh@mithril.dev</span>
+                  </div>
+                </div>
               </a>
             </div>
           </div>
@@ -96,32 +122,35 @@ function About() {
       question: "How does this app manage security?",
       answer: (
         <div>
-          <p>Security is built into every layer of this application:</p>
+          <p>Security is built into multiple layers of this application:</p>
           <div className="security-features">
             <div className="security-item">
               <h5><LockIcon size={18} className="security-icon" /> Local Processing</h5>
               <p>All voice recognition happens on your device using Whisper.cpp - no audio ever leaves your machine.</p>
             </div>
             <div className="security-item">
-              <h5><DatabaseIcon size={18} className="security-icon" /> Zero Persistence</h5>
+              <h5><DatabaseIcon size={18} className="security-icon" /> Zero Audio Persistence</h5>
               <p>Audio files are immediately deleted (within 2-5 seconds) after transcription with multi-layer cleanup.</p>
             </div>
             <div className="security-item">
-              <h5><ShieldIcon size={18} className="security-icon" /> Sandboxed Environment</h5>
-              <p>App runs in an isolated container - cannot access your Documents, Desktop, or other applications' data.</p>
+              <h5><ShieldIcon size={18} className="security-icon" /> Hardened Runtime</h5>
+              <p>App runs with macOS Hardened Runtime protections against code injection and runtime attacks.</p>
             </div>
             <div className="security-item">
-              <h5><GlobeIcon size={18} className="security-icon" /> Network Restrictions</h5>
-              <p>When using AI features, only transcribed text (never audio) is sent to declared, secure endpoints.</p>
+              <h5><GlobeIcon size={18} className="security-icon" /> Selective Network Access</h5>
+              <p>When using AI features, only transcribed text (never audio) is sent to secure endpoints (OpenAI/Supabase).</p>
             </div>
             <div className="security-item">
               <h5><TargetIcon size={18} className="security-icon" /> Rate Limiting</h5>
-              <p>Built-in protection against abuse with intelligent throttling and usage monitoring.</p>
+              <p>Built-in server-side protection against abuse with intelligent throttling and usage monitoring.</p>
             </div>
             <div className="security-item">
               <h5><LockIcon size={18} className="security-icon" /> Code Signed & Notarized</h5>
-              <p>Fully signed and notarized by Apple, ensuring no malicious modifications.</p>
+              <p>Fully signed and notarized by Apple, ensuring authenticity and no malicious modifications.</p>
             </div>
+          </div>
+          <div className="security-note">
+            <p><strong>Note:</strong> This app currently uses standard macOS permissions and can access user files when needed for functionality. It is not sandboxed, allowing full system integration for text injection and file operations.</p>
           </div>
         </div>
       )
@@ -137,7 +166,7 @@ function About() {
             </div>
             <div className="storage-section">
               <h5><ChatIcon size={18} className="storage-icon" /> Transcriptions: <span className="status-local">STORED LOCALLY</span></h5>
-              <p>Text transcriptions are stored locally on your device in the app's sandboxed container. You can view and clear them anytime.</p>
+              <p>Text transcriptions are stored locally on your device in the app's data directory. You can view and clear them anytime.</p>
             </div>
             <div className="storage-section">
               <h5><RocketIcon size={18} className="storage-icon" /> AI Conversations: <span className="status-optional">OPTIONAL</span></h5>
@@ -145,7 +174,7 @@ function About() {
             </div>
             <div className="storage-section">
               <h5><DatabaseIcon size={18} className="storage-icon" /> Settings: <span className="status-local">STORED LOCALLY</span></h5>
-              <p>Your preferences and hotkey settings are stored locally in the app's sandboxed container.</p>
+              <p>Your preferences and hotkey settings are stored locally on your device using standard app storage.</p>
             </div>
           </div>
           <div className="data-control">

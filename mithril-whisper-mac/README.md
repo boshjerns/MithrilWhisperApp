@@ -17,11 +17,11 @@
 
 **Your voice and data stay private with enterprise-grade security measures:**
 
-### 🛡️ **App Sandbox Security (NEW)**
-- **📦 Sandboxed Environment**: App runs in isolated container - **cannot access your Documents, Desktop, or Downloads**
-- **🚫 No File System Access**: Blocked from reading other applications' data or system files
-- **🌐 Network Restrictions**: Limited to declared domains only (OpenAI, Supabase, Hugging Face)
-- **⛔ Privilege Containment**: Even if compromised, attacker gains no system access
+### 🛡️ **Security Features**
+- **🔒 Hardened Runtime**: App runs with macOS Hardened Runtime protections against code injection
+- **🎯 Local Processing**: Voice recognition happens entirely on your device - no audio sent to servers
+- **⚡ Zero Audio Persistence**: Audio files deleted immediately after transcription (2-5 seconds)
+- **🔐 Code Signed & Notarized**: Fully signed and verified by Apple for authenticity
 
 ### Audio Privacy
 - **🎙️ Zero Persistence**: Audio files are immediately deleted after transcription (typically within 2-5 seconds)
@@ -31,32 +31,30 @@
 
 ### Technical Safeguards
 ```bash
-# Sandboxed Audio Lifecycle (Completely Isolated):
+# Audio Lifecycle (Local Processing):
 Recording → Temp File → Whisper.cpp → Transcription → Immediate Deletion
 └─ /tmp/mithril-whisper/{pid}-{timestamp}/recording_{time}.wav (deleted instantly)
-└─ App Container: ~/Library/Containers/com.voiceassistant.whisper/
 ```
 
-- **📁 Container Storage**: All app data confined to isolated sandbox container
+- **📁 Local Storage**: App data stored in standard macOS application directories
 - **⏱️ Time Limits**: Even if cleanup fails, 24-hour auto-deletion removes any strays  
 - **🚫 Build Exclusion**: Audio files explicitly excluded from app distributions
-- **🔐 Process Isolation**: Zero access to other apps' data or user files
+- **🔐 Hardened Runtime**: Protection against code injection and runtime attacks
 - **📋 Privacy Manifest**: Explicit declaration of all data usage (PrivacyInfo.xcprivacy)
 
-### File Access Restrictions
+### Security Model
 ```bash
-✅ ALLOWED ACCESS:
-  - App settings and preferences (sandboxed)
-  - Temporary audio files (/tmp/mithril-whisper/ only)
-  - Bundled Whisper models (read-only)
-  - App logs (sandboxed container)
+✅ SECURITY FEATURES:
+  - Local-only voice processing (Whisper.cpp)
+  - Immediate audio file deletion
+  - Code signing and notarization
+  - Hardened Runtime protections
+  - Minimal required permissions
 
-❌ BLOCKED ACCESS:
-  - User Documents, Desktop, Downloads
-  - Other applications' data
-  - System files and directories
-  - Camera, location, contacts
-  - Browser history or bookmarks
+⚠️ STANDARD PERMISSIONS:
+  - App can access user files when needed for functionality
+  - Uses standard macOS app permissions (not sandboxed)
+  - Full system integration for text injection features
 ```
 
 ### Optional Cloud Features
@@ -65,7 +63,7 @@ Recording → Temp File → Whisper.cpp → Transcription → Immediate Deletion
 - **Row-Level Security**: Database policies ensure users only access their own data
 - **Authentication**: JWT tokens and multi-factor validation for all API requests
 
-**Bottom Line**: Your voice recordings are processed locally and deleted immediately. The app is sandboxed to prevent any access to your personal files. Only if you choose to use AI assistant features is the resulting *text* securely transmitted for processing.
+**Bottom Line**: Your voice recordings are processed locally and deleted immediately. The app uses standard macOS permissions with hardened runtime security. Only if you choose to use AI assistant features is the resulting *text* securely transmitted for processing.
 
 ### 📋 Development Requirements
 

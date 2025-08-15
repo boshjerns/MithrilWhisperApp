@@ -131,3 +131,4 @@ coverage/
 # 3. Never commit the actual webpack.*.config.js files with hardcoded secrets
 # 4. Use the .EXAMPLE versions as templates
 # 5. Set up proper environment variable management
+

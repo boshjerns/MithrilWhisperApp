@@ -117,26 +117,10 @@ export const InfoIcon = ({ size, className }) => (
   </Icon>
 );
 
-// Chevron Left Icon
-export const ChevronLeftIcon = ({ size, className }) => (
+// Lightning Icon
+export const LightningIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
-    <polyline points="15 18 9 12 15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </Icon>
-);
-
-// Chevron Right Icon
-export const ChevronRightIcon = ({ size, className }) => (
-  <Icon size={size} className={className}>
-    <polyline points="9 18 15 12 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </Icon>
-);
-
-// More Horizontal Icon (three dots)
-export const MoreHorizontalIcon = ({ size, className }) => (
-  <Icon size={size} className={className}>
-    <circle cx="12" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="19" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="5" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
@@ -146,13 +130,6 @@ export const QuestionIcon = ({ size, className }) => (
     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </Icon>
-);
-
-// Lightning Icon (for MITHRIL)
-export const LightningIcon = ({ size, className }) => (
-  <Icon size={size} className={className}>
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
@@ -196,20 +173,10 @@ export const ExternalLinkIcon = ({ size, className }) => (
   </Icon>
 );
 
-// Globe Icon
-export const GlobeIcon = ({ size, className }) => (
-  <Icon size={size} className={className}>
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </Icon>
-);
-
 // Lock Icon
 export const LockIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="12" cy="16" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
@@ -222,19 +189,30 @@ export const FileIcon = ({ size, className }) => (
   </Icon>
 );
 
-// User Icon
-export const UserIcon = ({ size, className }) => (
+// Database Icon
+export const DatabaseIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
-// Building Icon (for Enterprise)
-export const BuildingIcon = ({ size, className }) => (
+// Globe Icon
+export const GlobeIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
-    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M6 12h4m4 0h4M6 16h4m4 0h4M6 8h4m4 0h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// Target Icon
+export const TargetIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
@@ -242,8 +220,9 @@ export const BuildingIcon = ({ size, className }) => (
 export const BugIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
     <rect x="8" y="6" width="8" height="14" rx="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M19 7s-2-2-3-2-3 1-3 1-2-1-3-1-3 2-3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M20 11h-4M4 11h4M17 18h3M7 18H4M20 15h-4M4 15h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M19 7s-1-2-3-2-3 2-3 2 1-2 3-2 3 2 3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M5 7s1-2 3-2 3 2 3 2-1-2-3-2-3 2-3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 2v4M16 2v4M8 18v4M16 18v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
@@ -264,21 +243,34 @@ export const RocketIcon = ({ size, className }) => (
   </Icon>
 );
 
-// Target Icon
-export const TargetIcon = ({ size, className }) => (
+// Building Icon
+export const BuildingIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M6 12h4m0 0h4m-4 0v6m-4-3h.01M18 9h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
-// Database Icon
-export const DatabaseIcon = ({ size, className }) => (
+// Chevron Left Icon
+export const ChevronLeftIcon = ({ size, className }) => (
   <Icon size={size} className={className}>
-    <ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="15 18 9 12 15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// Chevron Right Icon
+export const ChevronRightIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <polyline points="9 18 15 12 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// More Horizontal Icon
+export const MoreHorizontalIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <circle cx="12" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="19" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="5" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </Icon>
 );
 
@@ -297,24 +289,23 @@ export default {
   PasteIcon,
   PowerIcon,
   InfoIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-  QuestionIcon,
   LightningIcon,
+  QuestionIcon,
   GitHubIcon,
   TwitterIcon,
   LinkedInIcon,
   MailIcon,
   ExternalLinkIcon,
-  GlobeIcon,
   LockIcon,
   FileIcon,
-  UserIcon,
-  BuildingIcon,
+  DatabaseIcon,
+  GlobeIcon,
+  TargetIcon,
   BugIcon,
   ChatIcon,
   RocketIcon,
-  TargetIcon,
-  DatabaseIcon
+  BuildingIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoreHorizontalIcon
 }; 

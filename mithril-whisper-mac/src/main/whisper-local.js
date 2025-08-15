@@ -163,10 +163,10 @@ class WhisperLocal {
         '-m', this.modelPath,
         '-t', '4',
         '-otxt',
-        // Accuracy improvements
-        '-bo', '10',     // Increase best-of candidates for better accuracy
-        '-bs', '8',      // Increase beam size for better decoding
-        '-wt', '0.005',  // Lower word threshold for more confident words
+        // Accuracy improvements (limited by tiny model constraints)
+        '-bo', '8',      // Max best-of for tiny model (was 10, causing error)
+        '-bs', '5',      // Beam size (reduce to be safe with tiny model)
+        '-wt', '0.01',   // Word threshold (slightly higher for stability)
         '-tp', '0.0'     // Use greedy decoding (temperature 0) for consistency
       ];
 

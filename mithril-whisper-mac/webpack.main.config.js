@@ -43,13 +43,9 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      // 🚨 SECURITY: Use environment variables instead of hardcoded values
-      // Create a .env file with:
-      // SUPABASE_URL=your_supabase_project_url
-      // SUPABASE_ANON_KEY=your_supabase_anon_key
-      'process.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL || ''),
-      'process.env.SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY || ''),
+      'process.env.SUPABASE_URL': JSON.stringify('https://gufxxfaukitqghidmzef.supabase.co'),
+      'process.env.SUPABASE_ANON_KEY': JSON.stringify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1Znh4ZmF1a2l0cWdoaWRtemVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MDIwNTMsImV4cCI6MjA3MDM3ODA1M30.JdKlLwq7Sw9xR27NwyFKCP_R0X7HughlShleL8sxl18'),
       'process.env.APP_VERSION': JSON.stringify(process.env.npm_package_version || '0.0.0'),
     }),
   ],
-};
+}; 

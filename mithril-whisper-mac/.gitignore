@@ -1,16 +1,19 @@
-# 🚨 SECURITY-FOCUSED .gitignore for MITHRIL WHISPER
-# Add these rules to your .gitignore to prevent sensitive data leaks
+# 🚨 MITHRIL WHISPER - Security-First .gitignore
 
 # ==============================================================================
-# 🔥 CRITICAL - Environment Variables & Secrets
+# 🔥 CRITICAL - Sensitive Configuration Files (NEVER COMMIT)
 # ==============================================================================
-.env
-.env.local
-.env.development
-.env.production
-.env.test
+webpack.main.config.js
+webpack.renderer.config.js
+package.json
 
-# API Keys and tokens
+# Environment variables
+.env*
+!env.example
+
+# ==============================================================================
+# 🔐 Secrets & Credentials
+# ==============================================================================
 **/config/secrets.js
 **/config/keys.js
 **/*secrets*
@@ -18,9 +21,7 @@
 **/*token*
 **/*api-key*
 
-# ==============================================================================
-# 🔐 Code Signing & Certificates  
-# ==============================================================================
+# Code signing & certificates  
 *.p12
 *.cer
 *.mobileprovision
@@ -28,15 +29,12 @@
 **/signing/*
 **/certificates/*
 **/certs/*
-
-# macOS Keychain exports
 *.keychain
 *.keychain-db
 
 # ==============================================================================
 # 📦 Build & Distribution
 # ==============================================================================
-# Electron builds
 dist/
 build/main/
 build/renderer/
@@ -46,8 +44,6 @@ build/renderer/
 *.deb
 *.rpm
 *.AppImage
-
-# Temporary build files
 temp/
 tmp/
 .tmp/
@@ -62,12 +58,11 @@ tmp/
 *.ogg
 *.flac
 *.wma
-# Whisper model files (can be large)
 models/*.bin
 whisper-cpp/models/*.bin
 
 # ==============================================================================
-# 📱 Node.js & Dependencies
+# 📱 Standard Node.js
 # ==============================================================================
 node_modules/
 npm-debug.log*
@@ -76,7 +71,7 @@ yarn-error.log*
 package-lock.json.backup
 
 # ==============================================================================
-# 🖥️ IDE & Editor Files
+# 🖥️ IDE & System Files
 # ==============================================================================
 .vscode/settings.json
 .vscode/launch.json
@@ -84,10 +79,6 @@ package-lock.json.backup
 *.swp
 *.swo
 *~
-
-# ==============================================================================
-# 🍎 macOS & Windows
-# ==============================================================================
 .DS_Store
 .DS_Store?
 ._*
@@ -97,43 +88,20 @@ ehthumbs.db
 Thumbs.db
 
 # ==============================================================================
-# 📊 Logs & Debugging
+# 📊 Logs & Development
 # ==============================================================================
 logs/
 *.log
 crash-reports/
 .nyc_output/
-
-# ==============================================================================
-# ⚡ Development
-# ==============================================================================
 .cache/
 .parcel-cache/
 coverage/
 *.tsbuildinfo
 
 # ==============================================================================
-# 🚨 PERSONAL INFORMATION - Always exclude these patterns
+# 🚨 Personal Information Patterns
 # ==============================================================================
 *personal*
 *private*
 *confidential*
-*secret*
-*credential*
-*password*
-*token*
-
-# ==============================================================================
-# 📋 INSTRUCTIONS FOR DEVELOPERS
-# ==============================================================================
-# 1. Copy this file to .gitignore in your project root
-# 2. Create .env file for your environment variables
-# 3. Never commit the actual webpack.*.config.js files with hardcoded secrets
-# 4. Use the .EXAMPLE versions as templates
-# 5. Set up proper environment variable management
-
-# Private package.json with real credentials
-package.json.PRIVATE
-
-# Supabase temp files
-supabase/.temp/

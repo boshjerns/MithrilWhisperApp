@@ -13,8 +13,8 @@ const { ipcRenderer } = window.require('electron');
 
 function AppInner() {
   const [settings, setSettings] = useState({
-    hotkey: 'Alt+Space',
-    assistantHotkey: 'F2',
+    hotkey: 'Cmd+Q',
+    assistantHotkey: 'Cmd+W',
     model: 'small',
     sensitivity: 0.5,
     cleanup: true,
@@ -291,8 +291,8 @@ function AppInner() {
                   const int16Data = new Int16Array(float32Data.length);
                   
                   for (let i = 0; i < float32Data.length; i++) {
-                    // Convert [-1,1] float to [-32768,32767] int16 with strong gain
-                    let sample = float32Data[i] * 8.0; // Strong boost for Mac microphone capture
+                    // Convert [-1,1] float to [-32768,32767] int16 with normal gain
+                    let sample = float32Data[i] * 1.0; // Normal gain for Mac microphone capture
                     sample = Math.max(-1, Math.min(1, sample)); // Clamp
                     int16Data[i] = sample < 0 ? sample * 32768 : sample * 32767;
                   }

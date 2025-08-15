@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AuthProvider, useAuth } from './auth/AuthContext';
+import { isLocalMode } from './auth/supabaseClient';
 import Settings from './components/Settings';
 import UsageHistory from './components/UsageHistory';
 import RecordingControls from './components/RecordingControls';
@@ -374,7 +375,7 @@ function AppInner() {
             onStopRecording={handleStopRecording}
             onToggleRecording={handleToggleRecording}
             hotkey={settings.hotkey}
-            disabled={!user}
+            disabled={!user && !isLocalMode}
           />
         )}
 

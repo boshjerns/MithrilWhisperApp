@@ -1026,7 +1026,11 @@ class VoiceAssistant {
       console.log('🚫 Recording blocked: temporarily disabled (settings page open)');
       return false;
     }
-    if (!this.authUser) {
+    // Check if we're in local mode (no Supabase URL means local mode)
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const isLocalMode = !supabaseUrl;
+    
+    if (!isLocalMode && !this.authUser) {
       console.log('🚫 Recording blocked: user not authenticated');
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
         this.mainWindow.webContents.send('recording-status', false);
@@ -1374,7 +1378,11 @@ class VoiceAssistant {
       console.log('🚫 Assistant recording blocked: temporarily disabled (settings page open)');
       return false;
     }
-    if (!this.authUser) return false;
+    // Check if we're in local mode (no Supabase URL means local mode)
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const isLocalMode = !supabaseUrl;
+    
+    if (!isLocalMode && !this.authUser) return false;
     try {
       this.isAssistantRecording = true;
       this.recordingStartTime = Date.now();

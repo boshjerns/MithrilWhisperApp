@@ -38,10 +38,11 @@
 ### Privacy & Security First
 
 - **Air-Gapped Operation**: Works completely offline
-- **Zero Data Transmission**: Audio never leaves your computer
+- **Zero Data Transmission**: Audio never leaves your computer  
 - **Bundled AI Models**: Whisper.cpp models included - no downloads required
 - **Enterprise-Grade Security**: Designed for classified and sensitive environments
 - **Transparent Processing**: Open source - audit every line of code
+- **Immediate File Deletion**: Audio files automatically deleted after transcription
 
 ## Why Mithril Whisper?
 
@@ -69,10 +70,73 @@ Complete Windows implementation with:
 - Comprehensive setup and usage documentation
 
 ### 📁 [mithril-whisper-mac/](./mithril-whisper-mac/)
-*Coming Soon* - macOS implementation featuring:
+Complete macOS implementation featuring:
 - Native macOS integration
 - Optimized for Apple Silicon and Intel Macs
 - Seamless system-wide voice recognition
+- Comprehensive setup and usage documentation
+
+## Privacy & Telemetry Transparency
+
+**Mithril Whisper** offers two distinct usage modes to meet different privacy and deployment needs:
+
+### 🔒 **Local Development Mode** (Maximum Privacy)
+Run the application directly from source code without any installation:
+
+**Privacy Features:**
+- ✅ **No Authentication Required**: Works immediately without login
+- ✅ **Zero Telemetry**: No data collection or transmission whatsoever
+- ✅ **Complete Offline Operation**: Never connects to internet
+- ✅ **Voice Data Never Stored**: Audio files deleted immediately after transcription
+- ✅ **Local AI Processing**: All transcription happens on your device using bundled Whisper.cpp
+
+**Setup:** Clone repository → Install dependencies → Run locally
+
+### 📦 **Installed Version** (Minimal Telemetry)
+Pre-built applications for easy installation and updates:
+
+**Authentication:**
+- Requires user login for application access
+- Login credentials managed through secure Supabase authentication
+
+**Telemetry (AI Assistant Only):**
+- **Voice Dictation**: Zero telemetry - completely private
+- **AI Assistant Feature**: Minimal telemetry when actively used
+  - Character count of text sent to/from AI assistant
+  - Session duration and timestamps  
+  - Model used (e.g., whisper-tiny)
+  - Platform information (Windows/Mac)
+  - **Content is NEVER tracked** - only statistical metadata
+
+**What is NOT Tracked:**
+- Voice recordings or audio data
+- Transcription content or text
+- Conversations with AI assistant
+- Personal or sensitive information
+- Usage outside of AI assistant feature
+
+### Code Transparency
+Our telemetry implementation is fully transparent. Here's the actual code showing what data is collected:
+
+```javascript
+// From src/main/main.js - AI Assistant usage tracking only
+const payload = {
+  transcript_chars_original: userPrompt.length,     // Character count only
+  transcript_chars_cleaned: assistantReply.length, // Character count only
+  metadata: {
+    user_words: countWords(userPrompt),            // Word count only  
+    assistant_words: countWords(assistantReply),   // Word count only
+  }
+  // NOTE: Actual content is NEVER included in telemetry
+};
+```
+
+### Data Flow Summary
+1. **Voice Input** → Local Whisper.cpp processing → **Transcribed Text** (100% local)
+2. **AI Assistant** (optional) → Character count metadata → Encrypted transmission to OpenAI
+3. **File Cleanup** → Audio files immediately deleted after processing
+
+**Bottom Line:** Your voice never leaves your device. Only if you choose to use the AI assistant feature do we track minimal usage statistics (character counts, not content).
 
 ## About Mithril - Zero-Trust AI Solutions
 
@@ -120,8 +184,35 @@ Passionate about building AI solutions that respect privacy and maintain securit
 
 ## Getting Started
 
+### Quick Setup - Local Development Mode (Maximum Privacy)
+
+**Windows:**
+```bash
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-windows
+npm install
+npm run dev  # No authentication required, zero telemetry
+```
+
+**macOS:**
+```bash
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-mac
+npm install
+npm run dev  # No authentication required, zero telemetry
+```
+
+**Optional AI Assistant Setup:**
+```bash
+# Add OpenAI API key for enhanced text processing (optional)
+cp env.example .env
+# Edit .env and add: OPENAI_API_KEY=your_key_here
+```
+
+### Platform-Specific Documentation
+
 1. **Choose Your Platform**: Navigate to the appropriate platform folder
-2. **Follow Setup Instructions**: Each platform has detailed setup documentation
+2. **Follow Detailed Setup**: Each platform has comprehensive documentation
 3. **Start Transcribing**: Begin using voice recognition immediately
 4. **Enhance (Optional)**: Add OpenAI integration for advanced text processing
 

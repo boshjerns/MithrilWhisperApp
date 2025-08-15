@@ -396,7 +396,17 @@ We welcome contributions! Please:
 
 ## 📋 **License**
 
-MIT License - see LICENSE file for details.
+### **Personal Use**: 
+This project is licensed under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**. Free to use, modify, and distribute for non-commercial purposes with attribution.
+
+### **Commercial Use**: 
+Commercial use, including distribution in commercial products, SaaS offerings, or revenue-generating applications, requires a separate commercial license.
+
+**For commercial licensing inquiries, please contact: Josh Berns at boshjerns@gmail.com**
+
+See [LICENSE](LICENSE) file for full details.
+
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ---
 

@@ -80,13 +80,13 @@ const TRANSLATION_MODES = [
     mode: 'transcribe', 
     name: 'Transcribe Only', 
     icon: '🎙️', 
-    description: 'Transcribe in the original language' 
+    description: 'Transcribe in the original language (best accuracy)' 
   },
   { 
     mode: 'translate', 
     name: 'Translate to English', 
     icon: '🔄', 
-    description: 'Transcribe and translate to English' 
+    description: 'Transcribe and translate to English (requires clear speech)' 
   }
 ];
 
@@ -129,6 +129,17 @@ export default function LanguageSelector({
           <p className="setting-description">
             {selectedTransMode.description}
           </p>
+          {translationMode === 'translate' && (
+            <div className="translation-notice">
+              <div className="notice-header">📝 Translation Quality Tips:</div>
+              <ul className="notice-list">
+                <li>• Speak clearly and at a moderate pace</li>
+                <li>• Minimize background noise</li>
+                <li>• Translation works best with common languages</li>
+                <li>• For best results, use "Transcribe Only" then translate text separately</li>
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Language Selector */}
@@ -416,6 +427,35 @@ export default function LanguageSelector({
 
         .language-options::-webkit-scrollbar-thumb:hover {
           background: rgba(88, 166, 255, 0.5);
+        }
+
+        .translation-notice {
+          margin-top: 12px;
+          padding: 12px;
+          background: rgba(251, 191, 36, 0.1);
+          border: 1px solid rgba(251, 191, 36, 0.2);
+          border-radius: 8px;
+          border-left: 4px solid #f59e0b;
+        }
+
+        .notice-header {
+          font-size: 13px;
+          font-weight: 600;
+          color: #fbbf24;
+          margin-bottom: 8px;
+        }
+
+        .notice-list {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        .notice-list li {
+          font-size: 12px;
+          color: #e5e7eb;
+          margin-bottom: 4px;
+          line-height: 1.4;
         }
       `}</style>
     </div>

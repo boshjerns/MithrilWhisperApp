@@ -162,7 +162,12 @@ class WhisperLocal {
       const baseArgs = [
         '-m', this.modelPath,
         '-t', '4',
-        '-otxt'
+        '-otxt',
+        // Accuracy improvements
+        '-bo', '10',     // Increase best-of candidates for better accuracy
+        '-bs', '8',      // Increase beam size for better decoding
+        '-wt', '0.005',  // Lower word threshold for more confident words
+        '-tp', '0.0'     // Use greedy decoding (temperature 0) for consistency
       ];
 
       // Add language parameter if not auto-detecting
@@ -172,7 +177,7 @@ class WhisperLocal {
 
       // Add translation flag if translating to English
       if (this.translationMode === 'translate') {
-        baseArgs.push('--translate');
+        baseArgs.push('-tr'); // Use correct whisper.cpp flag
       }
 
       const args = isCli ? [
@@ -183,7 +188,8 @@ class WhisperLocal {
         audioPath,
       ];
 
-      console.log('Running whisper binary with sanitized args');
+      console.log(`🔧 Whisper command: ${path.basename(exe)} ${args.join(' ')}`);
+      console.log(`🌐 Language: ${this.language}, Translation: ${this.translationMode}`);
       
       // Ensure we execute from the same directory as the binary to resolve any relative Metal libraries
       const cwd = path.dirname(exe);

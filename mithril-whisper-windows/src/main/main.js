@@ -1,40 +1,10 @@
-const { app, BrowserWindow, globalShortcut, ipcMain, clipboard, systemPreferences, dialog, session } = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain, clipboard } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const Store = require('electron-store');
 const AudioRecorder = require('./audio-recorder');
 const TextProcessor = require('./text-processor');
 const VolumeManager = require('./volume-manager');
-
-// Simple file logger for packaged builds
-let __logStream = null;
-function initFileLogger() {
-  try {
-    const userData = app.getPath('userData');
-    const logDir = path.join(userData, 'logs');
-    try { fs.mkdirSync(logDir, { recursive: true }); } catch (_) {}
-    const logPath = path.join(logDir, 'main.log');
-    __logStream = fs.createWriteStream(logPath, { flags: 'a' });
-    const write = (level, args) => {
-      try {
-        const ts = new Date().toISOString();
-        const line = `[${ts}] [${level}] ${args.map(a => {
-          try { return typeof a === 'string' ? a : JSON.stringify(a); } catch (_) { return String(a); }
-        }).join(' ')}\n`;
-        __logStream.write(line);
-      } catch (_) {}
-    };
-    const orig = { log: console.log, warn: console.warn, error: console.error };
-    console.log = (...args) => { try { orig.log.apply(console, args); } catch (_) {}; write('INFO', args); };
-    console.warn = (...args) => { try { orig.warn.apply(console, args); } catch (_) {}; write('WARN', args); };
-    console.error = (...args) => { try { orig.error.apply(console, args); } catch (_) {}; write('ERROR', args); };
-    console.log('File logger initialized at', logPath);
-    process.on('uncaughtException', (e) => { console.error('uncaughtException', e && e.stack ? e.stack : e); });
-    process.on('unhandledRejection', (e) => { console.error('unhandledRejection', e && e.stack ? e.stack : e); });
-  } catch (e) {
-    // ignore
-  }
-}
 
 // Remove placeholder markers like [BLANK_AUDIO] / [NO AUDIO] / [SILENCE]
 function stripBlankAudioMarkers(input) {
@@ -81,181 +51,94 @@ function resolveRendererFile(filename) {
     return path.join(__dirname, '..', '..', 'build', 'renderer', filename);
   }
 }
-// --- macOS helpers (top-level) ---
-async function getFrontmostAppName() {
-  try {
-    const { spawnSync } = require('child_process');
-    const res = spawnSync('osascript', ['-e', 'tell application "System Events" to get name of first application process whose frontmost is true']);
-    if (res.status === 0) return String(res.stdout || '').trim();
-  } catch (_) {}
-  return '';
-}
-
-async function getFrontmostAppBundleId() {
-  try {
-    const name = await getFrontmostAppName();
-    if (!name) return '';
-    const { spawnSync } = require('child_process');
-    const res = spawnSync('osascript', ['-e', `id of application "${name.replace(/"/g, '\\"')}"`]);
-    if (res.status === 0) return String(res.stdout || '').trim();
-  } catch (_) {}
-  return '';
-}
-
-// Environment detection for dual-mode system
-function getAssistantMode() {
-  const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
-  const hasOpenAI = !!process.env.OPENAI_API_KEY;
-  
-  if (hasSupabase) {
-    return { mode: 'production', requiresAuth: true };
-  } else if (hasOpenAI) {
-    return { mode: 'local', requiresAuth: false };
-  } else {
-    return { mode: 'disabled', requiresAuth: false };
-  }
-}
-
-// Direct OpenAI API call for local development mode
-async function callOpenAIDirectly(systemPrompt, userPrompt, model = 'gpt-4o-mini', maxTokens = 4000) {
-  const openaiKey = process.env.OPENAI_API_KEY;
-  if (!openaiKey) {
-    throw new Error('OpenAI API key not found in environment');
-  }
-
-  console.log('🏠 Local mode: Calling OpenAI API directly');
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${openaiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: model,
-      stream: true,
-      max_tokens: maxTokens,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.7
-    })
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`OpenAI API error ${response.status}: ${text}`);
-  }
-
-  return response;
-}
-
 async function handleAssistantQuery(userPrompt, context) {
   try {
-    const { mode, requiresAuth } = getAssistantMode();
+    // Check if we're in local mode
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const jwt = this.accessToken || '';
+    const isLocalMode = !supabaseUrl;
     
-    // Handle different modes
-    if (mode === 'disabled') {
+    if (!isLocalMode && !jwt) {
       if (this.assistantWindow) {
-        this.assistantWindow.webContents.send('assistant:error', 'Assistant disabled: No API keys configured. Add OPENAI_API_KEY to .env for local mode.');
+        this.assistantWindow.webContents.send('assistant:error', 'Not authenticated');
       }
       return;
     }
     
-    // Production mode: requires Supabase authentication
-    if (mode === 'production') {
-      const supabaseUrl = process.env.SUPABASE_URL || '';
-      const jwt = this.accessToken || '';
-      if (!supabaseUrl || !jwt) {
+    if (isLocalMode) {
+      // In local mode, check for OpenAI API key
+      const openaiApiKey = this.store.get('openaiApiKey');
+      if (!openaiApiKey) {
         if (this.assistantWindow) {
-          this.assistantWindow.webContents.send('assistant:error', 'Not authenticated or missing Supabase URL');
+          this.assistantWindow.webContents.send('assistant:error', 'OpenAI API key not configured. Please add it in Settings.');
         }
         return;
       }
     }
-    
-    // Local mode: no authentication required, just OpenAI key
-    console.log(`🔧 Assistant mode: ${mode} (auth required: ${requiresAuth})`)
     const selection = (context && context.selectedText) ? String(context.selectedText) : '';
     let defaultAction = 'summarize';
     const lower = userPrompt.toLowerCase();
-    
-    // Enhanced intent detection for three actions
-    if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit|improve)/.test(lower)) {
+    if (selection && /(replace|change|modify|rewrite|refactor|fix|implement|update|apply|edit)/.test(lower)) {
       defaultAction = 'replace';
-    } else if (
-      // Strong generation keywords
-      /(output|generate|create|write|build|make|produce|print|display|code|function|class|component|method|script|file|document|app|game|website|page)/.test(lower) ||
-      // Programming language keywords  
-      /(html|css|javascript|python|java|cpp|sql|json|xml|yaml|markdown|react|vue|angular)/.test(lower) ||
-      // Generation phrases
-      /^(show me|give me|provide|write me|make me|create me|generate me) (a|an|the|some)/.test(lower) ||
-      /(write|create|make|generate|build|produce) (a|an|the|some|my)/.test(lower) ||
-      // Direct requests for content
-      /^(create|write|make|generate|build|produce|code|develop)/.test(lower)
-    ) {
-      // More precise: only inject for clear output/generation requests
-      // Avoid conversational queries like questions, explanations, etc.
-      if (!/^(tell me|explain|what|how|why|describe|define|summarize|can you|could you|would you|will you|do you|are you|is there|where|when|who|help me understand|walk me through)/.test(lower) &&
-          !/\?$/.test(userPrompt.trim()) &&
-          !/(explain|description|tutorial|guide|help|learn|understand|meaning|definition)/.test(lower)) {
-        defaultAction = 'inject';
-      }
     }
-    
     const systemPrompt = [
-      'You are a coding assistant that responds based on detected user intent.',
-      '',
-      'RESPONSE RULES:',
-      `INTENT DETECTED: ${defaultAction.toUpperCase()}`,
-      '',
-      defaultAction === 'inject' || defaultAction === 'replace' ? [
-        '🔧 OUTPUT MODE: PURE CONTENT ONLY',
-        ' - Output ONLY the requested content, nothing else',
-        ' - No explanations, instructions, or conversational text',
-        ' - No "Save this as..." or "Run with..." comments',
-        ' - No backticks unless part of the actual content',
-        ' - Content should be ready to paste/inject directly'
-      ].join('\n') : [
-        '💬 CONVERSATION MODE: HELPFUL EXPLANATION',
-        ' - Provide helpful conversational responses',
-        ' - Include explanations and context as needed',
-        ' - Use normal conversational tone'
-      ].join('\n'),
-      '',
-      'EXAMPLES:',
-      ' - "create a Python game" → [Pure Python code only]',
-      ' - "generate HTML form" → [Pure HTML only]', 
-      ' - "replace this function" → [Pure improved code only]',
-      ' - "explain this code" → [Conversational explanation]',
-      ' - "what is recursion?" → [Conversational educational response]',
+      'You are a fast coding assistant embedded in a voice tool.',
+      'You get a USER instruction and optionally a SELECTION (text/code).',
+      'Decide one of two actions:',
+      ' - replace: when the user asks to change/improve/generate content to substitute the selection.',
+      ' - summarize: when the user asks to explain/summarize/comment on the selection or topic.',
+      'OUTPUT PROTOCOL:',
+      ' 1) First line MUST be exactly: ACTION: replace  OR  ACTION: summarize',
+      ' 2) Then the content only:',
+      '    - If replace: output ONLY the replacement content, no commentary, no backticks.',
+      '    - If summarize: output a concise explanation; code blocks only if essential.',
+      'Constraints: Be brief and helpful. Keep under 800 tokens. No preambles.',
     ].join('\n');
 
     const selectionSnippet = selection && selection.length > 0 ? selection.slice(0, 8000) : '';
     const sanitizedUserPrompt = stripBlankAudioMarkers(userPrompt || '');
     this.createAssistantWindow && this.createAssistantWindow();
-      if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
-        this.assistantWindow.showInactive();
-        this.assistantWindow.webContents.send('assistant:stream-start', {
-          status: 'processing',
-          hasSelection: !!selectionSnippet,
-          userPrompt: sanitizedUserPrompt,
-        });
-      }
+    if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
+      this.assistantWindow.showInactive();
+      this.assistantWindow.webContents.send('assistant:stream-start', {
+        status: 'processing',
+        hasSelection: !!selectionSnippet,
+        userPrompt: sanitizedUserPrompt,
+      });
+    }
 
-    const model = this.assistantModel || (mode === 'production' ? 'o4-mini' : 'gpt-4o-mini');
+    const model = this.store.get('openaiModel') || this.assistantModel || 'gpt-4o-mini';
     const maxTokens = this.assistantMaxTokens || 800;
 
     let response;
-    
-    if (mode === 'production') {
-      // Production mode: Use Supabase Edge Function
-      const supabaseUrl = process.env.SUPABASE_URL;
-      const jwt = this.accessToken;
-      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-      console.log('🚀 Production mode: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
+    if (isLocalMode) {
+      // Direct OpenAI API call in local mode
+      const openaiApiKey = this.store.get('openaiApiKey');
+      console.log('Assistant: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
       
+      const messages = [
+        { role: 'system', content: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') },
+        { role: 'user', content: sanitizedUserPrompt }
+      ];
+      
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openaiApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          max_tokens: maxTokens,
+          stream: true,
+          temperature: 0.7
+        })
+      });
+    } else {
+      // Use Supabase Edge function
+      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
+      console.log('Assistant: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
       response = await fetch(assistantUrl, {
         method: 'POST',
         headers: {
@@ -276,11 +159,6 @@ async function handleAssistantQuery(userPrompt, context) {
           store: true
         })
       });
-    } else {
-      // Local mode: Call OpenAI API directly  
-      console.log('🏠 Local mode: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
-      const fullSystemPrompt = systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '');
-      response = await callOpenAIDirectly(fullSystemPrompt, sanitizedUserPrompt, model, maxTokens);
     }
 
     if (!response.ok || !response.body) {
@@ -288,35 +166,28 @@ async function handleAssistantQuery(userPrompt, context) {
       throw new Error(`OpenAI response error ${response.status}: ${text}`);
     }
 
+    let decidedAction = null;
     let buffer = '';
-    // Use intent detection instead of parsing AI response for actions
-    const decidedAction = defaultAction;
+    const tryDecide = () => {
+      if (decidedAction) return;
+      const firstLine = buffer.split(/\r?\n/)[0] || '';
+      const m = firstLine.match(/ACTION:\s*(replace|summarize)/i);
+      if (m) decidedAction = m[1].toLowerCase();
+    };
     const sendToken = (text) => {
       if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
         this.assistantWindow.webContents.send('assistant:stream-token', text);
       }
     };
       const finalize = async () => {
-      // No need to strip ACTION prefix since we don't use it anymore
-      let finalText = buffer;
+      let finalText = buffer.replace(/^ACTION:\s*(replace|summarize)\s*\r?\n/i, '');
+      if (!decidedAction) decidedAction = defaultAction;
       if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
         this.assistantWindow.webContents.send('assistant:stream-end', { action: decidedAction, text: finalText });
       }
-        
-        // Handle injection logic for different actions
-        const allowAssistantInject = this.store.get('assistantInjectOnReplace', false);
-        
-        if (decidedAction === 'inject') {
-          // Always inject when user explicitly asks for output generation
-          console.log('🎯 Assistant: Injecting generated content');
-          await this.injectText(finalText);
-        } else if (decidedAction === 'replace' && selection && allowAssistantInject) {
-          // Only inject replacement if setting is enabled
-          console.log('🎯 Assistant: Injecting replacement content');
-          await this.injectText(finalText);
-        }
-        // summarize action stays in chat only
-        
+      if (decidedAction === 'replace' && selection) {
+        await this.injectText(finalText);
+      }
         // Immediately return HUD to idle after finalize
         this.updateHUDStatus('idle', { connected: true });
 
@@ -362,53 +233,40 @@ async function handleAssistantQuery(userPrompt, context) {
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           
-          // Process streaming response differently based on mode
-          if (mode === 'production') {
-            // Supabase Edge Function format (OpenAI Realtime API format)
-            console.log('🔍 Production chunk received:', chunk);
+          if (isLocalMode) {
+            // OpenAI API streaming format
+            chunk.split('\n').forEach((line) => {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') return;
+                try {
+                  const json = JSON.parse(data);
+                  const delta = json.choices?.[0]?.delta?.content || '';
+                  if (delta) {
+                    buffer += delta;
+                    if (buffer.length < 200) tryDecide();
+                    sendToken(delta);
+                  }
+                } catch (_) {}
+              }
+            });
+          } else {
+            // Supabase Edge function format
             chunk.split(/\n\n/).forEach((block) => {
               const trimmed = block.trim();
               if (!trimmed) return;
-              console.log('🔍 Processing block:', trimmed);
               const lines = trimmed.split(/\n/);
               const eventLine = lines.find(l => l.startsWith('event:'));
-              if (eventLine) {
-                lastEvent = eventLine.replace(/^event:\s*/, '');
-                console.log('🔍 Event:', lastEvent);
-              }
+              if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
               const dataLine = lines.find(l => l.startsWith('data:'));
               if (!dataLine) return;
               const data = dataLine.replace(/^data:\s*/, '');
               if (data === '[DONE]') return;
-              console.log('🔍 Data:', data);
               try {
                 const json = JSON.parse(data);
-                console.log('🔍 Parsed JSON:', json);
                 let delta = '';
                 if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
                 else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                else if (json.content_part && json.content_part.text) delta = json.content_part.text;
-                else if (json.delta && typeof json.delta === 'string') delta = json.delta;
-                if (delta) {
-                  console.log('🔍 Sending delta:', delta);
-                  buffer += delta;
-                  if (buffer.length < 200) tryDecide();
-                  sendToken(delta);
-                }
-              } catch (e) {
-                console.log('🔍 JSON parse error:', e.message, 'for data:', data);
-              }
-            });
-          } else {
-            // Standard OpenAI Chat Completions streaming format
-            chunk.split(/\n/).forEach((line) => {
-              const trimmed = line.trim();
-              if (!trimmed || !trimmed.startsWith('data: ')) return;
-              const data = trimmed.replace(/^data:\s*/, '');
-              if (data === '[DONE]') return;
-              try {
-                const json = JSON.parse(data);
-                const delta = json.choices?.[0]?.delta?.content || '';
                 if (delta) {
                   buffer += delta;
                   if (buffer.length < 200) tryDecide();
@@ -423,49 +281,28 @@ async function handleAssistantQuery(userPrompt, context) {
           let lastEvent = '';
           response.body.on('data', (value) => {
             const chunk = value.toString('utf8');
-            
-            if (mode === 'production') {
-              // Supabase Edge Function format
-              chunk.split(/\n\n/).forEach((block) => {
-                const trimmed = block.trim();
-                if (!trimmed) return;
-                const lines = trimmed.split(/\n/);
-                const eventLine = lines.find(l => l.startsWith('event:'));
-                if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
-                const dataLine = lines.find(l => l.startsWith('data:'));
-                if (!dataLine) return;
-                const data = dataLine.replace(/^data:\s*/, '');
-                if (data === '[DONE]') return;
-                try {
-                  const json = JSON.parse(data);
-                  let delta = '';
-                  if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                  else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                  if (delta) {
-                    buffer += delta;
-                    if (buffer.length < 200) tryDecide();
-                    sendToken(delta);
-                  }
-                } catch (_) {}
-              });
-            } else {
-              // Standard OpenAI streaming format
-              chunk.split(/\n/).forEach((line) => {
-                const trimmed = line.trim();
-                if (!trimmed || !trimmed.startsWith('data: ')) return;
-                const data = trimmed.replace(/^data:\s*/, '');
-                if (data === '[DONE]') return;
-                try {
-                  const json = JSON.parse(data);
-                  const delta = json.choices?.[0]?.delta?.content || '';
-                  if (delta) {
-                    buffer += delta;
-                    if (buffer.length < 200) tryDecide();
-                    sendToken(delta);
-                  }
-                } catch (_) {}
-              });
-            }
+            chunk.split(/\n\n/).forEach((block) => {
+              const trimmed = block.trim();
+              if (!trimmed) return;
+              const lines = trimmed.split(/\n/);
+              const eventLine = lines.find(l => l.startsWith('event:'));
+              if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
+              const dataLine = lines.find(l => l.startsWith('data:'));
+              if (!dataLine) return;
+              const data = dataLine.replace(/^data:\s*/, '');
+              if (data === '[DONE]') return;
+              try {
+                const json = JSON.parse(data);
+                let delta = '';
+                if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                if (delta) {
+                  buffer += delta;
+                  if (buffer.length < 200) tryDecide();
+                  sendToken(delta);
+                }
+              } catch (_) {}
+            });
           });
           response.body.on('end', resolve);
           response.body.on('error', reject);
@@ -474,18 +311,14 @@ async function handleAssistantQuery(userPrompt, context) {
     } else {
       const full = await response.json();
       let content = '';
-      if (mode === 'production') {
-        // Supabase format
-        if (Array.isArray(full.output_text)) content = full.output_text.join('');
-        else if (typeof full.output_text === 'string') content = full.output_text;
-      } else {
-        // OpenAI format
-        content = full.choices?.[0]?.message?.content || '';
-      }
+      if (Array.isArray(full.output_text)) content = full.output_text.join('');
+      else if (typeof full.output_text === 'string') content = full.output_text;
       buffer = content || '';
       tryDecide();
       if (buffer) sendToken(buffer);
     }
+
+      await finalize();
   } catch (error) {
     console.error('Assistant OpenAI error:', error);
     if (this.assistantWindow && !this.assistantWindow.isDestroyed()) {
@@ -506,8 +339,9 @@ class VoiceAssistant {
     this.volumeManager = new VolumeManager();
     this.isRecording = false;
     this.isAssistantRecording = false;
-    this.hotkey = this.store.get('hotkey', 'Cmd+Q');
-    this.assistantHotkey = this.store.get('assistantHotkey', 'Cmd+W');
+    this.isRecordingDisabled = false;
+    this.hotkey = this.store.get('hotkey', 'F1');
+    this.assistantHotkey = this.store.get('assistantHotkey', 'F2');
     // Assistant model defaults/migration
     const storedAssistantModel = this.store.get('assistantModel');
     if (storedAssistantModel === 'gpt-o4-mini' || storedAssistantModel === 'gpt-4o-mini') {
@@ -559,10 +393,10 @@ class VoiceAssistant {
     this.mainWindow = new BrowserWindow({
       width: 400,
       height: 600,
-      frame: true, // Use native frame on macOS
-      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden', // macOS-specific title bar
+      frame: false, // Remove default title bar
+      titleBarStyle: 'hidden', // Cross-platform hidden title bar
       backgroundColor: '#000814', // Match our background color
-      title: 'MITHRIL WHISPER',
+      title: 'mithril whisper',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
@@ -571,12 +405,6 @@ class VoiceAssistant {
       },
       show: false,
       icon: path.join(__dirname, '../../logo1.ico'),
-      // macOS-specific window appearance
-      ...(process.platform === 'darwin' && {
-        trafficLightPosition: { x: 20, y: 18 }, // Position native controls
-        transparent: false,
-        vibrancy: 'dark',
-      }),
     });
 
     if (isDev) {
@@ -584,16 +412,7 @@ class VoiceAssistant {
       this.mainWindow.loadURL(`http://localhost:${devPort}`);
       this.mainWindow.webContents.openDevTools();
     } else {
-      try {
-        this.mainWindow.loadFile(resolveRendererFile('index.html'));
-      } catch (e) {
-        console.error('Failed to load index.html, falling back to app:// path', e);
-        try {
-          const appPath = app.getAppPath();
-          const fallback = path.join(appPath, 'build', 'renderer', 'index.html');
-          this.mainWindow.loadFile(fallback);
-        } catch (_) {}
-      }
+      this.mainWindow.loadFile(resolveRendererFile('index.html'));
     }
 
     this.mainWindow.on('closed', () => {
@@ -640,7 +459,7 @@ class VoiceAssistant {
     // Always load overlay from HTML file for reliability
     // The overlay doesn't need hot reloading and this prevents route issues
     const overlayPath = isDev ? path.join(__dirname, '../renderer/overlay.html') : resolveRendererFile('overlay.html');
-    try { this.overlayWindow.loadFile(overlayPath); } catch (e) { console.error('overlay load failed', e); }
+    this.overlayWindow.loadFile(overlayPath);
     console.log('Loading overlay from:', overlayPath);
   }
 
@@ -724,7 +543,7 @@ class VoiceAssistant {
     } else {
       // Load the desktop HUD HTML file
       const hudPath = resolveRendererFile('desktop-hud.html');
-      try { this.desktopHUD.loadFile(hudPath); } catch (e) { console.error('hud load failed', e); }
+      this.desktopHUD.loadFile(hudPath);
       console.log('🎯 Loading HUD from file:', hudPath);
     }
 
@@ -772,7 +591,7 @@ class VoiceAssistant {
         const devPort = Number(process.env.DEV_SERVER_PORT || 37843);
         this.assistantWindow.loadURL(`http://localhost:${devPort}#assistant`);
       } else {
-        try { this.assistantWindow.loadFile(resolveRendererFile('assistant-chat.html')); } catch (e) { console.error('assistant load failed', e); }
+        this.assistantWindow.loadFile(resolveRendererFile('assistant-chat.html'));
       }
 
       this.assistantWindow.once('ready-to-show', () => {
@@ -796,19 +615,19 @@ class VoiceAssistant {
     // Validate and fix hotkey format
     let hotkey = this.hotkey;
     if (hotkey) {
-      // Fix common format issues for Mac
-      hotkey = hotkey.replace('Control+', 'Ctrl+').replace('CmdOrCtrl+', 'Cmd+');
+      // Fix common format issues
+      hotkey = hotkey.replace('Control+', 'Ctrl+').replace('Cmd+', 'CmdOrCtrl+');
       
       // If format is still invalid or incomplete, reset to default
-      const validHotkey = hotkey.match(/^(Ctrl|Alt|Shift|Cmd|CmdOrCtrl)\+\w+$/) || hotkey.match(/^F\d+$/);
+      const validHotkey = hotkey.match(/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/) || hotkey.match(/^F\d+$/);
       if (!validHotkey || hotkey.endsWith('+')) {
-        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to Cmd+Q`);
-        hotkey = 'Cmd+Q';
+        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to Alt+Space`);
+        hotkey = 'Alt+Space';
         this.hotkey = hotkey;
         this.store.set('hotkey', hotkey);
       }
     } else {
-      hotkey = 'Cmd+Q';
+      hotkey = 'Alt+Space';
     }
     
     console.log(`🎯 Setting up transcription hotkey: ${hotkey}`);
@@ -837,6 +656,11 @@ class VoiceAssistant {
           return;
         }
         
+        if (this.isRecordingDisabled) {
+          console.log('🚫 Hotkey ignored - recording temporarily disabled (settings page open)');
+          return;
+        }
+        
         lastHotkeyTime = now;
         isProcessing = true;
         
@@ -857,16 +681,20 @@ class VoiceAssistant {
           isProcessing = false;
         }
       });
-    } catch (error) {
+      } catch (error) {
         console.error(`❌ Failed to register hotkey "${hotkey}":`, error.message);
         // Reset to default if registration fails
-        hotkey = 'Cmd+Q';
+        hotkey = 'Alt+Space';
         this.hotkey = hotkey;
         this.store.set('hotkey', hotkey);
         try {
           success = globalShortcut.register(hotkey, async () => {
             // Simple fallback hotkey handler
             console.log('🎯 Fallback hotkey triggered');
+            if (this.isRecordingDisabled) {
+              console.log('🚫 Fallback hotkey ignored - recording temporarily disabled (settings page open)');
+              return;
+            }
             if (this.isRecording) {
               await this.stopRecording();
             } else {
@@ -889,16 +717,9 @@ class VoiceAssistant {
   setupAssistantHotkey() {
     try { if (this.assistantHotkey) globalShortcut.unregister(this.assistantHotkey); } catch (_) {}
 
-    let hotkey = this.assistantHotkey || 'Cmd+W';
-    
-    // Warn about potentially problematic hotkeys
-    if (hotkey === 'CmdOrCtrl+s' || hotkey === 'Ctrl+s' || hotkey === 'Cmd+s') {
-      console.warn('⚠️ Assistant hotkey conflicts with system Save shortcut. Consider using Cmd+W or Alt+A instead.');
-    }
-    
-    if (!/^F\d+$/.test(hotkey) && !/^(Ctrl|Alt|Shift|Cmd|CmdOrCtrl)\+\w+$/.test(hotkey)) {
-      console.log('🔧 Invalid assistant hotkey format, defaulting to Cmd+W');
-      hotkey = 'Cmd+W';
+    let hotkey = this.assistantHotkey || 'F2';
+    if (!/^F\d+$/.test(hotkey) && !/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/.test(hotkey)) {
+      hotkey = 'F2';
       this.assistantHotkey = hotkey;
       this.store.set('assistantHotkey', hotkey);
     }
@@ -906,56 +727,39 @@ class VoiceAssistant {
     console.log(`🎯 Setting up assistant hotkey: ${hotkey}`);
     let lastHotkeyTime = 0;
     let isProcessing = false;
-    const quickDebounceTime = 150; // Short debounce for rapid double-presses
-    
+    const debounceTime = 300;
+
     let success = false;
     try {
       success = globalShortcut.register(hotkey, async () => {
         const now = Date.now();
         const timeSinceLastHotkey = now - lastHotkeyTime;
-        const currentState = this.isAssistantRecording;
-        
-        // Smart debouncing: Allow quick stop actions, prevent only rapid duplicates
-        if (timeSinceLastHotkey < quickDebounceTime && !currentState) {
-          // Only debounce start actions (not stop actions)
-          console.log(`🚫 Debounced assistant start: ignoring press (${timeSinceLastHotkey}ms ago)`);
+        if (timeSinceLastHotkey < debounceTime) {
+          console.log(`🚫 Debounced assistant key: ignoring press (${timeSinceLastHotkey}ms ago)`);
           return;
         }
-        
-        // Don't block stop actions - only block if another operation is actively running
-        if (isProcessing && timeSinceLastHotkey < quickDebounceTime) {
-          console.log('🚫 Assistant hotkey: operation already in progress');
+        if (isProcessing || this.isRecording) {
+          console.log('🚫 Assistant hotkey ignored - other recording in progress');
           return;
         }
-        
-        // Block regular recording but allow assistant operations
-        if (this.isRecording && !currentState) {
-          console.log('🚫 Assistant hotkey ignored - regular recording in progress');
+        if (this.isRecordingDisabled) {
+          console.log('🚫 Assistant hotkey ignored - recording temporarily disabled (settings page open)');
           return;
         }
-        
         lastHotkeyTime = now;
         isProcessing = true;
-        
         try {
-          console.log('🎯 Assistant hotkey pressed. isAssistantRecording:', currentState);
-          
-          if (currentState) {
+          if (this.isAssistantRecording) {
             console.log('🛑 Assistant: stopping recording');
-            const result = await this.stopAssistantRecording();
-            console.log('🛑 Assistant: stop result:', result);
+            await this.stopAssistantRecording();
           } else {
             console.log('🎙️ Assistant: starting recording');
-            const result = await this.startAssistantRecording();
-            console.log('🎙️ Assistant: start result:', result);
+            await this.startAssistantRecording();
           }
         } catch (err) {
           console.error('Assistant hotkey error:', err);
         } finally {
-          // Quick reset for responsive UX
-          setTimeout(() => {
-            isProcessing = false;
-          }, 50); // Much shorter delay
+          isProcessing = false;
         }
       });
     } catch (error) {
@@ -1014,14 +818,12 @@ class VoiceAssistant {
       }
 
       return {
-        hotkey: this.store.get('hotkey', 'Cmd+Q'),
-        assistantHotkey: this.store.get('assistantHotkey', 'Cmd+W'),
-        assistantInjectOnReplace: this.store.get('assistantInjectOnReplace', false),
+        hotkey: this.store.get('hotkey', 'Alt+Space'),
+        assistantHotkey: this.store.get('assistantHotkey', 'F2'),
         model: this.store.get('model', effectiveModel),
         sensitivity: this.store.get('sensitivity', 0.5),
         cleanup: this.store.get('cleanup', true),
         autoInject: this.store.get('autoInject', true),
-        injectionMode: this.store.get('injectionMode', 'auto'),
         openaiApiKey: '',
         useLocalWhisper: true,
         whisperModel: effectiveModel,
@@ -1040,41 +842,12 @@ class VoiceAssistant {
         console.log(`📝 Stored ${key}:`, settings[key]);
       });
       
-      // Update hotkey if changed - properly unregister old hotkey first
+      // Update hotkey if changed
       if (settings.hotkey !== this.hotkey) {
-        const oldHotkey = this.hotkey;
-        console.log(`🔄 Hotkey change: "${oldHotkey}" → "${settings.hotkey}"`);
-        
-        // Unregister the OLD hotkey before setting the new one
-        try { 
-          if (oldHotkey) {
-            globalShortcut.unregister(oldHotkey);
-            console.log(`🗑️ Unregistered old hotkey: ${oldHotkey}`);
-          }
-        } catch (e) {
-          console.warn('Failed to unregister old hotkey:', e.message);
-        }
-        
-        // Now update to the new hotkey and register it
         this.hotkey = settings.hotkey;
         this.setupGlobalHotkey();
       }
-      
       if (settings.assistantHotkey && settings.assistantHotkey !== this.assistantHotkey) {
-        const oldAssistantHotkey = this.assistantHotkey;
-        console.log(`🔄 Assistant hotkey change: "${oldAssistantHotkey}" → "${settings.assistantHotkey}"`);
-        
-        // Unregister the OLD assistant hotkey before setting the new one
-        try { 
-          if (oldAssistantHotkey) {
-            globalShortcut.unregister(oldAssistantHotkey);
-            console.log(`🗑️ Unregistered old assistant hotkey: ${oldAssistantHotkey}`);
-          }
-        } catch (e) {
-          console.warn('Failed to unregister old assistant hotkey:', e.message);
-        }
-        
-        // Now update to the new hotkey and register it
         this.assistantHotkey = settings.assistantHotkey;
         this.store.set('assistantHotkey', this.assistantHotkey);
         this.setupAssistantHotkey();
@@ -1109,6 +882,17 @@ class VoiceAssistant {
           this.assistantWindow.webContents.send('assistant:show');
         }
       } catch (_) {}
+    });
+
+    // Recording control for settings page
+    ipcMain.on('disable-recording-temporarily', () => {
+      console.log('🚫 Recording disabled temporarily (settings page open)');
+      this.isRecordingDisabled = true;
+    });
+
+    ipcMain.on('enable-recording', () => {
+      console.log('✅ Recording re-enabled (settings page closed)');
+      this.isRecordingDisabled = false;
     });
 
     // Auth state from renderer
@@ -1238,6 +1022,10 @@ class VoiceAssistant {
       console.log('Already recording, ignoring start request');
       return false;
     }
+    if (this.isRecordingDisabled) {
+      console.log('🚫 Recording blocked: temporarily disabled (settings page open)');
+      return false;
+    }
     if (!this.authUser) {
       console.log('🚫 Recording blocked: user not authenticated');
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
@@ -1250,13 +1038,6 @@ class VoiceAssistant {
       console.log('Starting recording...');
       this.isRecording = true;
       this.recordingStartTime = Date.now(); // Track recording start time
-      // Remember frontmost app on macOS so we can target paste reliably
-      if (process.platform === 'darwin') {
-        try {
-          this.frontAppId = await getFrontmostAppBundleId();
-          if (!this.frontAppId) this.frontAppName = await getFrontmostAppName();
-        } catch (_) {}
-      }
       
       await this.audioRecorder.start();
       
@@ -1308,14 +1089,6 @@ class VoiceAssistant {
       this.isRecording = false;
       
       const audioData = await this.audioRecorder.stop();
-      if (!audioData || !audioData.buffer || audioData.buffer.length < 1024) {
-        console.warn('StopRecording: captured audio too small or missing. audioData=', audioData ? {
-          path: audioData.path,
-          chunks: audioData.chunks,
-          sampleRate: audioData.sampleRate,
-          bufferLength: audioData.buffer ? audioData.buffer.length : 0,
-        } : null);
-      }
       
       // Send status to main window without bringing it to front
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
@@ -1325,12 +1098,12 @@ class VoiceAssistant {
       // Update desktop HUD to processing mode
       this.updateHUDStatus('processing', { connected: true });
       
-      // Process audio even if small (whisper will return no-speech)
-      if (audioData && audioData.buffer && audioData.buffer.length > 0) {
+      // Process audio if we have data
+      if (audioData && audioData.chunks > 0) {
         console.log('Processing audio data...');
         await this.processAudio(audioData);
       } else {
-        console.log('No audio data to process (file too small or empty)');
+        console.log('No audio data to process');
         // Hide overlay immediately if no data
         // Overlay disabled
       }
@@ -1368,31 +1141,14 @@ class VoiceAssistant {
 
   async processAudio(audioData) {
     try {
-      // Prefer robust local Whisper transcription over Web Speech API
+      // Use the real transcript from speech recognition if available
+      let transcript = this.currentTranscript && this.currentTranscript.trim();
       let cleanedOutput = '';
-      const webSpeechTranscript = (this.currentTranscript && this.currentTranscript.trim()) || '';
-      let whisperTranscript = '';
-      try {
-        whisperTranscript = await this.textProcessor.transcribe(audioData) || '';
-      } catch (e) {
-        console.error('Whisper transcription failed:', e);
+      
+      // Fallback to placeholder if no speech recognition result
+      if (!transcript) {
+        transcript = await this.textProcessor.transcribe(audioData);
       }
-
-      // Choose the most meaningful transcript
-      const wordCount = (s) => (s || '').trim().split(/\s+/).filter(Boolean).length;
-      let transcript = '';
-      if (whisperTranscript && (wordCount(whisperTranscript) >= 3 || wordCount(whisperTranscript) >= wordCount(webSpeechTranscript))) {
-        transcript = whisperTranscript;
-      } else {
-        transcript = webSpeechTranscript || whisperTranscript;
-      }
-      console.log('Transcript choice:', {
-        webSpeechLen: webSpeechTranscript.length,
-        webSpeechWords: wordCount(webSpeechTranscript),
-        whisperLen: whisperTranscript.length,
-        whisperWords: wordCount(whisperTranscript),
-        chosenLen: (transcript || '').length,
-      });
 
       // Remove any blank-audio markers before further processing/display
       const transcriptSansMarkers = stripBlankAudioMarkers(transcript || '');
@@ -1494,81 +1250,97 @@ class VoiceAssistant {
   async injectText(text) {
     try {
       console.log('🚀 Fast injecting text via clipboard save-restore. length=', text ? text.length : 0);
-
-      const { spawn } = require('child_process');
-
-      if (process.platform === 'win32') {
-        // Existing Windows PowerShell flow
+      
+      // Fast method: Save clipboard, paste our text, restore clipboard
+      // This is instant and preserves user's clipboard contents
+      try {
+        const { spawn } = require('child_process');
+        
+        // Escape text for PowerShell (but simpler since we're using clipboard)
         const escapedText = text.replace(/"/g, '""').replace(/`/g, '``');
+        
+        // PowerShell script that saves clipboard, injects text, restores clipboard
         const psScript = `
           Add-Type -AssemblyName System.Windows.Forms
           Add-Type -AssemblyName System.Drawing
+          
+          # Save current clipboard content
           $originalClipboard = $null
           $clipboardFormat = $null
+          
           try {
-            if ([System.Windows.Forms.Clipboard]::ContainsText()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetText(); $clipboardFormat = "text" }
-            elseif ([System.Windows.Forms.Clipboard]::ContainsImage()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetImage(); $clipboardFormat = "image" }
-            elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetFileDropList(); $clipboardFormat = "files" }
-          } catch {}
+            if ([System.Windows.Forms.Clipboard]::ContainsText()) {
+              $originalClipboard = [System.Windows.Forms.Clipboard]::GetText()
+              $clipboardFormat = "text"
+            }
+            elseif ([System.Windows.Forms.Clipboard]::ContainsImage()) {
+              $originalClipboard = [System.Windows.Forms.Clipboard]::GetImage()
+              $clipboardFormat = "image"
+            }
+            elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) {
+              $originalClipboard = [System.Windows.Forms.Clipboard]::GetFileDropList()
+              $clipboardFormat = "files"
+            }
+          } catch {
+            # If clipboard access fails, continue anyway
+            $originalClipboard = $null
+          }
+          
+          # Set our text to clipboard
           [System.Windows.Forms.Clipboard]::SetText("${escapedText}")
+          
+          # Small delay to ensure clipboard is set
           Start-Sleep -Milliseconds 50
+          
+          # Send Ctrl+V to paste instantly
           [System.Windows.Forms.SendKeys]::SendWait("^v")
+          
+          # Wait a moment for paste to complete
           Start-Sleep -Milliseconds 100
+          
+          # Restore original clipboard content
           try {
             if ($originalClipboard -ne $null) {
-              switch ($clipboardFormat) { "text" { [System.Windows.Forms.Clipboard]::SetText($originalClipboard) } "image" { [System.Windows.Forms.Clipboard]::SetImage($originalClipboard) } "files" { [System.Windows.Forms.Clipboard]::SetFileDropList($originalClipboard) } }
-            } else { [System.Windows.Forms.Clipboard]::Clear() }
-          } catch { [System.Windows.Forms.Clipboard]::Clear() }
+              switch ($clipboardFormat) {
+                "text" { [System.Windows.Forms.Clipboard]::SetText($originalClipboard) }
+                "image" { [System.Windows.Forms.Clipboard]::SetImage($originalClipboard) }
+                "files" { [System.Windows.Forms.Clipboard]::SetFileDropList($originalClipboard) }
+              }
+            } else {
+              [System.Windows.Forms.Clipboard]::Clear()
+            }
+          } catch {
+            # If restore fails, at least clear our text from clipboard
+            [System.Windows.Forms.Clipboard]::Clear()
+          }
         `;
-        const proc = spawn('powershell', ['-Command', psScript], { windowsHide: true, stdio: 'pipe' });
-        proc.on('error', (e) => { console.error('PowerShell error:', e); this.showTextNotification(text); });
-        proc.on('close', (code) => { if (code !== 0) this.showTextNotification(text); });
-        return true;
-      }
-
-      if (process.platform === 'darwin') {
-        // macOS: Mac-native text injection using CGEventPost (no Accessibility permissions needed)
-        const mode = (this.store && this.store.get('injectionMode')) || 'auto';
-        const original = clipboard.readText();
-        clipboard.writeText(text || '');
-        const restore = () => { try { if (original) clipboard.writeText(original); else clipboard.clear(); } catch (_) {} };
-
-        if (mode === 'copy-only') {
-          console.log('macOS inject: copy-only mode.');
-          return true;
-        }
-
-        // Do NOT bring our windows to front; avoid stealing focus
-        try { this.assistantWindow && this.assistantWindow.hide && this.assistantWindow.hide(); } catch (_) {}
-        // Keep main window hidden during paste to prevent focus changes
-
-        // Use our native key-injector (CGEventPost) instead of osascript
-        // In development, fall back to osascript since key-injector is only in production builds
-        const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
         
-        if (isDev) {
-          console.log('🎯 Development mode: using osascript fallback');
-          const osaScript = `tell application "System Events" to keystroke "v" using command down`;
-          const osa = spawn('osascript', ['-e', osaScript]);
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          await new Promise((resolve) => osa.on('close', resolve));
-        } else {
-          const keyInjectorPath = path.join(process.resourcesPath, 'key-injector');
-          console.log('🎯 Production mode: using native key injector:', keyInjectorPath);
-          
-          const keyInjector = spawn(keyInjectorPath, ['paste']);
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          await new Promise((resolve) => keyInjector.on('close', resolve));
-        }
+        // Execute the PowerShell script
+        const process = spawn('powershell', ['-Command', psScript], {
+          windowsHide: true,
+          stdio: 'pipe'
+        });
         
-        // Give paste time to complete before restoring clipboard to avoid truncation
-        await new Promise((resolve) => setTimeout(resolve, 400));
-        restore();
-        return true;
+        // Handle any errors from PowerShell
+        process.on('error', (error) => {
+          console.error('PowerShell process error:', error);
+          this.showTextNotification(text);
+        });
+        
+        process.on('close', (code) => {
+          if (code === 0) {
+            console.log('✅ Text injected instantly with clipboard restore');
+          } else {
+            console.log('⚠️ PowerShell process exited with code:', code);
+            this.showTextNotification(text);
+          }
+        });
+        
+      } catch (injectError) {
+        console.log('Fast injection failed, falling back to notification:', injectError.message);
+        this.showTextNotification(text);
       }
-
-      // Other platforms: fallback notification
-      this.showTextNotification(text);
+      
       return true;
     } catch (error) {
       console.error('Failed to inject text:', error);
@@ -1598,6 +1370,10 @@ class VoiceAssistant {
   // === Assistant recording control ===
   async startAssistantRecording() {
     if (this.isAssistantRecording) return false;
+    if (this.isRecordingDisabled) {
+      console.log('🚫 Assistant recording blocked: temporarily disabled (settings page open)');
+      return false;
+    }
     if (!this.authUser) return false;
     try {
       this.isAssistantRecording = true;
@@ -1624,12 +1400,8 @@ class VoiceAssistant {
   }
 
   async stopAssistantRecording() {
-    if (!this.isAssistantRecording) {
-      console.log('🚫 stopAssistantRecording called but not recording');
-      return false;
-    }
+    if (!this.isAssistantRecording) return false;
     try {
-      console.log('🛑 Stopping assistant recording, setting state to false');
       this.isAssistantRecording = false;
       const audioData = await this.audioRecorder.stop();
       this.updateHUDStatus('assistant-processing', { connected: true });
@@ -1642,7 +1414,6 @@ class VoiceAssistant {
         console.log('Assistant: skipping AI call due to blank-audio-only transcript');
       }
       this.updateHUDStatus('idle', { connected: true });
-      console.log('✅ Assistant recording stopped successfully');
       return true;
     } catch (e) {
       console.error('Assistant stop failed:', e);
@@ -1656,56 +1427,34 @@ class VoiceAssistant {
   async captureSelectedTextSafe() {
     try {
       const { spawn } = require('child_process');
-      if (process.platform === 'win32') {
-        const psScript = `
-          Add-Type -AssemblyName System.Windows.Forms
-          Add-Type -AssemblyName System.Drawing
-          $originalClipboard = $null
-          $clipboardFormat = $null
-          try {
-            if ([System.Windows.Forms.Clipboard]::ContainsText()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetText(); $clipboardFormat = "text" }
-            elseif ([System.Windows.Forms.Clipboard]::ContainsImage()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetImage(); $clipboardFormat = "image" }
-            elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetFileDropList(); $clipboardFormat = "files" }
-          } catch {}
-          [System.Windows.Forms.SendKeys]::SendWait("^c")
-          Start-Sleep -Milliseconds 120
-          $text = ""
-          try { if ([System.Windows.Forms.Clipboard]::ContainsText()) { $text = [System.Windows.Forms.Clipboard]::GetText() } } catch {}
-          try {
-            if ($originalClipboard -ne $null) {
-              switch ($clipboardFormat) { "text" { [System.Windows.Forms.Clipboard]::SetText($originalClipboard) } "image" { [System.Windows.Forms.Clipboard]::SetImage($originalClipboard) } "files" { [System.Windows.Forms.Clipboard]::SetFileDropList($originalClipboard) } }
-            } else { [System.Windows.Forms.Clipboard]::Clear() }
-          } catch {}
-          Write-Output $text
-        `;
-        return await new Promise((resolve) => {
-          const proc = spawn('powershell', ['-Command', psScript], { windowsHide: true });
-          let out = '';
-          proc.stdout.on('data', (d) => out += d.toString('utf8'));
-          proc.on('close', () => resolve(out.trim()));
-          proc.on('error', () => resolve(''));
-        });
-      }
-
-      if (process.platform === 'darwin') {
-        const original = clipboard.readText();
-        return await new Promise((resolve) => {
-          const osa = spawn('osascript', ['-e', 'tell application "System Events" to keystroke "c" using command down']);
-          let done = false;
-          osa.on('close', async () => {
-            setTimeout(() => {
-              try {
-                const text = clipboard.readText();
-                if (original) clipboard.writeText(original); else clipboard.clear();
-                resolve((text || '').trim());
-              } catch (_) { resolve(''); }
-            }, 120);
-          });
-          osa.on('error', () => { try { if (original) clipboard.writeText(original); } catch (_) {} ; if (!done) resolve(''); });
-        });
-      }
-
-      return '';
+      const psScript = `
+        Add-Type -AssemblyName System.Windows.Forms
+        Add-Type -AssemblyName System.Drawing
+        $originalClipboard = $null
+        $clipboardFormat = $null
+        try {
+          if ([System.Windows.Forms.Clipboard]::ContainsText()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetText(); $clipboardFormat = "text" }
+          elseif ([System.Windows.Forms.Clipboard]::ContainsImage()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetImage(); $clipboardFormat = "image" }
+          elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) { $originalClipboard = [System.Windows.Forms.Clipboard]::GetFileDropList(); $clipboardFormat = "files" }
+        } catch {}
+        [System.Windows.Forms.SendKeys]::SendWait("^c")
+        Start-Sleep -Milliseconds 120
+        $text = ""
+        try { if ([System.Windows.Forms.Clipboard]::ContainsText()) { $text = [System.Windows.Forms.Clipboard]::GetText() } } catch {}
+        try {
+          if ($originalClipboard -ne $null) {
+            switch ($clipboardFormat) { "text" { [System.Windows.Forms.Clipboard]::SetText($originalClipboard) } "image" { [System.Windows.Forms.Clipboard]::SetImage($originalClipboard) } "files" { [System.Windows.Forms.Clipboard]::SetFileDropList($originalClipboard) } }
+          } else { [System.Windows.Forms.Clipboard]::Clear() }
+        } catch {}
+        Write-Output $text
+      `;
+      return await new Promise((resolve) => {
+        const proc = spawn('powershell', ['-Command', psScript], { windowsHide: true });
+        let out = '';
+        proc.stdout.on('data', (d) => out += d.toString('utf8'));
+        proc.on('close', () => resolve(out.trim()));
+        proc.on('error', () => resolve(''));
+      });
     } catch (e) {
       console.error('captureSelectedTextSafe error:', e);
       return '';
@@ -1714,28 +1463,31 @@ class VoiceAssistant {
 
   async init() {
     await this.createMainWindow();
-    // Show the main window as early as possible
-    try { this.mainWindow && this.mainWindow.show(); } catch (_) {}
-    try { this.mainWindow && this.mainWindow.focus(); } catch (_) {}
-
     // Overlay window disabled per request (HUD only)
     // this.createOverlayWindow();
     this.createDesktopHUD();
+    this.createAssistantWindow();
     this.setupGlobalHotkey();
     this.setupAssistantHotkey();
     
     // Initialize audio recorder and text processor
-    try { await this.audioRecorder.init(); } catch (e) { console.error('audioRecorder.init failed', e); }
+    await this.audioRecorder.init();
+    await this.textProcessor.init();
     
-    // Pass the store instance to text processor BEFORE init so model/settings are respected
-    try { this.textProcessor.setStore(this.store); } catch (_) {}
-    try { await this.textProcessor.init(); } catch (e) { console.error('textProcessor.init failed', e); }
+    // Pass the store instance to text processor to ensure shared data
+    this.textProcessor.setStore(this.store);
     
     // Set main window reference for audio recorder
-    try { this.audioRecorder.setMainWindow(this.mainWindow); } catch (_) {}
+    this.audioRecorder.setMainWindow(this.mainWindow);
     
     // Set up speech recognition event handlers
-    try { this.setupSpeechRecognitionHandlers(); } catch (e) { console.error('setupSpeechRecognitionHandlers failed', e); }
+    this.setupSpeechRecognitionHandlers();
+    
+    // Show the main window
+    if (this.mainWindow) {
+      this.mainWindow.show();
+      this.mainWindow.focus();
+    }
 
     // On startup, if already authenticated, fetch remote config
     this.fetchRemoteConfigSafe();
@@ -1780,71 +1532,8 @@ class VoiceAssistant {
 
 // App event handlers
 app.whenReady().then(async () => {
-  try {
-    // Initialize file logger early (packaged builds)
-    try { initFileLogger(); } catch (_) {}
-    if (process.platform === 'darwin') {
-      // Proactively request microphone access on macOS
-      const status = systemPreferences.getMediaAccessStatus ? systemPreferences.getMediaAccessStatus('microphone') : 'unknown';
-      if (status !== 'granted') {
-        try { await systemPreferences.askForMediaAccess('microphone'); } catch (_) {}
-      }
-      // Allow in-page media permission prompts
-      try {
-        const sess = session.defaultSession;
-        if (sess && sess.setPermissionRequestHandler) {
-          sess.setPermissionRequestHandler((webContents, permission, callback) => {
-            if (permission === 'media' || permission === 'audioCapture') return callback(true);
-            return callback(true);
-          });
-        }
-      } catch (_) {}
-    }
-  } catch (_) {}
-
   const voiceAssistant = new VoiceAssistant();
   await voiceAssistant.init();
-
-  // Debug auto-recording to exercise the full microphone → whisper path in packaged builds
-  try {
-    if (String(process.env.DEBUG_AUTOREC || '').toLowerCase() === '1') {
-      const delayMs = Number(process.env.DEBUG_AUTOREC_DELAY_MS || 1500);
-      const recMs = Number(process.env.DEBUG_AUTOREC_MS || 2500);
-      console.log('DEBUG_AUTOREC enabled. delayMs=', delayMs, 'recMs=', recMs);
-      try { if (!voiceAssistant.authUser) voiceAssistant.authUser = { id: 'debug', email: 'debug@example.com' }; } catch (_) {}
-      setTimeout(async () => {
-        console.log('DEBUG_AUTOREC: startRecording');
-        const ok = await voiceAssistant.startRecording();
-        console.log('DEBUG_AUTOREC: startRecording ok=', ok);
-        setTimeout(async () => {
-          console.log('DEBUG_AUTOREC: stopRecording');
-          try { await voiceAssistant.stopRecording(); } catch (e) { console.error('DEBUG_AUTOREC stop error', e); }
-        }, recMs);
-      }, delayMs);
-    }
-  } catch (e) { console.error('DEBUG_AUTOREC setup failed', e); }
-
-  // Optional: built-in debug transcription path for packaged builds
-  try {
-    if (String(process.env.DEBUG_TRANSCRIBE || '').toLowerCase() === '1') {
-      console.log('DEBUG_TRANSCRIBE enabled: generating test audio and running transcription');
-      const { spawnSync } = require('child_process');
-      const aiff = '/tmp/mithril-debug.aiff';
-      const wav = '/tmp/mithril-debug.wav';
-      try { fs.unlinkSync(aiff); } catch (_) {}
-      try { fs.unlinkSync(wav); } catch (_) {}
-      const tts = String(process.env.DEBUG_TTS_TEXT || 'hello this is a mithril transcription test');
-      spawnSync('say', ['-o', aiff, tts]);
-      spawnSync('afconvert', ['-f', 'WAVE', '-d', 'LEI16@16000', aiff, wav]);
-      try {
-        const wavBuf = fs.readFileSync(wav);
-        await voiceAssistant.processAudio({ path: wav, buffer: wavBuf, chunks: 1, sampleRate: 16000 });
-        console.log('DEBUG_TRANSCRIBE completed');
-      } catch (e) {
-        console.error('DEBUG_TRANSCRIBE failed', e);
-      }
-    }
-  } catch (e) { console.error('DEBUG init failed', e); }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

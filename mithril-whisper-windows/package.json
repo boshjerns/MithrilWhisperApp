@@ -12,7 +12,6 @@
     "build:main": "webpack --mode production --config webpack.main.config.js",
     "package": "npm run build && electron-builder",
     "package:win": "npm run build && electron-builder --win",
-    "dist": "npm run build && electron-builder",
     "dev": "npm start",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -38,7 +37,6 @@
     "css-loader": "^6.8.1",
     "dotenv": "^17.2.1",
     "electron": "^27.0.0",
-    "electron-osx-sign": "^0.6.0",
     "electron-builder": "^24.6.4",
     "html-webpack-plugin": "^5.5.3",
     "png-to-ico": "^2.1.8",
@@ -56,9 +54,7 @@
     "form-data": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "supabase": "^2.33.9"
-  },
-  "optionalDependencies": {
+    "supabase": "^2.33.9",
     "win-audio": "^3.0.5"
   },
   "build": {
@@ -67,7 +63,6 @@
     "directories": {
       "output": "dist"
     },
-    "afterSign": "build/after-sign.js",
     "files": [
       "build/**/*",
       "node_modules/**/*",
@@ -76,9 +71,6 @@
       "LICENSE*",
       "logo1.ico"
     ],
-    "extraMetadata": {
-      "PrivacyInfo": "build/PrivacyInfo.xcprivacy"
-    },
     "asarUnpack": [
       "node_modules/win-audio/**",
       "whisper-cpp/**"
@@ -90,32 +82,21 @@
         "filter": [
           "**/*"
         ]
-      },
-      {
-        "from": "build/mac-resources/key-injector",
-        "to": "key-injector"
       }
     ],
-    "mac": {
-      "target": ["dmg"],
-      "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
-      "notarize": {
-        "teamId": "D763V8H675"
-      },
-      "extendInfo": {
-        "NSMicrophoneUsageDescription": "Used to transcribe your speech.",
-        "NSAppleEventsUsageDescription": "Used to paste transcriptions into the frontmost app via System Events."
-      }
-    },
     "win": {
       "target": "nsis",
       "sign": false,
-      "icon": "logo1.ico"
+      "icon": "logo1.ico",
+      "verifyUpdateCodeSignature": false,
+      "forceCodeSigning": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraMetadata": {
+      "sign": false
     }
   }
 }

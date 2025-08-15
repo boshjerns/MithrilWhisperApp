@@ -9,7 +9,6 @@ function Settings({ settings, onChange }) {
     useLocalWhisper: settings.useLocalWhisper !== undefined ? settings.useLocalWhisper : true,
     whisperModel: settings.whisperModel || 'tiny-q5_1',
     whisperLanguage: settings.whisperLanguage || 'auto',
-    translationMode: settings.translationMode || 'transcribe',
     audioDucking: settings.audioDucking || { enabled: true, duckPercent: 90 },
     injectionMode: settings.injectionMode || 'auto',
     assistantInjectOnReplace: settings.assistantInjectOnReplace || false
@@ -125,12 +124,10 @@ function Settings({ settings, onChange }) {
           </div>
         </div>
 
-        {/* Language and Translation Settings */}
+        {/* Language Settings */}
         <LanguageSelector
           selectedLanguage={localSettings.whisperLanguage}
-          translationMode={localSettings.translationMode}
           onLanguageChange={(language) => handleChange('whisperLanguage', language)}
-          onTranslationModeChange={(mode) => handleChange('translationMode', mode)}
         />
 
         <div className="setting-item">

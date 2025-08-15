@@ -1026,7 +1026,6 @@ class VoiceAssistant {
         useLocalWhisper: true,
         whisperModel: effectiveModel,
         whisperLanguage: this.store.get('whisperLanguage', 'auto'),
-        translationMode: this.store.get('translationMode', 'transcribe'),
         availableModels,
         audioDucking: this.store.get('audioDucking', { enabled: true, duckPercent: 90 }),
       };
@@ -1095,13 +1094,6 @@ class VoiceAssistant {
         this.store.set('whisperLanguage', settings.whisperLanguage);
         if (this.textProcessor && this.textProcessor.whisperLocal) {
           this.textProcessor.whisperLocal.setLanguage(settings.whisperLanguage);
-        }
-      }
-      
-      if (settings.translationMode !== undefined) {
-        this.store.set('translationMode', settings.translationMode);
-        if (this.textProcessor && this.textProcessor.whisperLocal) {
-          this.textProcessor.whisperLocal.setTranslationMode(settings.translationMode);
         }
       }
 
@@ -1760,10 +1752,8 @@ class VoiceAssistant {
     try {
       if (this.textProcessor.whisperLocal) {
         const language = this.store.get('whisperLanguage', 'auto');
-        const translationMode = this.store.get('translationMode', 'transcribe');
         this.textProcessor.whisperLocal.setLanguage(language);
-        this.textProcessor.whisperLocal.setTranslationMode(translationMode);
-        console.log(`🌐 Whisper language set to: ${language}, translation mode: ${translationMode}`);
+        console.log(`🌐 Whisper language set to: ${language}`);
       }
     } catch (e) { 
       console.error('Failed to set Whisper language settings:', e); 

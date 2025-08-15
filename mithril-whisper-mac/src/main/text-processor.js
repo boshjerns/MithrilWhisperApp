@@ -1,4 +1,4 @@
-const fs = require('./secure-fs'); // Use secure file system wrapper
+const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
 // Cloud transcription removed for fully local operation

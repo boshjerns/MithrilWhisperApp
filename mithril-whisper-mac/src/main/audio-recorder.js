@@ -1,4 +1,4 @@
-const fs = require('./secure-fs'); // Use secure file system wrapper
+const fs = require('fs');
 const path = require('path');
 const { EventEmitter } = require('events');
 const { app } = require('electron');

@@ -272,7 +272,7 @@ const HotkeySelector = ({
         </small>
       </div>
 
-      <style>{`
+      <style jsx>{`
         .hotkey-selector {
           margin-bottom: 1rem;
         }

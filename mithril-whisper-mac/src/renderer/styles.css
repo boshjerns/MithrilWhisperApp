@@ -70,6 +70,96 @@ body::before { display: none; }
   padding-top: 40px; /* Space for fixed title bar */
 }
 
+/* Mac Title Bar Styles */
+.mac-title-bar {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  background: rgba(0, 8, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  -webkit-app-region: drag;
+  padding: 0;
+}
+
+.mac-title-bar-left {
+  width: 80px;
+  height: 100%;
+  flex-shrink: 0;
+  /* Reserve space for native macOS controls */
+}
+
+.mac-title-bar-drag-region {
+  flex: 1;
+  height: 100%;
+  /* This area allows window dragging */
+}
+
+.mac-title-bar-right {
+  padding-right: 20px;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.mac-title-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mac-title-ascii {
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 3px;
+  line-height: 0.8;
+  color: #58a6ff;
+  text-shadow: 0 0 4px rgba(88, 166, 255, 0.3);
+  margin: 0;
+  white-space: pre;
+  transform: scale(0.8);
+  transform-origin: center;
+  opacity: 0.9;
+}
+
+.mac-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #58a6ff;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+/* Responsive scaling for smaller windows */
+@media (max-width: 500px) {
+  .mac-title-ascii {
+    font-size: 2.5px;
+    transform: scale(0.7);
+  }
+  .mac-subtitle {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 350px) {
+  .mac-title-ascii {
+    font-size: 2px;
+    transform: scale(0.6);
+  }
+  .mac-subtitle {
+    font-size: 8px;
+  }
+}
+
 /* Glass Panel Mixin */
 .glass-panel {
   background: var(--glass-bg);
@@ -817,4 +907,59 @@ body::before { display: none; }
   .title-bar-button {
     width: 42px;
   }
+}
+
+/* =====================================================
+   ICON STYLES FOR ABOUT PAGE
+   ===================================================== */
+
+/* General icon styling */
+.inline-icon,
+.social-icon,
+.reason-icon,
+.security-icon,
+.storage-icon,
+.control-icon,
+.section-icon,
+.repo-icon,
+.contact-icon,
+.question-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+/* Specific icon spacing */
+.social-icon {
+  margin-right: 0.75rem;
+}
+
+.question-icon {
+  margin-right: 0.75rem;
+  opacity: 0.8;
+}
+
+.mithril-logo {
+  filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.4));
+  color: #58a6ff;
+}
+
+/* Icon alignment in lists */
+.why-reasons .reason-icon,
+.security-features .security-icon,
+.storage-answer .storage-icon,
+.data-control .control-icon {
+  margin-right: 0.75rem;
+  color: inherit;
+}
+
+/* Icon alignment in links */
+.social-link .social-icon,
+.support-link svg,
+.repo-link .repo-icon,
+.enterprise-contact .contact-icon {
+  margin-right: 0.75rem;
+  color: currentColor;
 } 

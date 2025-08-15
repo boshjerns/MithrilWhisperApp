@@ -10,7 +10,6 @@ class WhisperLocal {
     this.modelSize = 'tiny-q5_1'; // Default to quantized tiny model for speed
     this.isInitialized = false;
     this.language = 'auto'; // Default to auto-detect
-    this.translationMode = 'transcribe'; // Default to transcribe only
   }
 
   async init() {
@@ -175,11 +174,6 @@ class WhisperLocal {
         baseArgs.push('-l', this.language);
       }
 
-      // Add translation flag if translating to English
-      if (this.translationMode === 'translate') {
-        baseArgs.push('-tr'); // Use correct whisper.cpp flag
-      }
-
       const args = isCli ? [
         ...baseArgs,
         '-f', audioPath,
@@ -189,7 +183,7 @@ class WhisperLocal {
       ];
 
       console.log(`🔧 Whisper command: ${path.basename(exe)} ${args.join(' ')}`);
-      console.log(`🌐 Language: ${this.language}, Translation: ${this.translationMode}`);
+      console.log(`🌐 Language: ${this.language}`);
       
       // Ensure we execute from the same directory as the binary to resolve any relative Metal libraries
       const cwd = path.dirname(exe);
@@ -249,10 +243,6 @@ class WhisperLocal {
 
   setLanguage(language) {
     this.language = language || 'auto';
-  }
-
-  setTranslationMode(mode) {
-    this.translationMode = mode || 'transcribe';
   }
 }
 

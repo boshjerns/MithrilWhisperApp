@@ -75,32 +75,14 @@ const SUPPORTED_LANGUAGES = [
   { code: 'mi', name: 'Maori', flag: '🇳🇿', description: 'Te Reo Māori' }
 ];
 
-const TRANSLATION_MODES = [
-  { 
-    mode: 'transcribe', 
-    name: 'Transcribe Only', 
-    icon: '🎙️', 
-    description: 'Transcribe in the original language (best accuracy)' 
-  },
-  { 
-    mode: 'translate', 
-    name: 'Translate to English', 
-    icon: '🔄', 
-    description: 'Transcribe and translate to English (requires clear speech)' 
-  }
-];
-
 export default function LanguageSelector({ 
   selectedLanguage = 'auto', 
-  translationMode = 'transcribe',
-  onLanguageChange, 
-  onTranslationModeChange 
+  onLanguageChange
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   const selectedLang = SUPPORTED_LANGUAGES.find(lang => lang.code === selectedLanguage) || SUPPORTED_LANGUAGES[0];
-  const selectedTransMode = TRANSLATION_MODES.find(mode => mode.mode === translationMode) || TRANSLATION_MODES[0];
 
   const filteredLanguages = SUPPORTED_LANGUAGES.filter(lang =>
     lang.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,43 +92,9 @@ export default function LanguageSelector({
   return (
     <div className="language-selector">
       <div className="language-setting-group">
-        {/* Translation Mode Selector */}
-        <div className="setting-item">
-          <label className="setting-label">Transcription Mode:</label>
-          <div className="translation-mode-buttons">
-            {TRANSLATION_MODES.map(mode => (
-              <button
-                key={mode.mode}
-                className={`translation-mode-btn ${translationMode === mode.mode ? 'active' : ''}`}
-                onClick={() => onTranslationModeChange(mode.mode)}
-                title={mode.description}
-              >
-                <span className="mode-icon">{mode.icon}</span>
-                <span className="mode-name">{mode.name}</span>
-              </button>
-            ))}
-          </div>
-          <p className="setting-description">
-            {selectedTransMode.description}
-          </p>
-          {translationMode === 'translate' && (
-            <div className="translation-notice">
-              <div className="notice-header">📝 Translation Quality Tips:</div>
-              <ul className="notice-list">
-                <li>• Speak clearly and at a moderate pace</li>
-                <li>• Minimize background noise</li>
-                <li>• Translation works best with common languages</li>
-                <li>• For best results, use "Transcribe Only" then translate text separately</li>
-              </ul>
-            </div>
-          )}
-        </div>
-
         {/* Language Selector */}
         <div className="setting-item">
-          <label className="setting-label">
-            {translationMode === 'translate' ? 'Source Language:' : 'Transcription Language:'}
-          </label>
+          <label className="setting-label">Transcription Language:</label>
           
           <div className="language-dropdown">
             <button
@@ -234,46 +182,7 @@ export default function LanguageSelector({
           font-style: italic;
         }
 
-        .translation-mode-buttons {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
 
-        .translation-mode-btn {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 16px;
-          background: rgba(88, 166, 255, 0.1);
-          border: 1px solid rgba(88, 166, 255, 0.2);
-          border-radius: 8px;
-          color: #e6edf3;
-          font-size: 13px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          flex: 1;
-          min-width: 140px;
-        }
-
-        .translation-mode-btn:hover {
-          background: rgba(88, 166, 255, 0.15);
-          border-color: rgba(88, 166, 255, 0.3);
-        }
-
-        .translation-mode-btn.active {
-          background: rgba(88, 166, 255, 0.2);
-          border-color: rgba(88, 166, 255, 0.4);
-          color: #58a6ff;
-        }
-
-        .mode-icon {
-          font-size: 16px;
-        }
-
-        .mode-name {
-          font-weight: 500;
-        }
 
         .language-dropdown {
           position: relative;
@@ -429,34 +338,7 @@ export default function LanguageSelector({
           background: rgba(88, 166, 255, 0.5);
         }
 
-        .translation-notice {
-          margin-top: 12px;
-          padding: 12px;
-          background: rgba(251, 191, 36, 0.1);
-          border: 1px solid rgba(251, 191, 36, 0.2);
-          border-radius: 8px;
-          border-left: 4px solid #f59e0b;
-        }
 
-        .notice-header {
-          font-size: 13px;
-          font-weight: 600;
-          color: #fbbf24;
-          margin-bottom: 8px;
-        }
-
-        .notice-list {
-          margin: 0;
-          padding: 0;
-          list-style: none;
-        }
-
-        .notice-list li {
-          font-size: 12px;
-          color: #e5e7eb;
-          margin-bottom: 4px;
-          line-height: 1.4;
-        }
       `}</style>
     </div>
   );

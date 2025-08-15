@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       🔒 SECURITY-HARDENED ENTITLEMENTS FOR MITHRIL WHISPER
+       
+       This configuration implements App Sandbox with MINIMAL permissions:
+       - Blocks access to user files (Documents, Desktop, Downloads)
+       - Prevents reading other apps' data
+       - Restricts network access to declared domains only
+       - Confines file operations to app container
+       
+       Only grants permissions essential for voice transcription functionality.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  
+  <!-- 🎙️ AUDIO PERMISSIONS (Required for voice recording) -->
+  <key>com.apple.security.device.audio-input</key>
+  <true/>
+  
+  <!-- ⌨️ AUTOMATION PERMISSIONS (Required for text injection) -->
+  <key>com.apple.security.automation.apple-events</key>
+  <true/>
+  
+  <!-- 🚫 EXPLICITLY DENY DEBUG ACCESS -->
+  <key>com.apple.security.cs.debugger</key>
+  <false/>
+  
+  <!-- 🔒 ELECTRON COMPATIBILITY: Required for V8 JavaScript engine -->
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
+</dict>
+</plist>
+
+

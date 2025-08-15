@@ -3,7 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MITHRIL WHISPER - Privacy-First Voice Transcription</title>
+    <title>MITHRIL WHISPER - Privacy-First AI Voice Dictation and Assistant</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="logo1.ico" type="image/x-icon">
+    <link rel="icon" href="logo1.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="logo1.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="logo1.png">
+    <meta name="msapplication-TileImage" content="logo1.png">
+    <meta name="msapplication-TileColor" content="#0f172a">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .ascii-art {
@@ -14,6 +34,16 @@
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
             white-space: pre;
             overflow-x: auto;
+        }
+        .nav-ascii {
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+            font-size: 16px;
+            color: #3b82f6;
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+            white-space: nowrap;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
         .download-mac {
             background: linear-gradient(135deg, #c0c0c0, #f5f5f5);
@@ -39,20 +69,65 @@
             background: linear-gradient(135deg, #0f172a, #1e293b);
             min-height: 100vh;
         }
+        .bounce-arrows {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        .code-snippet {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #e5e7eb;
+            overflow-x: auto;
+        }
+        .privacy-section {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-top: 1px solid #374151;
+        }
     </style>
 </head>
 <body class="text-white">
     <!-- Navigation -->
     <nav class="p-4 border-b border-gray-700">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <img src="logo1.png" alt="MITHRIL" class="h-10 w-10">
-                <h1 class="text-2xl font-bold">MITHRIL WHISPER</h1>
+            <div class="flex items-center space-x-3">
+                <img src="logo1.png" alt="MITHRIL Logo" class="h-10 w-10 rounded-lg shadow-lg object-cover">
+                <span class="nav-ascii">MITHRIL WHISPER</span>
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="https://deployforward.com/mithril" target="_blank" class="text-gray-300 hover:text-white transition-colors">
-                    by <span class="text-white">deploy</span> <span class="text-green-400">forward</span>
-                </a>
+            <div class="flex items-center space-x-3">
+                <!-- Combined branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-gray-300 hover:text-white transition-colors">
+                        by <a href="https://deployforward.com/mithril" target="_blank" class="hover:text-white"><span class="text-white">deploy</span> <span class="text-green-400">forward</span></a>/<span class="text-blue-400">mithril solutions</span> & <span class="text-white">Josh Berns</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <!-- GitHub Icon -->
+                        <a href="https://github.com/boshjerns" target="_blank" class="p-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group">
+                            <svg class="w-4 h-4 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                            </svg>
+                        </a>
+                        <!-- X (Twitter) Icon -->
+                        <a href="https://twitter.com/boshjerns" target="_blank" class="p-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group">
+                            <svg class="w-4 h-4 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -75,7 +150,7 @@
 ╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝</pre>
             
-            <h2 class="text-2xl text-gray-300 mb-8">Privacy-First Voice Transcription & AI Assistant</h2>
+            <h2 class="text-2xl text-gray-300 mb-8">Privacy-First AI Voice Dictation and Assistant</h2>
             
             <!-- Download Buttons -->
             <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
@@ -97,7 +172,7 @@
             </div>
             
             <!-- GitHub Link -->
-            <div class="flex justify-center">
+            <div class="flex justify-center mb-8">
                 <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-3 hover:bg-gray-700 transition-colors">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
@@ -106,18 +181,137 @@
                     <span id="star-count" class="bg-gray-700 px-2 py-1 rounded text-sm"></span>
                 </a>
             </div>
+
+            <!-- Learn More Arrows -->
+            <div class="flex flex-col items-center">
+                <div class="bounce-arrows text-gray-400 hover:text-white transition-colors cursor-pointer" onclick="document.getElementById('privacy-section').scrollIntoView({behavior: 'smooth'})">
+                    <div class="flex flex-col items-center space-y-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        <span class="text-sm font-medium">Learn More</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- Privacy & How It Works Section -->
+    <section id="privacy-section" class="privacy-section py-16">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">How It Works & Privacy</h2>
+                <p class="text-xl text-gray-300">Complete transparency about our data practices</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Local Transcription -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Local Transcription</h3>
+                    </div>
+                    <p class="text-gray-300 mb-4">All voice-to-text processing uses open-source <strong>Whisper-CPP</strong> models running entirely on your device. Your voice recordings never leave your computer.</p>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>✅ 100% offline processing</li>
+                        <li>✅ Open-source models by OpenAI</li>
+                        <li>✅ Audio files deleted immediately</li>
+                    </ul>
+                </div>
+
+                <!-- Privacy Modes -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Privacy Modes</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-medium text-white">📦 Installed Version</h4>
+                            <p class="text-gray-300 text-sm">Requires login. Only tracks character count for AI assistant (not content).</p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-white">💻 Local Setup</h4>
+                            <p class="text-gray-300 text-sm">No login required. Zero telemetry. Complete privacy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telemetry Transparency -->
+            <div class="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-8">
+                <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <svg class="w-6 h-6 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    AI Assistant Telemetry (Voice Dictation Has Zero Telemetry)
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium text-white mb-2">What We Track (Installed Version Only)</h4>
+                        <ul class="text-gray-300 space-y-1 text-sm">
+                            <li>• Character count when using AI assistant</li>
+                            <li>• Session duration and timestamps</li>
+                            <li>• Model used (e.g., whisper-tiny)</li>
+                            <li>• Platform (Mac/Windows)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-white mb-2">What We DON'T Track</h4>
+                        <ul class="text-gray-300 space-y-1 text-sm">
+                            <li>• Voice recordings</li>
+                            <li>• Transcription content</li>
+                            <li>• What you say to the AI assistant</li>
+                            <li>• Any personally identifiable content</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Example -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-white mb-4">Code Transparency</h3>
+                <p class="text-gray-300 mb-4">Here's the exact code showing our minimal telemetry (character count only):</p>
+                <div class="code-snippet">
+<pre>// From src/main/main.js - AI Assistant usage tracking
+const payload = {
+  transcript_chars_original: userPrompt.length,    // Character count only
+  transcript_chars_cleaned: assistantReply.length, // Character count only
+  metadata: {
+    user_words: countWords(userPrompt),           // Word count only
+    assistant_words: countWords(assistantReply), // Word count only
+  }
+  // NOTE: Actual content is NEVER included in telemetry
+};</pre>
+                </div>
+            </div>
+
+            <!-- File Cleanup -->
+            <div class="bg-red-900/20 border border-red-800 rounded-lg p-6">
+                <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <svg class="w-6 h-6 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Immediate File Deletion
+                </h3>
+                <p class="text-gray-300">All audio files are automatically deleted immediately after transcription completes. This happens locally on your device and ensures no voice data persists anywhere in our system.</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="p-6 border-t border-gray-700">
         <div class="max-w-6xl mx-auto text-center text-gray-400 text-sm">
             <div class="flex justify-center items-center space-x-4 mb-2">
                 <a href="https://deployforward.com/mithril" target="_blank" class="hover:text-white transition-colors">
-                    by <span class="text-white">deploy</span> <span class="text-green-400">forward</span>
+                    by <span class="text-white">deploy</span> <span class="text-green-400">forward</span>/<span class="text-blue-400">mithril solutions</span> & <span class="text-white">Josh Berns</span>
                 </a>
             </div>
-            <p>© 2025 MITHRIL & deploy forward.</p>
+            <p>© 2025 deploy forward, mithril solutions & Josh Berns.</p>
         </div>
     </footer>
 

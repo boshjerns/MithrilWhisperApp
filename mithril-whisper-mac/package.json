@@ -105,9 +105,7 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
       "notarize": {
-        "comment": "🚨 SECURITY: Replace with your Apple Developer Team ID",
-        "comment2": "Get this from https://developer.apple.com/account/#/membership",
-        "teamId": "YOUR_APPLE_TEAM_ID_HERE"
+        "teamId": "D763V8H675"
       },
       "extendInfo": {
         "NSMicrophoneUsageDescription": "Used to transcribe your speech.",

@@ -12,22 +12,6 @@ export function AuthProvider({ children }) {
     let mounted = true;
 
     const init = async () => {
-      // Check if we're in offline mode (no Supabase credentials)
-      const isOfflineMode = !process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY;
-      
-      if (isOfflineMode) {
-        console.log('🔄 Running in offline mode - authentication disabled');
-        // Create a fake offline user for offline mode
-        const offlineUser = { id: 'offline', email: 'offline@local', isOffline: true };
-        setUser(offlineUser);
-        setSession({ user: offlineUser, access_token: 'offline' });
-        ipcRenderer.send('auth:signed-in', {
-          user: offlineUser,
-          accessToken: 'offline',
-        });
-        return;
-      }
-      
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       setSession(data.session ?? null);
@@ -41,26 +25,20 @@ export function AuthProvider({ children }) {
     };
     init();
 
-    // Only set up auth state listener if not in offline mode
-    let listener = null;
-    const isOfflineMode = !process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY;
-    if (!isOfflineMode) {
-      const { data: authListener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-        setSession(newSession ?? null);
-        setUser(newSession?.user ?? null);
-        if (newSession?.user) {
-          ipcRenderer.send('auth:signed-in', {
-            user: { id: newSession.user.id, email: newSession.user.email },
-            accessToken: newSession.access_token,
-          });
-          // Flush any queued usage events now that we're authenticated
-          import('../usage/uploader').then(mod => mod.flushQueue && mod.flushQueue()).catch(() => {});
-        } else {
-          ipcRenderer.send('auth:signed-out');
-        }
-      });
-      listener = authListener;
-    }
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession ?? null);
+      setUser(newSession?.user ?? null);
+      if (newSession?.user) {
+        ipcRenderer.send('auth:signed-in', {
+          user: { id: newSession.user.id, email: newSession.user.email },
+          accessToken: newSession.access_token,
+        });
+        // Flush any queued usage events now that we're authenticated
+        import('../usage/uploader').then(mod => mod.flushQueue && mod.flushQueue()).catch(() => {});
+      } else {
+        ipcRenderer.send('auth:signed-out');
+      }
+    });
 
     return () => {
       mounted = false;

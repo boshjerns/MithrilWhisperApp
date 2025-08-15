@@ -1238,19 +1238,12 @@ class VoiceAssistant {
       console.log('Already recording, ignoring start request');
       return false;
     }
-    
-    // Check authentication only if Supabase is configured
-    const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
-    if (hasSupabase && !this.authUser) {
+    if (!this.authUser) {
       console.log('🚫 Recording blocked: user not authenticated');
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
         this.mainWindow.webContents.send('recording-status', false);
       }
       return false;
-    }
-    
-    if (!hasSupabase) {
-      console.log('🔄 Running in offline mode - authentication bypassed');
     }
     
     try {
@@ -1605,15 +1598,7 @@ class VoiceAssistant {
   // === Assistant recording control ===
   async startAssistantRecording() {
     if (this.isAssistantRecording) return false;
-    
-    // Check authentication only if Supabase is configured
-    const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
-    if (hasSupabase && !this.authUser) return false;
-    
-    if (!hasSupabase) {
-      console.log('🚫 AI Assistant not available in offline mode');
-      return false;
-    }
+    if (!this.authUser) return false;
     try {
       this.isAssistantRecording = true;
       this.recordingStartTime = Date.now();

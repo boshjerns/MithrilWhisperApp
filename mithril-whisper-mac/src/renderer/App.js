@@ -6,6 +6,7 @@ import RecordingControls from './components/RecordingControls';
 import TitleBar from './components/TitleBar';
 import { TerminalIcon } from './components/Icons';
 import Account from './components/Account';
+import About from './components/About';
 import './styles.css';
 
 const { ipcRenderer } = window.require('electron');
@@ -435,6 +436,12 @@ function AppInner() {
         >
           Account
         </button>
+        <button 
+          className={`nav-tab ${currentTab === 'about' ? 'active' : ''}`}
+          onClick={() => setCurrentTab('about')}
+        >
+          About
+        </button>
       </div>
 
       <div className="content">
@@ -462,6 +469,9 @@ function AppInner() {
         )}
         {currentTab === 'account' && (
           <Account />
+        )}
+        {currentTab === 'about' && (
+          <About />
         )}
       </div>
     </div>

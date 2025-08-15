@@ -10,13 +10,10 @@ const webpack = require('webpack');
 module.exports = {
   target: 'electron-main',
   mode: process.env.NODE_ENV || 'development',
-  entry: {
-    main: './src/main/main.js',
-    preload: './src/main/preload.js',
-  },
+  entry: './src/main/main.js',
   output: {
     path: path.resolve(__dirname, 'build/main'),
-    filename: '[name].js',
+    filename: 'main.js',
     clean: true,
   },
   externals: {

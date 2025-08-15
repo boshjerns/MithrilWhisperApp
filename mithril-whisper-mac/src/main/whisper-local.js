@@ -9,6 +9,8 @@ class WhisperLocal {
     this.modelPath = null;
     this.modelSize = 'tiny-q5_1'; // Default to quantized tiny model for speed
     this.isInitialized = false;
+    this.language = 'auto'; // Default to auto-detect
+    this.translationMode = 'transcribe'; // Default to transcribe only
   }
 
   async init() {
@@ -157,17 +159,27 @@ class WhisperLocal {
       const base = path.basename(exe).toLowerCase();
       const isCli = base.includes('whisper-cli');
       // Whisper.cpp command arguments (prefer whisper-cli API)
-      const args = isCli ? [
+      const baseArgs = [
         '-m', this.modelPath,
         '-t', '4',
-        '-l', 'en',
-        '-otxt',
+        '-otxt'
+      ];
+
+      // Add language parameter if not auto-detecting
+      if (this.language && this.language !== 'auto') {
+        baseArgs.push('-l', this.language);
+      }
+
+      // Add translation flag if translating to English
+      if (this.translationMode === 'translate') {
+        baseArgs.push('--translate');
+      }
+
+      const args = isCli ? [
+        ...baseArgs,
         '-f', audioPath,
       ] : [
-        '-m', this.modelPath,
-        '-t', '4',
-        '-l', 'en',
-        '-otxt',
+        ...baseArgs,
         audioPath,
       ];
 
@@ -227,6 +239,14 @@ class WhisperLocal {
     // Do not compute modelPath here because whisperDir may not be resolved yet
     // It will be computed during init() after resolving the directory
     this.isInitialized = false; // Force re-init with new model
+  }
+
+  setLanguage(language) {
+    this.language = language || 'auto';
+  }
+
+  setTranslationMode(mode) {
+    this.translationMode = mode || 'transcribe';
   }
 }
 

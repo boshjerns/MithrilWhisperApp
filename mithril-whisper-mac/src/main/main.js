@@ -1025,6 +1025,8 @@ class VoiceAssistant {
         openaiApiKey: '',
         useLocalWhisper: true,
         whisperModel: effectiveModel,
+        whisperLanguage: this.store.get('whisperLanguage', 'auto'),
+        translationMode: this.store.get('translationMode', 'transcribe'),
         availableModels,
         audioDucking: this.store.get('audioDucking', { enabled: true, duckPercent: 90 }),
       };
@@ -1086,6 +1088,29 @@ class VoiceAssistant {
       if (typeof settings.assistantMaxTokens === 'number') {
         this.assistantMaxTokens = Math.max(128, Math.min(2048, settings.assistantMaxTokens));
         this.store.set('assistantMaxTokens', this.assistantMaxTokens);
+      }
+
+      // Update Whisper language settings
+      if (settings.whisperLanguage !== undefined) {
+        this.store.set('whisperLanguage', settings.whisperLanguage);
+        if (this.textProcessor && this.textProcessor.whisperLocal) {
+          this.textProcessor.whisperLocal.setLanguage(settings.whisperLanguage);
+        }
+      }
+      
+      if (settings.translationMode !== undefined) {
+        this.store.set('translationMode', settings.translationMode);
+        if (this.textProcessor && this.textProcessor.whisperLocal) {
+          this.textProcessor.whisperLocal.setTranslationMode(settings.translationMode);
+        }
+      }
+
+      // Update Whisper model if changed
+      if (settings.whisperModel && settings.whisperModel !== this.store.get('whisperModel')) {
+        this.store.set('whisperModel', settings.whisperModel);
+        if (this.textProcessor && this.textProcessor.whisperLocal) {
+          this.textProcessor.whisperLocal.setModel(settings.whisperModel);
+        }
       }
 
       // OpenAI path removed
@@ -1730,6 +1755,19 @@ class VoiceAssistant {
     // Pass the store instance to text processor BEFORE init so model/settings are respected
     try { this.textProcessor.setStore(this.store); } catch (_) {}
     try { await this.textProcessor.init(); } catch (e) { console.error('textProcessor.init failed', e); }
+    
+    // Initialize Whisper language settings
+    try {
+      if (this.textProcessor.whisperLocal) {
+        const language = this.store.get('whisperLanguage', 'auto');
+        const translationMode = this.store.get('translationMode', 'transcribe');
+        this.textProcessor.whisperLocal.setLanguage(language);
+        this.textProcessor.whisperLocal.setTranslationMode(translationMode);
+        console.log(`🌐 Whisper language set to: ${language}, translation mode: ${translationMode}`);
+      }
+    } catch (e) { 
+      console.error('Failed to set Whisper language settings:', e); 
+    }
     
     // Set main window reference for audio recorder
     try { this.audioRecorder.setMainWindow(this.mainWindow); } catch (_) {}

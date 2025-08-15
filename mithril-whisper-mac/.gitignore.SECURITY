@@ -1,0 +1,133 @@
+# 🚨 SECURITY-FOCUSED .gitignore for MITHRIL WHISPER
+# Add these rules to your .gitignore to prevent sensitive data leaks
+
+# ==============================================================================
+# 🔥 CRITICAL - Environment Variables & Secrets
+# ==============================================================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# API Keys and tokens
+**/config/secrets.js
+**/config/keys.js
+**/*secrets*
+**/*keys*
+**/*token*
+**/*api-key*
+
+# ==============================================================================
+# 🔐 Code Signing & Certificates  
+# ==============================================================================
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+**/signing/*
+**/certificates/*
+**/certs/*
+
+# macOS Keychain exports
+*.keychain
+*.keychain-db
+
+# ==============================================================================
+# 📦 Build & Distribution
+# ==============================================================================
+# Electron builds
+dist/
+build/main/
+build/renderer/
+*.dmg
+*.exe
+*.msi
+*.deb
+*.rpm
+*.AppImage
+
+# Temporary build files
+temp/
+tmp/
+.tmp/
+
+# ==============================================================================
+# 🎯 Audio & Media Files (Privacy)
+# ==============================================================================
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.ogg
+*.flac
+*.wma
+# Whisper model files (can be large)
+models/*.bin
+whisper-cpp/models/*.bin
+
+# ==============================================================================
+# 📱 Node.js & Dependencies
+# ==============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.backup
+
+# ==============================================================================
+# 🖥️ IDE & Editor Files
+# ==============================================================================
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# 🍎 macOS & Windows
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==============================================================================
+# 📊 Logs & Debugging
+# ==============================================================================
+logs/
+*.log
+crash-reports/
+.nyc_output/
+
+# ==============================================================================
+# ⚡ Development
+# ==============================================================================
+.cache/
+.parcel-cache/
+coverage/
+*.tsbuildinfo
+
+# ==============================================================================
+# 🚨 PERSONAL INFORMATION - Always exclude these patterns
+# ==============================================================================
+*personal*
+*private*
+*confidential*
+*secret*
+*credential*
+*password*
+*token*
+
+# ==============================================================================
+# 📋 INSTRUCTIONS FOR DEVELOPERS
+# ==============================================================================
+# 1. Copy this file to .gitignore in your project root
+# 2. Create .env file for your environment variables
+# 3. Never commit the actual webpack.*.config.js files with hardcoded secrets
+# 4. Use the .EXAMPLE versions as templates
+# 5. Set up proper environment variable management

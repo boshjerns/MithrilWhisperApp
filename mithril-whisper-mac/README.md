@@ -84,13 +84,90 @@ cd mithril-whisper-mac
 
 ---
 
+## 🛠️ **Local Setup Instructions**
+
+### **🍎 Mac Local Setup (No Installation Required)**
+```bash
+# Clone and setup
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-mac
+
+# Install dependencies
+npm install
+
+# Optional: Add OpenAI API key for AI assistant (voice transcription works without this)
+cp env.example .env
+# Edit .env and add: OPENAI_API_KEY=your_key_here
+
+# Run locally (no authentication required)
+npm run dev
+```
+
+### **🪟 Windows Local Setup (No Installation Required)**
+```bash
+# Clone and setup
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-windows
+
+# Install dependencies
+npm install
+
+# Optional: Add OpenAI API key for AI assistant (voice transcription works without this)
+copy env.example .env
+# Edit .env and add: OPENAI_API_KEY=your_key_here
+
+# Run locally (no authentication required)
+npm run dev
+```
+
+**Local Mode Benefits:**
+- ✅ No login or authentication required
+- ✅ Complete offline operation
+- ✅ Zero telemetry or data collection
+- ✅ All processing happens on your device
+- ✅ Audio files deleted immediately after transcription
+
+---
+
 ## 🔐 **Privacy & Security**
 
-- **🔒 Local Processing**: Voice data never leaves your device
-- **🛡️ Zero-Trust Architecture**: Multiple isolation layers
-- **📊 Configurable Privacy**: Choose your data sharing level
+### **Data Processing**
+- **🔒 Local Transcription**: All voice-to-text processing uses open-source Whisper-CPP models running entirely on your device
+- **🗑️ Immediate Cleanup**: Audio files are automatically deleted after transcription completes
+- **🛡️ Zero Content Tracking**: Your spoken words and transcriptions are never stored or transmitted
+
+### **Installation Modes & Telemetry**
+
+#### **📦 Installed Version (Mac/Windows)**
+- **Authentication**: Requires login for application access
+- **Limited Telemetry**: Only tracks character count when using AI assistant features
+- **What's Tracked**: Character count of text sent to/from AI assistant (not content)
+- **What's NOT Tracked**: Voice recordings, transcriptions, or any spoken content
+
+#### **💻 Local Development Mode**
+- **No Authentication**: Run completely offline without any login
+- **Zero Telemetry**: No data collection or transmission whatsoever
+- **Complete Privacy**: Everything stays on your device
+
+### **Code Transparency**
+Here's the exact code showing our minimal telemetry (character count only):
+```javascript
+// From src/main/main.js - AI Assistant usage tracking
+const payload = {
+  transcript_chars_original: sanitizedUserPrompt.length,    // Character count only
+  transcript_chars_cleaned: (finalText || '').length,      // Character count only
+  metadata: {
+    user_words: countWords(sanitizedUserPrompt),           // Word count only
+    assistant_words: countWords(finalText),                // Word count only
+  }
+  // NOTE: Actual content is NEVER included in telemetry
+};
+```
+
+### **Security Features**
 - **🔐 Code Signed**: Apple-verified security for macOS
-- **🚫 No Telemetry**: Optional analytics only in production mode
+- **🛡️ Zero-Trust Architecture**: Multiple isolation layers
+- **📊 Configurable Privacy**: Choose between offline, local, or production modes
 
 ---
 

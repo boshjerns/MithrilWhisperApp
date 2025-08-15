@@ -87,7 +87,16 @@
     "win": {
       "target": "nsis",
       "sign": false,
-      "icon": "logo1.ico"
+      "icon": "logo1.ico",
+      "verifyUpdateCodeSignature": false,
+      "forceCodeSigning": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraMetadata": {
+      "sign": false
     }
   }
 }

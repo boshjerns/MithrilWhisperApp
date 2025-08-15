@@ -339,6 +339,7 @@ class VoiceAssistant {
     this.volumeManager = new VolumeManager();
     this.isRecording = false;
     this.isAssistantRecording = false;
+    this.isRecordingDisabled = false;
     this.hotkey = this.store.get('hotkey', 'F1');
     this.assistantHotkey = this.store.get('assistantHotkey', 'F2');
     // Assistant model defaults/migration
@@ -655,6 +656,11 @@ class VoiceAssistant {
           return;
         }
         
+        if (this.isRecordingDisabled) {
+          console.log('🚫 Hotkey ignored - recording temporarily disabled (settings page open)');
+          return;
+        }
+        
         lastHotkeyTime = now;
         isProcessing = true;
         
@@ -685,6 +691,10 @@ class VoiceAssistant {
           success = globalShortcut.register(hotkey, async () => {
             // Simple fallback hotkey handler
             console.log('🎯 Fallback hotkey triggered');
+            if (this.isRecordingDisabled) {
+              console.log('🚫 Fallback hotkey ignored - recording temporarily disabled (settings page open)');
+              return;
+            }
             if (this.isRecording) {
               await this.stopRecording();
             } else {
@@ -730,6 +740,10 @@ class VoiceAssistant {
         }
         if (isProcessing || this.isRecording) {
           console.log('🚫 Assistant hotkey ignored - other recording in progress');
+          return;
+        }
+        if (this.isRecordingDisabled) {
+          console.log('🚫 Assistant hotkey ignored - recording temporarily disabled (settings page open)');
           return;
         }
         lastHotkeyTime = now;
@@ -818,12 +832,6 @@ class VoiceAssistant {
       };
     });
 
-    ipcMain.handle('set-settings-mode', (event, isInSettings) => {
-      // Disable/enable recording while in settings to prevent accidental hotkey triggers
-      this.isInSettingsMode = isInSettings;
-      console.log('⚙️ Settings mode:', isInSettings ? 'ENABLED (recording disabled)' : 'DISABLED (recording enabled)');
-    });
-
     ipcMain.handle('save-settings', (event, settings) => {
       console.log('💾 Saving settings:', { ...settings, openaiApiKey: settings.openaiApiKey ? '[REDACTED]' : 'empty' });
       
@@ -874,6 +882,17 @@ class VoiceAssistant {
           this.assistantWindow.webContents.send('assistant:show');
         }
       } catch (_) {}
+    });
+
+    // Recording control for settings page
+    ipcMain.on('disable-recording-temporarily', () => {
+      console.log('🚫 Recording disabled temporarily (settings page open)');
+      this.isRecordingDisabled = true;
+    });
+
+    ipcMain.on('enable-recording', () => {
+      console.log('✅ Recording re-enabled (settings page closed)');
+      this.isRecordingDisabled = false;
     });
 
     // Auth state from renderer
@@ -1003,8 +1022,8 @@ class VoiceAssistant {
       console.log('Already recording, ignoring start request');
       return false;
     }
-    if (this.isInSettingsMode) {
-      console.log('🚫 Recording blocked: in settings mode (hotkey configuration)');
+    if (this.isRecordingDisabled) {
+      console.log('🚫 Recording blocked: temporarily disabled (settings page open)');
       return false;
     }
     if (!this.authUser) {
@@ -1351,8 +1370,8 @@ class VoiceAssistant {
   // === Assistant recording control ===
   async startAssistantRecording() {
     if (this.isAssistantRecording) return false;
-    if (this.isInSettingsMode) {
-      console.log('🚫 Assistant recording blocked: in settings mode (hotkey configuration)');
+    if (this.isRecordingDisabled) {
+      console.log('🚫 Assistant recording blocked: temporarily disabled (settings page open)');
       return false;
     }
     if (!this.authUser) return false;

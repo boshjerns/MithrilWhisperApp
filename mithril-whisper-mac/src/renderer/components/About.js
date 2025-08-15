@@ -67,7 +67,7 @@ function About() {
                 <ExternalLinkIcon size={16} className="external-icon" />
               </a>
               
-              <a href="https://linkedin.com/in/joshberns" target="_blank" rel="noopener noreferrer" className="social-link-card linkedin">
+              <a href="https://www.linkedin.com/in/josh-berns-6a553717b/" target="_blank" rel="noopener noreferrer" className="social-link-card linkedin">
                 <div className="social-link-content">
                   <LinkedInIcon size={24} className="social-icon" />
                   <div className="social-info">
@@ -78,12 +78,12 @@ function About() {
                 <ExternalLinkIcon size={16} className="external-icon" />
               </a>
               
-              <a href="mailto:josh@mithril.dev" className="social-link-card email">
+              <a href="mailto:boshjerns@gmail.com" className="social-link-card email">
                 <div className="social-link-content">
                   <MailIcon size={24} className="social-icon" />
                   <div className="social-info">
                     <span className="social-platform">Email</span>
-                    <span className="social-handle">josh@mithril.dev</span>
+                    <span className="social-handle">boshjerns@gmail.com</span>
                   </div>
                 </div>
               </a>
@@ -206,7 +206,7 @@ function About() {
               <a href="https://github.com/boshjerns/MITHRILWHISPER/discussions" target="_blank" rel="noopener noreferrer" className="support-link">
                 <ChatIcon size={16} /> Join Discussions
               </a>
-              <a href="mailto:josh@mithril.dev" className="support-link">
+              <a href="mailto:boshjerns@gmail.com" className="support-link">
                 <MailIcon size={16} /> Email Support
               </a>
             </div>
@@ -215,7 +215,7 @@ function About() {
           <div className="enterprise-section">
             <h5><BuildingIcon size={18} className="section-icon" /> Enterprise Solutions</h5>
             <p>Interested in custom AI solutions for your organization? Let's discuss how MITHRIL can help with proprietary LLM integrations, secure voice processing, or custom AI applications.</p>
-            <a href="mailto:josh@mithril.dev?subject=Enterprise AI Solutions Inquiry" className="enterprise-contact">
+            <a href="mailto:boshjerns@gmail.com?subject=Enterprise AI Solutions Inquiry" className="enterprise-contact">
               <RocketIcon size={20} className="contact-icon" /> Contact for Enterprise Solutions
             </a>
           </div>

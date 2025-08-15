@@ -218,7 +218,7 @@ export default function AssistantChat() {
         ))}
       </div>
       <div style={footerStyle}>
-        <span>F2 to start/stop. Says “whisper …” to engage tasks.</span>
+        <span>⌘W to start/stop. Says "whisper …" to engage tasks.</span>
         <span style={{ opacity: 0.7 }}>model: o4-mini</span>
       </div>
       </div>

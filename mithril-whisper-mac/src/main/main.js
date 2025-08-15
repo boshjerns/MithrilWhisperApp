@@ -506,8 +506,8 @@ class VoiceAssistant {
     this.volumeManager = new VolumeManager();
     this.isRecording = false;
     this.isAssistantRecording = false;
-    this.hotkey = this.store.get('hotkey', 'F1');
-    this.assistantHotkey = this.store.get('assistantHotkey', 'F2');
+    this.hotkey = this.store.get('hotkey', 'Cmd+Q');
+    this.assistantHotkey = this.store.get('assistantHotkey', 'Cmd+W');
     // Assistant model defaults/migration
     const storedAssistantModel = this.store.get('assistantModel');
     if (storedAssistantModel === 'gpt-o4-mini' || storedAssistantModel === 'gpt-4o-mini') {
@@ -796,19 +796,19 @@ class VoiceAssistant {
     // Validate and fix hotkey format
     let hotkey = this.hotkey;
     if (hotkey) {
-      // Fix common format issues
-      hotkey = hotkey.replace('Control+', 'Ctrl+').replace('Cmd+', 'CmdOrCtrl+');
+      // Fix common format issues for Mac
+      hotkey = hotkey.replace('Control+', 'Ctrl+').replace('CmdOrCtrl+', 'Cmd+');
       
       // If format is still invalid or incomplete, reset to default
-      const validHotkey = hotkey.match(/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/) || hotkey.match(/^F\d+$/);
+      const validHotkey = hotkey.match(/^(Ctrl|Alt|Shift|Cmd|CmdOrCtrl)\+\w+$/) || hotkey.match(/^F\d+$/);
       if (!validHotkey || hotkey.endsWith('+')) {
-        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to Alt+Space`);
-        hotkey = 'Alt+Space';
+        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to Cmd+Q`);
+        hotkey = 'Cmd+Q';
         this.hotkey = hotkey;
         this.store.set('hotkey', hotkey);
       }
     } else {
-      hotkey = 'Alt+Space';
+      hotkey = 'Cmd+Q';
     }
     
     console.log(`🎯 Setting up transcription hotkey: ${hotkey}`);
@@ -860,7 +860,7 @@ class VoiceAssistant {
     } catch (error) {
         console.error(`❌ Failed to register hotkey "${hotkey}":`, error.message);
         // Reset to default if registration fails
-        hotkey = 'Alt+Space';
+        hotkey = 'Cmd+Q';
         this.hotkey = hotkey;
         this.store.set('hotkey', hotkey);
         try {
@@ -889,16 +889,16 @@ class VoiceAssistant {
   setupAssistantHotkey() {
     try { if (this.assistantHotkey) globalShortcut.unregister(this.assistantHotkey); } catch (_) {}
 
-    let hotkey = this.assistantHotkey || 'F2';
+    let hotkey = this.assistantHotkey || 'Cmd+W';
     
     // Warn about potentially problematic hotkeys
     if (hotkey === 'CmdOrCtrl+s' || hotkey === 'Ctrl+s' || hotkey === 'Cmd+s') {
-      console.warn('⚠️ Assistant hotkey conflicts with system Save shortcut. Consider using F2 or Alt+Space instead.');
+      console.warn('⚠️ Assistant hotkey conflicts with system Save shortcut. Consider using Cmd+W or Alt+A instead.');
     }
     
-    if (!/^F\d+$/.test(hotkey) && !/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/.test(hotkey)) {
-      console.log('🔧 Invalid assistant hotkey format, defaulting to F2');
-      hotkey = 'F2';
+    if (!/^F\d+$/.test(hotkey) && !/^(Ctrl|Alt|Shift|Cmd|CmdOrCtrl)\+\w+$/.test(hotkey)) {
+      console.log('🔧 Invalid assistant hotkey format, defaulting to Cmd+W');
+      hotkey = 'Cmd+W';
       this.assistantHotkey = hotkey;
       this.store.set('assistantHotkey', hotkey);
     }
@@ -1014,8 +1014,8 @@ class VoiceAssistant {
       }
 
       return {
-        hotkey: this.store.get('hotkey', 'Alt+Space'),
-        assistantHotkey: this.store.get('assistantHotkey', 'F2'),
+        hotkey: this.store.get('hotkey', 'Cmd+Q'),
+        assistantHotkey: this.store.get('assistantHotkey', 'Cmd+W'),
         assistantInjectOnReplace: this.store.get('assistantInjectOnReplace', false),
         model: this.store.get('model', effectiveModel),
         sensitivity: this.store.get('sensitivity', 0.5),

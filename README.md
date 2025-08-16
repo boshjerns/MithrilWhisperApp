@@ -19,7 +19,7 @@
 **Mithril Whisper** is a privacy-focused, air-gapped voice-to-text platform designed for organizations and individuals who prioritize data security. Built for environments where sensitive information cannot leave local systems, it provides enterprise-grade speech recognition with military-level security.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey.svg)
 
 ## What is Mithril Whisper?
@@ -218,7 +218,7 @@ cp env.example .env
 
 ## Open Source Commitment
 
-**Mithril Whisper** is fully open source under the MIT License. We believe security through obscurity is a flawed approach - true security comes from transparency, peer review, and community validation.
+**Mithril Whisper** is available under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License for personal use, with commercial licensing available. We believe security through obscurity is a flawed approach - true security comes from transparency, peer review, and community validation.
 
 ### Contributing
 We welcome contributions from the security and AI communities. Whether you're fixing bugs, adding features, or improving documentation, your input helps make voice recognition more secure for everyone.

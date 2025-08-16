@@ -28,8 +28,8 @@ Built by [Josh Berns](https://github.com/boshjerns) under [MITHRIL](https://depl
 
 ### 1. **Clone & Install**
 ```bash
-git clone https://github.com/boshjerns/MITHRILWHISPER.git
-cd MITHRILWHISPER/mithril-whisper-mac
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-mac
 npm install
 ```
 
@@ -195,9 +195,28 @@ npm run dev
 # Build for production
 npm run build
 
-# Package as macOS app
+# Package as macOS app (.pkg installer)
 npm run package
+
+# Build and automatically install (recommended)
+npm run package:install
+
+# Build, package, and open installer
+npm run build:install
 ```
+
+## 📦 **Models & Packaging Strategy**
+
+### **How Models Are Handled:**
+- **✅ Development**: Models included locally (57MB + 31MB) for immediate development
+- **✅ Git Repository**: Models excluded via `.gitignore` to keep repo lightweight  
+- **✅ User Downloads**: Build script automatically downloads models if missing
+- **✅ PKG Installers**: Released via GitHub with models embedded
+
+### **Current Setup:**
+1. **Local Development**: Ready to use - models pre-installed
+2. **GitHub Users**: Models download automatically during build
+3. **End Users**: Download signed PKG from GitHub releases (includes everything)
 
 ### **First Launch:**
 1. **Grant microphone permissions** when prompted
@@ -260,6 +279,11 @@ cd MithrilWhisperApp/mithril-whisper-mac
 
 # Install dependencies
 npm install
+
+# 📦 MODELS: The repository includes pre-built Whisper models for immediate use
+# - ggml-base-q5_1.bin (57MB) - High accuracy model  
+# - ggml-tiny-q5_1.bin (31MB) - Fast, lightweight model
+# If missing, run: npm run build:install (downloads automatically)
 
 # Optional: Add OpenAI API key for AI assistant (voice transcription works without this)
 cp env.example .env
@@ -388,7 +412,7 @@ We welcome contributions! Please:
 
 ## 📞 **Support & Contact**
 
-- **GitHub Issues**: [Create an issue](https://github.com/boshjerns/MITHRILWHISPER/issues)
+- **GitHub Issues**: [Create an issue](https://github.com/boshjerns/MithrilWhisperApp/issues)
 - **Email**: [boshjerns@gmail.com](mailto:boshjerns@gmail.com)
 - **Enterprise Solutions**: [Deploy Forward](https://deployforward.com/mithril)
 

@@ -82,3 +82,9 @@ echo ""
 echo "🔍 After installation, you can run:"
 echo "   open /Applications/MithrilWhisper.app"
 echo ""
+
+# Download models if missing (for users)
+if [ ! -f whisper-cpp/ggml-base-q5_1.bin ]; then
+    echo '📥 Downloading base model (required for app)...'
+    curl -L -o whisper-cpp/ggml-base-q5_1.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base-q5_1.bin
+fi

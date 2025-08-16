@@ -105,3 +105,23 @@ coverage/
 *personal*
 *private*
 *confidential*
+# =================================================================
+# 🚫 LARGE FILES - Prevent accidental commits (50MB+ files)
+# =================================================================
+# Model files (users download these separately or via build process)
+*.bin
+models/
+whisper-cpp/*.bin
+
+# Installation artifacts and built apps
+clean-install*/
+test-install*/
+expanded-working/
+extracted-pkg/
+*.app/
+
+# Large binaries and payloads
+Payload
+*/Payload
+Electron Framework
+*/Electron Framework

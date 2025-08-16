@@ -135,3 +135,7 @@ extracted-pkg/
 # macOS system files
 .DS_Store
 **/.DS_Store
+
+# BFG cleanup reports
+..bfg-report/
+**/..bfg-report/

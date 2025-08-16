@@ -178,6 +178,7 @@ Ready to implement secure AI in your organization? We provide:
 
 Passionate about building AI solutions that respect privacy and maintain security. Specializing in air-gapped AI systems for sensitive environments where data protection is paramount.
 
+- **Email**: [boshjerns@gmail.com](mailto:boshjerns@gmail.com)
 - **GitHub**: [@boshjerns](https://github.com/boshjerns)
 - **Twitter**: [@boshjerns](https://x.com/boshjerns)
 - **Company**: [Deploy Forward](https://www.deployforward.com/)

@@ -131,3 +131,7 @@ clean-install*/
 test-install*/
 expanded-working/
 extracted-pkg/
+
+# macOS system files
+.DS_Store
+**/.DS_Store

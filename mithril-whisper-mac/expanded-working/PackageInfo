@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pkg-info overwrite-permissions="true" relocatable="false" identifier="com.voiceassistant.whisper" postinstall-action="none" version="1.0.0" format-version="2" generator-version="InstallCmds-860 (24F74)" install-location="/Applications" auth="root">
+    <payload numberOfFiles="581" installKBytes="386305"/>
+    <bundle id="com.voiceassistant.whisper.helper.GPU" CFBundleVersion="1.0.0" path="./mithril whisper.app/Contents/Frameworks/mithril whisper Helper (GPU).app"/>
+    <bundle path="./mithril whisper.app/Contents/Frameworks/Mantle.framework" id="org.mantle.Mantle" CFBundleShortVersionString="1.0" CFBundleVersion="0.0.0"/>
+    <bundle id="com.github.Electron.framework" CFBundleVersion="27.3.11" path="./mithril whisper.app/Contents/Frameworks/Electron Framework.framework"/>
+    <bundle path="./mithril whisper.app/Contents/Frameworks/ReactiveObjC.framework" id="com.electron.reactive" CFBundleShortVersionString="3.1.0" CFBundleVersion="0.0.0"/>
+    <bundle id="com.voiceassistant.whisper.helper" CFBundleVersion="1.0.0" path="./mithril whisper.app/Contents/Frameworks/mithril whisper Helper.app"/>
+    <bundle path="./mithril whisper.app/Contents/Frameworks/Squirrel.framework" id="com.github.Squirrel" CFBundleShortVersionString="1.0" CFBundleVersion="1"/>
+    <bundle id="com.voiceassistant.whisper.helper.Renderer" CFBundleVersion="1.0.0" path="./mithril whisper.app/Contents/Frameworks/mithril whisper Helper (Renderer).app"/>
+    <bundle id="com.voiceassistant.whisper.helper.Plugin" CFBundleVersion="1.0.0" path="./mithril whisper.app/Contents/Frameworks/mithril whisper Helper (Plugin).app"/>
+    <bundle path="./mithril whisper.app" id="com.voiceassistant.whisper" CFBundleShortVersionString="1.0.0" CFBundleVersion="1.0.0"/>
+    <bundle-version>
+        <bundle id="com.voiceassistant.whisper"/>
+    </bundle-version>
+    <upgrade-bundle>
+        <bundle id="com.voiceassistant.whisper"/>
+    </upgrade-bundle>
+    <update-bundle/>
+    <atomic-update-bundle/>
+    <strict-identifier>
+        <bundle id="com.voiceassistant.whisper.helper.GPU"/>
+        <bundle id="com.voiceassistant.whisper.helper"/>
+        <bundle id="com.voiceassistant.whisper.helper.Renderer"/>
+        <bundle id="com.voiceassistant.whisper.helper.Plugin"/>
+        <bundle id="com.voiceassistant.whisper"/>
+    </strict-identifier>
+    <relocate>
+        <bundle id="com.voiceassistant.whisper"/>
+    </relocate>
+</pkg-info>

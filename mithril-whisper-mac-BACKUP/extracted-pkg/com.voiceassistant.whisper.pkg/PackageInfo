@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pkg-info overwrite-permissions="true" relocatable="false" identifier="com.voiceassistant.whisper" postinstall-action="none" version="1.0.0" format-version="2" generator-version="InstallCmds-860 (24F74)" install-location="/Applications" auth="root" preserve-xattr="true">
+    <payload numberOfFiles="290" installKBytes="386203"/>
+    <bundle path="./mithril whisper.app" id="com.voiceassistant.whisper" CFBundleShortVersionString="1.0.0" CFBundleVersion="1.0.0"/>
+    <bundle-version>
+        <bundle id="com.voiceassistant.whisper"/>
+    </bundle-version>
+    <upgrade-bundle>
+        <bundle id="com.voiceassistant.whisper"/>
+    </upgrade-bundle>
+    <update-bundle/>
+    <atomic-update-bundle/>
+    <strict-identifier>
+        <bundle id="com.voiceassistant.whisper"/>
+    </strict-identifier>
+    <relocate>
+        <bundle id="com.voiceassistant.whisper"/>
+    </relocate>
+</pkg-info>

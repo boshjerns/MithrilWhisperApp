@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         🔒 PRIVACY MANIFEST FOR MITHRIL WHISPER
+         
+         This manifest explicitly declares all data collection and usage,
+         ensuring transparency and compliance with Apple's privacy requirements.
+         ═══════════════════════════════════════════════════════════════════════ -->
+    
+    <!-- 📊 DATA COLLECTION TRACKING -->
+    <key>NSPrivacyTracking</key>
+    <false/>
+    
+    <!-- 🎯 DATA COLLECTION DOMAINS (None - all processing is local) -->
+    <key>NSPrivacyTrackingDomains</key>
+    <array>
+        <!-- No tracking domains - we don't track users -->
+    </array>
+    
+    <!-- 📝 COLLECTED DATA TYPES -->
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+        <dict>
+            <!-- 🎙️ AUDIO DATA (Temporary, Local Processing Only) -->
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeAudioData</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        
+        <dict>
+            <!-- 📱 DEVICE IDENTIFIER (App Settings Only) -->
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeDeviceID</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+    </array>
+    
+    <!-- 🔐 ACCESSED API TYPES -->
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <!-- 📁 FILE TIMESTAMP API (Audio File Management) -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>C617.1</string> <!-- Accessing file timestamps for temporary audio files -->
+            </array>
+        </dict>
+        
+        <dict>
+            <!-- 🎵 AUDIO CAPTURE API -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryMicrophone</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>NSPrivacyAccessedAPICategoryMicrophone.1</string> <!-- Voice transcription -->
+            </array>
+        </dict>
+        
+        <dict>
+            <!-- 📄 USER DEFAULTS API (App Settings) -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string> <!-- App-specific preferences and settings -->
+            </array>
+        </dict>
+        
+        <dict>
+            <!-- 🌐 NETWORK API (Optional Assistant Features) -->
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryNetworking</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>7D31.1</string> <!-- Optional AI assistant functionality -->
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
+

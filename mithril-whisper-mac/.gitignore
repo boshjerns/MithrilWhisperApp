@@ -125,3 +125,9 @@ Payload
 */Payload
 Electron Framework
 */Electron Framework
+
+# Installation test folders (not needed in Git)
+clean-install*/
+test-install*/
+expanded-working/
+extracted-pkg/

@@ -167,6 +167,17 @@
             background: linear-gradient(135deg, #1e293b, #0f172a);
             border-top: 1px solid #374151;
         }
+        .download-counter-mac, .download-counter-windows {
+            text-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+        .download-counter-mac:hover, .download-counter-windows:hover {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+            transform: translateY(-1px);
+        }
+        #macDownloadCount, #windowsDownloadCount {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body class="text-white">
@@ -245,7 +256,7 @@
                         </svg>
                     </button>
                     <div id="macDropdownContent" class="mac-dropdown-content">
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg" onclick="trackDownload('mac')">
                             <div class="flex items-center space-x-3">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -256,7 +267,7 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg" onclick="trackDownload('mac')">
                             <div class="flex items-center space-x-3">
                                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
@@ -268,15 +279,29 @@
                             </div>
                         </a>
                     </div>
+                    <!-- Mac Download Counter -->
+                    <div class="mt-3 text-center">
+                        <div class="download-counter-mac text-gray-300 text-sm" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">
+                            <span class="text-blue-400">[MAC_DOWNLOADS]:</span> <span id="macDownloadCount" class="text-white font-bold">Loading...</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Windows Download -->
-                <a href="https://gateway.pinata.cloud/ipfs/bafybeih2kpr2b6zbykn3uj3mbhjrgtbdrp52txfiar27clzsllrnebsiim/mithril-whisper-Setup.exe" class="download-windows text-white px-8 py-4 rounded-lg font-semibold flex items-center space-x-3 transition-all duration-300">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
-                    </svg>
-                    <span>Download for Windows</span>
-                </a>
+                <div class="windows-download-container">
+                    <a href="https://gateway.pinata.cloud/ipfs/bafybeih2kpr2b6zbykn3uj3mbhjrgtbdrp52txfiar27clzsllrnebsiim/mithril-whisper-Setup.exe" class="download-windows text-white px-8 py-4 rounded-lg font-semibold flex items-center space-x-3 transition-all duration-300" onclick="trackDownload('windows')">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
+                        </svg>
+                        <span>Download for Windows</span>
+                    </a>
+                    <!-- Windows Download Counter -->
+                    <div class="mt-3 text-center">
+                        <div class="download-counter-windows text-gray-300 text-sm" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">
+                            <span class="text-blue-400">[WINDOWS_DOWNLOADS]:</span> <span id="windowsDownloadCount" class="text-white font-bold">Loading...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- GitHub Link -->
@@ -459,6 +484,70 @@ const payload = {
     </footer>
 
     <script>
+        // Download counter configuration
+        const COUNTER_API_BASE = 'https://api.countapi.xyz';
+        const COUNTER_NAMESPACE = 'mithril-whisper';
+        
+        // Download counter functions
+        async function loadDownloadCounts() {
+            try {
+                // Load Mac downloads
+                const macResponse = await fetch(`${COUNTER_API_BASE}/get/${COUNTER_NAMESPACE}/mac-downloads`);
+                const macData = await macResponse.json();
+                const macCount = macData.value || 0;
+                document.getElementById('macDownloadCount').textContent = macCount.toLocaleString();
+                
+                // Load Windows downloads
+                const windowsResponse = await fetch(`${COUNTER_API_BASE}/get/${COUNTER_NAMESPACE}/windows-downloads`);
+                const windowsData = await windowsResponse.json();
+                const windowsCount = windowsData.value || 0;
+                document.getElementById('windowsDownloadCount').textContent = windowsCount.toLocaleString();
+                
+                // Store in local storage as backup
+                localStorage.setItem('macDownloadCount', macCount);
+                localStorage.setItem('windowsDownloadCount', windowsCount);
+            } catch (error) {
+                console.log('Failed to load download counts from API, using local storage');
+                // Fallback to local storage
+                const macCount = localStorage.getItem('macDownloadCount') || '0';
+                const windowsCount = localStorage.getItem('windowsDownloadCount') || '0';
+                document.getElementById('macDownloadCount').textContent = parseInt(macCount).toLocaleString();
+                document.getElementById('windowsDownloadCount').textContent = parseInt(windowsCount).toLocaleString();
+            }
+        }
+        
+        async function trackDownload(platform) {
+            try {
+                // Increment counter on API
+                const response = await fetch(`${COUNTER_API_BASE}/hit/${COUNTER_NAMESPACE}/${platform}-downloads`);
+                const data = await response.json();
+                
+                if (data.value) {
+                    // Update display with new count
+                    const countElement = document.getElementById(`${platform}DownloadCount`);
+                    countElement.textContent = data.value.toLocaleString();
+                    
+                    // Store in local storage
+                    localStorage.setItem(`${platform}DownloadCount`, data.value);
+                    
+                    // Add visual feedback
+                    countElement.style.color = '#10b981'; // green
+                    countElement.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        countElement.style.color = '#ffffff';
+                        countElement.style.transform = 'scale(1)';
+                    }, 1000);
+                }
+            } catch (error) {
+                console.log('Failed to track download:', error);
+                // Fallback: increment local storage count
+                const currentCount = parseInt(localStorage.getItem(`${platform}DownloadCount`) || '0');
+                const newCount = currentCount + 1;
+                localStorage.setItem(`${platform}DownloadCount`, newCount);
+                document.getElementById(`${platform}DownloadCount`).textContent = newCount.toLocaleString();
+            }
+        }
+        
         // Fetch GitHub star count
         async function fetchStarCount() {
             try {
@@ -471,6 +560,7 @@ const payload = {
         }
         
         fetchStarCount();
+        loadDownloadCounts();
         
         // Mac dropdown functionality
         function toggleMacDropdown() {

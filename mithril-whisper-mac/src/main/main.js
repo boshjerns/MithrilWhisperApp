@@ -102,14 +102,11 @@ async function getFrontmostAppBundleId() {
   return '';
 }
 
-// Environment detection for dual-mode system
+// Environment detection for local-only system
 function getAssistantMode() {
-  const hasSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
   const hasOpenAI = !!process.env.OPENAI_API_KEY;
   
-  if (hasSupabase) {
-    return { mode: 'production', requiresAuth: true };
-  } else if (hasOpenAI) {
+  if (hasOpenAI) {
     return { mode: 'local', requiresAuth: false };
   } else {
     return { mode: 'disabled', requiresAuth: false };
@@ -163,17 +160,6 @@ async function handleAssistantQuery(userPrompt, context) {
       return;
     }
     
-    // Production mode: requires Supabase authentication
-    if (mode === 'production') {
-      const supabaseUrl = process.env.SUPABASE_URL || '';
-      const jwt = this.accessToken || '';
-      if (!supabaseUrl || !jwt) {
-        if (this.assistantWindow) {
-          this.assistantWindow.webContents.send('assistant:error', 'Not authenticated or missing Supabase URL');
-        }
-        return;
-      }
-    }
     
     // Local mode: no authentication required, just OpenAI key
     console.log(`🔧 Assistant mode: ${mode} (auth required: ${requiresAuth})`)
@@ -244,44 +230,13 @@ async function handleAssistantQuery(userPrompt, context) {
         });
       }
 
-    const model = this.assistantModel || (mode === 'production' ? 'o4-mini' : 'gpt-4o-mini');
+    const model = this.assistantModel || 'gpt-4o-mini';
     const maxTokens = this.assistantMaxTokens || 800;
 
-    let response;
-    
-    if (mode === 'production') {
-      // Production mode: Use Supabase Edge Function
-      const supabaseUrl = process.env.SUPABASE_URL;
-      const jwt = this.accessToken;
-      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-      console.log('🚀 Production mode: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
-      
-      response = await fetch(assistantUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          max_output_tokens: maxTokens,
-          input: [
-            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-          ],
-          text: { format: { type: 'text' } },
-          reasoning: { effort: 'medium', summary: 'auto' },
-          tools: [],
-          store: true
-        })
-      });
-    } else {
-      // Local mode: Call OpenAI API directly  
-      console.log('🏠 Local mode: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
-      const fullSystemPrompt = systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '');
-      response = await callOpenAIDirectly(fullSystemPrompt, sanitizedUserPrompt, model, maxTokens);
-    }
+    // Local mode: Call OpenAI API directly  
+    console.log('🏠 Local mode: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
+    const fullSystemPrompt = systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '');
+    const response = await callOpenAIDirectly(fullSystemPrompt, sanitizedUserPrompt, model, maxTokens);
 
     if (!response.ok || !response.body) {
       const text = await (response.text ? response.text() : Promise.resolve(''));
@@ -320,35 +275,6 @@ async function handleAssistantQuery(userPrompt, context) {
         // Immediately return HUD to idle after finalize
         this.updateHUDStatus('idle', { connected: true });
 
-        // Emit usage event to renderer (assistant session)
-        try {
-          const startedAt = new Date(this.recordingStartTime || Date.now());
-          const endedAt = new Date();
-          const durationMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
-          const { countWords } = require('../shared/text-utils');
-          const payload = {
-            started_at: startedAt.toISOString(),
-            ended_at: endedAt.toISOString(),
-            duration_ms: durationMs,
-            transcript_chars_original: sanitizedUserPrompt.length,
-            transcript_chars_cleaned: (finalText || '').length,
-            model: this.assistantModel || 'o4-mini',
-            platform: process.platform,
-            app_version: app.getVersion ? app.getVersion() : (process.env.APP_VERSION || '0.0.0'),
-            metadata: {
-              kind: 'assistant',
-              action: decidedAction,
-              selection_chars: (selection || '').length,
-              user_words: countWords(sanitizedUserPrompt),
-              assistant_words: countWords(finalText),
-            },
-          };
-          if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-            this.mainWindow.webContents.send('usage:session-completed', payload);
-          }
-        } catch (e) {
-          console.error('Assistant: failed to emit usage event:', e);
-        }
     };
 
     const contentType = response.headers.get('content-type') || '';
@@ -362,45 +288,30 @@ async function handleAssistantQuery(userPrompt, context) {
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           
-          // Process streaming response differently based on mode
-          if (mode === 'production') {
-            // Supabase Edge Function format (OpenAI Realtime API format)
-            console.log('🔍 Production chunk received:', chunk);
-            chunk.split(/\n\n/).forEach((block) => {
-              const trimmed = block.trim();
-              if (!trimmed) return;
-              console.log('🔍 Processing block:', trimmed);
-              const lines = trimmed.split(/\n/);
-              const eventLine = lines.find(l => l.startsWith('event:'));
-              if (eventLine) {
-                lastEvent = eventLine.replace(/^event:\s*/, '');
-                console.log('🔍 Event:', lastEvent);
+          // Standard OpenAI Chat Completions streaming format
+          chunk.split(/\n/).forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data: ')) return;
+            const data = trimmed.replace(/^data:\s*/, '');
+            if (data === '[DONE]') return;
+            try {
+              const json = JSON.parse(data);
+              const delta = json.choices?.[0]?.delta?.content || '';
+              if (delta) {
+                buffer += delta;
+                if (buffer.length < 200) tryDecide();
+                sendToken(delta);
               }
-              const dataLine = lines.find(l => l.startsWith('data:'));
-              if (!dataLine) return;
-              const data = dataLine.replace(/^data:\s*/, '');
-              if (data === '[DONE]') return;
-              console.log('🔍 Data:', data);
-              try {
-                const json = JSON.parse(data);
-                console.log('🔍 Parsed JSON:', json);
-                let delta = '';
-                if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                else if (json.content_part && json.content_part.text) delta = json.content_part.text;
-                else if (json.delta && typeof json.delta === 'string') delta = json.delta;
-                if (delta) {
-                  console.log('🔍 Sending delta:', delta);
-                  buffer += delta;
-                  if (buffer.length < 200) tryDecide();
-                  sendToken(delta);
-                }
-              } catch (e) {
-                console.log('🔍 JSON parse error:', e.message, 'for data:', data);
-              }
-            });
-          } else {
-            // Standard OpenAI Chat Completions streaming format
+            } catch (_) {}
+          });
+        }
+      } else {
+        await new Promise((resolve, reject) => {
+          let lastEvent = '';
+          response.body.on('data', (value) => {
+            const chunk = value.toString('utf8');
+            
+            // Standard OpenAI streaming format
             chunk.split(/\n/).forEach((line) => {
               const trimmed = line.trim();
               if (!trimmed || !trimmed.startsWith('data: ')) return;
@@ -416,56 +327,6 @@ async function handleAssistantQuery(userPrompt, context) {
                 }
               } catch (_) {}
             });
-          }
-        }
-      } else {
-        await new Promise((resolve, reject) => {
-          let lastEvent = '';
-          response.body.on('data', (value) => {
-            const chunk = value.toString('utf8');
-            
-            if (mode === 'production') {
-              // Supabase Edge Function format
-              chunk.split(/\n\n/).forEach((block) => {
-                const trimmed = block.trim();
-                if (!trimmed) return;
-                const lines = trimmed.split(/\n/);
-                const eventLine = lines.find(l => l.startsWith('event:'));
-                if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
-                const dataLine = lines.find(l => l.startsWith('data:'));
-                if (!dataLine) return;
-                const data = dataLine.replace(/^data:\s*/, '');
-                if (data === '[DONE]') return;
-                try {
-                  const json = JSON.parse(data);
-                  let delta = '';
-                  if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                  else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                  if (delta) {
-                    buffer += delta;
-                    if (buffer.length < 200) tryDecide();
-                    sendToken(delta);
-                  }
-                } catch (_) {}
-              });
-            } else {
-              // Standard OpenAI streaming format
-              chunk.split(/\n/).forEach((line) => {
-                const trimmed = line.trim();
-                if (!trimmed || !trimmed.startsWith('data: ')) return;
-                const data = trimmed.replace(/^data:\s*/, '');
-                if (data === '[DONE]') return;
-                try {
-                  const json = JSON.parse(data);
-                  const delta = json.choices?.[0]?.delta?.content || '';
-                  if (delta) {
-                    buffer += delta;
-                    if (buffer.length < 200) tryDecide();
-                    sendToken(delta);
-                  }
-                } catch (_) {}
-              });
-            }
           });
           response.body.on('end', resolve);
           response.body.on('error', reject);
@@ -473,15 +334,8 @@ async function handleAssistantQuery(userPrompt, context) {
       }
     } else {
       const full = await response.json();
-      let content = '';
-      if (mode === 'production') {
-        // Supabase format
-        if (Array.isArray(full.output_text)) content = full.output_text.join('');
-        else if (typeof full.output_text === 'string') content = full.output_text;
-      } else {
-        // OpenAI format
-        content = full.choices?.[0]?.message?.content || '';
-      }
+      // OpenAI format
+      const content = full.choices?.[0]?.message?.content || '';
       buffer = content || '';
       tryDecide();
       if (buffer) sendToken(buffer);
@@ -515,9 +369,6 @@ class VoiceAssistant {
     }
     this.assistantModel = this.store.get('assistantModel', 'o4-mini');
     this.assistantMaxTokens = this.store.get('assistantMaxTokens', 800);
-    this.authUser = null;
-    this.accessToken = null;
-    try { console.log('Supabase URL (main env):', process.env.SUPABASE_URL || '(empty)'); } catch (_) {}
     // Stable device id
     try {
       let deviceId = this.store.get('deviceId');
@@ -1128,20 +979,6 @@ class VoiceAssistant {
       } catch (_) {}
     });
 
-    // Auth state from renderer
-    ipcMain.on('auth:signed-in', (_event, payload) => {
-      this.authUser = payload && payload.user ? payload.user : null;
-      this.accessToken = payload && payload.accessToken ? payload.accessToken : null;
-      console.log('🔐 Auth signed in:', this.authUser ? this.authUser.email : 'unknown');
-      // On sign-in, fetch remote non-sensitive config from Edge Function
-      this.fetchRemoteConfigSafe();
-    });
-
-    ipcMain.on('auth:signed-out', () => {
-      console.log('🔐 Auth signed out');
-      this.authUser = null;
-      this.accessToken = null;
-    });
 
     // Recording controls
     ipcMain.handle('start-recording', () => {
@@ -1272,46 +1109,10 @@ class VoiceAssistant {
     });
   }
 
-  async fetchRemoteConfigSafe() {
-    try {
-      const supabaseUrl = process.env.SUPABASE_URL || '';
-      if (!supabaseUrl || !this.accessToken) return;
-      const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/get-config`;
-      console.log('Config: fetching remote config from', url);
-      const resp = await fetch(url, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${this.accessToken}` }
-      });
-      if (!resp.ok) {
-        const t = await resp.text().catch(() => '');
-        console.warn('Config: get-config failed', resp.status, t);
-        return;
-      }
-      const cfg = await resp.json();
-      if (cfg && typeof cfg === 'object') {
-        if (typeof cfg.model === 'string') {
-          this.assistantModel = cfg.model;
-          this.store.set('assistantModel', this.assistantModel);
-        }
-        if (typeof cfg.max_output_tokens === 'number') {
-          this.assistantMaxTokens = Math.max(128, Math.min(2048, cfg.max_output_tokens));
-          this.store.set('assistantMaxTokens', this.assistantMaxTokens);
-        }
-        console.log('Config: applied', { model: this.assistantModel, maxTokens: this.assistantMaxTokens });
-      }
-    } catch (_) {}
-  }
 
   async startRecording() {
     if (this.isRecording) {
       console.log('Already recording, ignoring start request');
-      return false;
-    }
-    if (!this.authUser) {
-      console.log('🚫 Recording blocked: user not authenticated');
-      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-        this.mainWindow.webContents.send('recording-status', false);
-      }
       return false;
     }
     
@@ -1533,28 +1334,6 @@ class VoiceAssistant {
       // Update HUD back to idle state
       this.updateHUDStatus('idle', { connected: true });
 
-      // Emit usage event to renderer for Supabase insert
-      try {
-        const startedAt = new Date(this.recordingStartTime || Date.now());
-        const endedAt = new Date();
-        const durationMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
-        const payload = {
-          started_at: startedAt.toISOString(),
-          ended_at: endedAt.toISOString(),
-          duration_ms: durationMs,
-          transcript_chars_original: transcriptSansMarkers ? transcriptSansMarkers.length : 0,
-          transcript_chars_cleaned: cleanedOutput ? cleanedOutput.length : 0,
-          model: this.store.get('whisperModel'),
-          platform: process.platform,
-          app_version: app.getVersion ? app.getVersion() : (process.env.APP_VERSION || '0.0.0'),
-          metadata: null,
-        };
-        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.webContents.send('usage:session-completed', payload);
-        }
-      } catch (e) {
-        console.error('Failed to emit usage event:', e);
-      }
       
     } catch (error) {
       console.error('Failed to process audio:', error);
@@ -1683,7 +1462,6 @@ class VoiceAssistant {
   // === Assistant recording control ===
   async startAssistantRecording() {
     if (this.isAssistantRecording) return false;
-    if (!this.authUser) return false;
     try {
       this.isAssistantRecording = true;
       this.recordingStartTime = Date.now();
@@ -1833,8 +1611,6 @@ class VoiceAssistant {
     // Set up speech recognition event handlers
     try { this.setupSpeechRecognitionHandlers(); } catch (e) { console.error('setupSpeechRecognitionHandlers failed', e); }
 
-    // On startup, if already authenticated, fetch remote config
-    this.fetchRemoteConfigSafe();
   }
 
   setupSpeechRecognitionHandlers() {
@@ -1915,7 +1691,6 @@ app.whenReady().then(async () => {
       const delayMs = Number(process.env.DEBUG_AUTOREC_DELAY_MS || 1500);
       const recMs = Number(process.env.DEBUG_AUTOREC_MS || 2500);
       console.log('DEBUG_AUTOREC enabled. delayMs=', delayMs, 'recMs=', recMs);
-      try { if (!voiceAssistant.authUser) voiceAssistant.authUser = { id: 'debug', email: 'debug@example.com' }; } catch (_) {}
       setTimeout(async () => {
         console.log('DEBUG_AUTOREC: startRecording');
         const ok = await voiceAssistant.startRecording();

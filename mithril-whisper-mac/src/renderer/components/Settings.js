@@ -10,8 +10,7 @@ function Settings({ settings, onChange }) {
     whisperModel: settings.whisperModel || 'tiny-q5_1',
     whisperLanguage: settings.whisperLanguage || 'auto',
     audioDucking: settings.audioDucking || { enabled: true, duckPercent: 90 },
-    injectionMode: settings.injectionMode || 'auto',
-    assistantInjectOnReplace: settings.assistantInjectOnReplace || false
+    injectionMode: settings.injectionMode || 'auto'
   });
   const [availableModels, setAvailableModels] = useState(settings.availableModels || []);
 
@@ -58,17 +57,6 @@ function Settings({ settings, onChange }) {
           </div>
         </div>
 
-        <div className="setting-item">
-          <HotkeySelector
-            label="Assistant Hotkey"
-            value={localSettings.assistantHotkey}
-            onChange={(hotkey) => handleChange('assistantHotkey', hotkey)}
-            placeholder="Click to set assistant hotkey"
-          />
-          <div className="setting-description">
-            Global shortcut to start/stop AI assistant recording
-          </div>
-        </div>
       </div>
 
       <div className="settings-group">
@@ -78,20 +66,6 @@ function Settings({ settings, onChange }) {
         </h3>
         
         {/* Local Whisper is always enabled in this build */}
-        <div className="setting-item">
-          <label className="setting-checkbox">
-            <input
-              type="checkbox"
-              checked={!!localSettings.assistantInjectOnReplace}
-              onChange={(e) => handleChange('assistantInjectOnReplace', e.target.checked)}
-            />
-            <span className="checkmark"></span>
-            Allow assistant to replace selection in apps (inject on replace)
-          </label>
-          <div className="setting-description">
-            When enabled, assistant replacement requests will paste into the current app. Otherwise they will stay in the chat window.
-          </div>
-        </div>
 
         <div className="setting-item">
           <div className="setting-description">All transcription happens locally on your device</div>
@@ -280,10 +254,6 @@ function Settings({ settings, onChange }) {
           <div className="info-card">
             <div className="info-title">Hotkey</div>
             <div className="info-value"><kbd>{localSettings.hotkey}</kbd></div>
-          </div>
-          <div className="info-card">
-            <div className="info-title">Assistant Hotkey</div>
-            <div className="info-value"><kbd>{localSettings.assistantHotkey}</kbd></div>
           </div>
           <div className="info-card">
             <div className="info-title">Auto-inject</div>

@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AuthProvider, useAuth } from './auth/AuthContext';
 import Settings from './components/Settings';
-import UsageHistory from './components/UsageHistory';
 import RecordingControls from './components/RecordingControls';
 import TitleBar from './components/TitleBar';
 import { TerminalIcon } from './components/Icons';
-import Account from './components/Account';
 import About from './components/About';
 import './styles.css';
 
@@ -24,7 +21,6 @@ function AppInner() {
   const [transcriptions, setTranscriptions] = useState([]); // retained only for tab label count migration
   const [isRecording, setIsRecording] = useState(false);
   const [currentTab, setCurrentTab] = useState('controls');
-  const { user } = useAuth();
 
   // Load settings on component mount
   useEffect(() => {
@@ -122,19 +118,6 @@ function AppInner() {
     setTranscriptions([]);
   }, []);
 
-  // Listen for usage events and forward to Supabase uploader
-  useEffect(() => {
-    const handler = async (_event, payload) => {
-      try {
-        const { uploadUsageEvent } = await import('./usage/uploader');
-        await uploadUsageEvent(payload);
-      } catch (e) {
-        console.error('Failed to upload usage event', e);
-      }
-    };
-    ipcRenderer.on('usage:session-completed', handler);
-    return () => ipcRenderer.removeListener('usage:session-completed', handler);
-  }, []);
 
     // Web Audio API recording functions
   let mediaRecorder = null;
@@ -419,22 +402,10 @@ function AppInner() {
           Controls
         </button>
         <button 
-          className={`nav-tab ${currentTab === 'history' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('history')}
-        >
-          History
-        </button>
-        <button 
           className={`nav-tab ${currentTab === 'settings' ? 'active' : ''}`}
           onClick={() => setCurrentTab('settings')}
         >
           Settings
-        </button>
-        <button 
-          className={`nav-tab ${currentTab === 'account' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('account')}
-        >
-          Account
         </button>
         <button 
           className={`nav-tab ${currentTab === 'about' ? 'active' : ''}`}
@@ -452,13 +423,7 @@ function AppInner() {
             onStopRecording={handleStopRecording}
             onToggleRecording={handleToggleRecording}
             hotkey={settings.hotkey}
-            assistantHotkey={settings.assistantHotkey}
-            disabled={!user}
           />
-        )}
-
-        {currentTab === 'history' && (
-          <UsageHistory />
         )}
 
         {currentTab === 'settings' && (
@@ -466,9 +431,6 @@ function AppInner() {
             settings={settings}
             onChange={handleSettingsChange}
           />
-        )}
-        {currentTab === 'account' && (
-          <Account />
         )}
         {currentTab === 'about' && (
           <About />
@@ -479,9 +441,5 @@ function AppInner() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <AppInner />
-    </AuthProvider>
-  );
+  return <AppInner />;
 }

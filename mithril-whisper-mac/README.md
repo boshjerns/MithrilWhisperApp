@@ -48,82 +48,29 @@ cp package.EXAMPLE.json package.json
 cp env.example .env
 ```
 
-### 3. **Choose Your Setup Mode**
+### 3. **Configure for Local Mode (Optional)**
 
-**MITHRIL WHISPER** works in three different modes depending on your environment variables:
-
----
-
-## 🔧 **Setup Modes**
-
-### 🏠 **MODE 1: Local Development (Recommended for GitHub users)**
-
-**Best for:** Individual developers, testing, offline use
+**MITHRIL WHISPER** runs in local-only mode with maximum privacy:
 
 **Setup:**
 ```bash
-# Edit .env file - add ONLY your OpenAI key
+# Optional: Add OpenAI key for AI assistant features
 OPENAI_API_KEY=sk-your_openai_key_here
 
-# Leave these EMPTY for local mode:
-# SUPABASE_URL=
-# SUPABASE_ANON_KEY=
+# Leave empty for transcription-only mode
+# OPENAI_API_KEY=
 ```
 
 **Features:**
 - ✅ **Local transcription** with Whisper.cpp
-- ✅ **AI assistant** via direct OpenAI API calls  
-- ✅ **Mock authentication** (creates `developer@localhost` account)
+- ✅ **AI assistant** (if OpenAI key provided)
+- ✅ **No authentication required**
 - ✅ **No external database** required
-- ✅ **Works offline** for transcription (AI features need internet)
+- ✅ **Works offline** for transcription
+- ✅ **Zero usage tracking** - maximum privacy
+- ✅ **All processing on your device**
 
-**Models Used:** `gpt-4o-mini` for AI features
-
----
-
-### 🏢 **MODE 2: Production (Enterprise/Multi-user)**
-
-**Best for:** Organizations, shared deployments, enterprise use
-
-**Setup:**
-```bash
-# Edit .env file with full configuration
-SUPABASE_URL=https://your-project-ref.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
-OPENAI_API_KEY=sk-your_openai_key_here
-```
-
-**Features:**
-- ✅ **All local mode features** 
-- ✅ **Real user authentication** via Supabase
-- ✅ **Usage tracking** and analytics
-- ✅ **Rate limiting** and abuse protection
-- ✅ **Multi-user support** with individual accounts
-- ✅ **Secure AI processing** via Supabase Edge Functions
-
-**Models Used:** `o4-mini` (optimized for production)
-
-**Additional Setup Required:**
-1. Create [Supabase account](https://supabase.com)
-2. Run database migrations (see Production Setup below)
-
----
-
-### 🔒 **MODE 3: Fully Offline (Maximum Privacy)**
-
-**Best for:** Air-gapped environments, maximum security
-
-**Setup:**
-```bash
-# Leave .env file empty or don't create it
-# No API keys required
-```
-
-**Features:**
-- ✅ **Local transcription only** with Whisper.cpp
-- ✅ **Zero network calls** - completely offline
-- ✅ **No AI assistant** features (transcription only)
-- ✅ **Maximum privacy** - nothing ever leaves your device
+**Models Used:** `gpt-4o-mini` for AI features (when enabled)
 
 ---
 
@@ -148,43 +95,6 @@ Edit `package.json` and replace `YOUR_APPLE_TEAM_ID_HERE` with your actual Apple
 
 ---
 
-## 🏗️ **Production Setup (Mode 2)**
-
-If you're setting up the full production environment:
-
-### **1. Supabase Setup**
-1. Create account at [supabase.com](https://supabase.com)
-2. Create new project
-3. Get URL and anon key from Settings → API
-4. Add to your `.env` file
-
-### **2. Database Setup**
-```bash
-# Install Supabase CLI
-npm install -g supabase
-
-# Link to your project  
-npx supabase link
-
-# Apply database migrations
-npx supabase db push
-```
-
-### **3. Environment Variables**
-```bash
-# Production .env example
-SUPABASE_URL=https://yourproject.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
-OPENAI_API_KEY=sk-proj-abc123...
-
-# Apple Developer (for signed builds)
-CSC_NAME=Developer ID Application: Your Name (TEAMID)
-APPLE_ID=your@apple.id
-APPLE_ID_PASSWORD=app-specific-password
-APPLE_TEAM_ID=YOUR_TEAM_ID
-```
-
----
 
 ## 🏃‍♂️ **Running the Application**
 
@@ -222,7 +132,7 @@ npm run build:install
 1. **Grant microphone permissions** when prompted
 2. **Set your hotkeys** in Settings (default: `Cmd+Q` for recording, `Cmd+W` for assistant)
 3. **Test transcription** by pressing your hotkey and speaking
-4. **Sign in** (production mode) or use automatic developer account (local mode)
+4. **No sign-in required** - start using immediately
 
 ---
 

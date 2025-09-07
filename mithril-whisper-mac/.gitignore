@@ -3,9 +3,8 @@
 # ==============================================================================
 # 🔥 CRITICAL - Sensitive Configuration Files (NEVER COMMIT)
 # ==============================================================================
-webpack.main.config.js
-webpack.renderer.config.js
-package.json
+# Note: webpack configs and package.json should be tracked in git
+# Only sensitive files like .env should be ignored
 
 # Environment variables
 .env*

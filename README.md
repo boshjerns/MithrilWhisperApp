@@ -67,15 +67,13 @@ Streamlined Windows implementation with:
 - 100% local processing - no sign-in required
 - Bundled Whisper.cpp models and binaries
 - Windows-optimized audio processing
-- Flexible hotkey system (any key combination)
-- Zero external dependencies or configuration
+- Flexible hotkey system
 
 ### 📁 [mithril-whisper-mac/](./mithril-whisper-mac/)
 Complete macOS implementation featuring:
-- Native macOS integration with optional AI assistant
+- Native macOS integration
 - Optimized for Apple Silicon and Intel Macs
 - Seamless system-wide voice recognition
-- Optional OpenAI integration for enhanced text processing
 
 ## Privacy & Telemetry Transparency
 

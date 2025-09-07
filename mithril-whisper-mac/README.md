@@ -33,44 +33,21 @@ cd MithrilWhisperApp/mithril-whisper-mac
 npm install
 ```
 
-### 2. **Create Configuration Files**
-The repository includes template files. Copy them to create your working configuration:
-
+### 2. **Run Immediately**
 ```bash
-# Copy webpack configurations
-cp webpack.main.config.EXAMPLE.js webpack.main.config.js
-cp webpack.renderer.config.EXAMPLE.js webpack.renderer.config.js
-
-# Copy package.json template  
-cp package.EXAMPLE.json package.json
-
-# Copy environment template
-cp env.example .env
+npm run dev
 ```
 
-### 3. **Configure for Local Mode (Optional)**
-
-**MITHRIL WHISPER** runs in local-only mode with maximum privacy:
-
-**Setup:**
-```bash
-# Optional: Add OpenAI key for AI assistant features
-OPENAI_API_KEY=sk-your_openai_key_here
-
-# Leave empty for transcription-only mode
-# OPENAI_API_KEY=
-```
+**That's it!** No configuration files needed, no login required, no environment variables. The app works immediately with local transcription.
 
 **Features:**
 - ✅ **Local transcription** with Whisper.cpp
-- ✅ **AI assistant** (if OpenAI key provided)
 - ✅ **No authentication required**
-- ✅ **No external database** required
-- ✅ **Works offline** for transcription
+- ✅ **Works completely offline**
 - ✅ **Zero usage tracking** - maximum privacy
 - ✅ **All processing on your device**
-
-**Models Used:** `gpt-4o-mini` for AI features (when enabled)
+- ✅ **System-wide voice recording** with global hotkeys
+- ✅ **Auto text injection** into any application
 
 ---
 
@@ -130,7 +107,7 @@ npm run build:install
 
 ### **First Launch:**
 1. **Grant microphone permissions** when prompted
-2. **Set your hotkeys** in Settings (default: `Cmd+Q` for recording, `Cmd+W` for assistant)
+2. **Set your hotkey** in Settings (Command + any key)
 3. **Test transcription** by pressing your hotkey and speaking
 4. **No sign-in required** - start using immediately
 
@@ -138,44 +115,36 @@ npm run build:install
 
 ## 📊 **Features Overview**
 
-### **Core Transcription:**
+### **Voice Transcription:**
 - 🎙️ **Real-time voice-to-text** using Whisper.cpp
 - ⌨️ **Global hotkeys** for system-wide recording
 - 📝 **Auto-injection** into any application
 - 🧹 **Smart text cleanup** (remove filler words, fix punctuation)
-- 📋 **Transcription history** with search
-
-### **AI Assistant (Requires API key):**
-- 🤖 **Intelligent responses** to voice prompts
-- ✏️ **Text editing and improvement**
-- 🔄 **Content rewriting and formatting**
-- 📚 **Context-aware suggestions**
-- 💬 **Conversational interface**
+- ⚙️ **Configurable hotkeys** (Command + any key)
 
 ### **Privacy & Security:**
 - 🔒 **Local audio processing** - voice never leaves your device
 - 🛡️ **Hardened runtime** with macOS security features
 - 🔐 **Code signed & notarized** by Apple
-- 📊 **Row Level Security** (production mode)
-- ⚡ **Rate limiting** and abuse protection
+- 🚫 **No usage tracking** or data collection
+- 🏠 **Completely offline** operation
 
 ---
 
 ## ⚙️ **Configuration Guide**
 
 ### **Hotkey Settings:**
-- **Recording Hotkey** (default: `Cmd+Q`): Start/stop transcription
-- **Assistant Hotkey** (default: `Cmd+W`): Start/stop AI assistant
+- **Recording Hotkey**: Customizable (Command + any key)
+- **Simple Setup**: Click the hotkey field and press your preferred key
 
 ### **Audio Settings:**
 - **Voice Activity Detection**: Adjust sensitivity
 - **Audio Ducking**: Reduce background volume during recording
-- **Whisper Model**: Choose accuracy vs speed (tiny, base, small, medium, large)
+- **Whisper Model**: Choose accuracy vs speed (tiny, base models available)
 
-### **AI Settings:**
-- **Model Selection**: Different models for different use cases
-- **Max Tokens**: Control response length (development vs production)
-- **Injection Mode**: Auto-inject, replace selection, or manual copy
+### **Text Settings:**
+- **Auto-inject**: Automatically paste transcribed text into active application
+- **Text Cleanup**: Remove filler words and improve formatting
 
 ---
 
@@ -190,18 +159,11 @@ cd MithrilWhisperApp/mithril-whisper-mac
 # Install dependencies
 npm install
 
-# 📦 MODELS: The repository includes pre-built Whisper models for immediate use
-# - ggml-base-q5_1.bin (57MB) - High accuracy model  
-# - ggml-tiny-q5_1.bin (31MB) - Fast, lightweight model
-# If missing, run: npm run build:install (downloads automatically)
-
-# Optional: Add OpenAI API key for AI assistant (voice transcription works without this)
-cp env.example .env
-# Edit .env and add: OPENAI_API_KEY=your_key_here
-
-# Run locally (no authentication required)
+# Run immediately (no configuration needed)
 npm run dev
 ```
+
+**That's it!** The app includes pre-built Whisper models and works immediately without any setup.
 
 ### **🪟 Windows Local Setup (No Installation Required)**
 ```bash
@@ -212,15 +174,11 @@ cd MithrilWhisperApp/mithril-whisper-windows
 # Install dependencies
 npm install
 
-# Optional: Add OpenAI API key for AI assistant (voice transcription works without this)
-copy env.example .env
-# Edit .env and add: OPENAI_API_KEY=your_key_here
-
-# Run locally (no authentication required)
+# Run immediately (no configuration needed)
 npm run dev
 ```
 
-**Local Mode Benefits:**
+**Privacy Benefits:**
 - ✅ No login or authentication required
 - ✅ Complete offline operation
 - ✅ Zero telemetry or data collection

@@ -97,7 +97,6 @@ async function handleAssistantQuery(userPrompt, context) {
     const maxTokens = this.assistantMaxTokens || 800;
 
     // Direct OpenAI API call in local mode
-    const openaiApiKey = this.store.get('openaiApiKey');
     console.log('Assistant: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
     
     const messages = [
@@ -236,21 +235,12 @@ class VoiceAssistant {
     this.mainWindow = null;
     this.overlayWindow = null;
     this.desktopHUD = null;
-    this.assistantWindow = null;
     this.audioRecorder = new AudioRecorder();
     this.textProcessor = new TextProcessor();
     this.volumeManager = new VolumeManager();
     this.isRecording = false;
-    this.isAssistantRecording = false;
     this.isRecordingDisabled = false;
-    this.hotkey = this.store.get('hotkey', 'F1');
-    // Assistant model defaults/migration
-    const storedAssistantModel = this.store.get('assistantModel');
-    if (storedAssistantModel === 'gpt-o4-mini' || storedAssistantModel === 'gpt-4o-mini') {
-      this.store.set('assistantModel', 'o4-mini');
-    }
-    this.assistantModel = this.store.get('assistantModel', 'o4-mini');
-    this.assistantMaxTokens = this.store.get('assistantMaxTokens', 800);
+    this.hotkey = this.store.get('hotkey', 'F6');
     // Stable device id
     try {
       let deviceId = this.store.get('deviceId');
@@ -290,8 +280,10 @@ class VoiceAssistant {
 
   async createMainWindow() {
     this.mainWindow = new BrowserWindow({
-      width: 400,
-      height: 600,
+      width: 800,
+      height: 700,
+      minWidth: 600,
+      minHeight: 500,
       frame: false, // Remove default title bar
       titleBarStyle: 'hidden', // Cross-platform hidden title bar
       backgroundColor: '#000814', // Match our background color
@@ -453,80 +445,39 @@ class VoiceAssistant {
     });
   }
 
-  createAssistantWindow() {
-    try {
-      if (this.assistantWindow && !this.assistantWindow.isDestroyed()) return;
-      this.assistantWindow = new BrowserWindow({
-        width: 380,
-        height: 260,
-        frame: false,
-        alwaysOnTop: true,
-        transparent: true,
-        backgroundColor: '#00000000',
-        skipTaskbar: true,
-        resizable: false,
-        focusable: true,
-        hasShadow: false,
-        type: process.platform === 'darwin' ? 'panel' : 'toolbar',
-        webPreferences: {
-          nodeIntegration: true,
-          contextIsolation: false,
-          webSecurity: false,
-          backgroundThrottling: false,
-        },
-        show: false,
-      });
-
-      // Position bottom-right
-      const { screen } = require('electron');
-      const primaryDisplay = screen.getPrimaryDisplay();
-      const { width, height } = primaryDisplay.workAreaSize;
-      const w = 380; const h = 260;
-      const x = Math.max(10, width - w - 20);
-      const y = Math.max(10, height - h - 80);
-      this.assistantWindow.setPosition(x, y);
-
-      if (isDev) {
-        const devPort = Number(process.env.DEV_SERVER_PORT || 37843);
-        this.assistantWindow.loadURL(`http://localhost:${devPort}#assistant`);
-      } else {
-        this.assistantWindow.loadFile(resolveRendererFile('assistant-chat.html'));
-      }
-
-      this.assistantWindow.once('ready-to-show', () => {
-        try {
-          if (process.platform === 'win32') this.assistantWindow.setAlwaysOnTop(true, 'screen-saver');
-          this.assistantWindow.showInactive();
-          this.assistantWindow.webContents.send('assistant:show');
-        } catch (_) {}
-      });
-
-      this.assistantWindow.on('closed', () => { this.assistantWindow = null; });
-    } catch (e) {
-      console.error('Failed to create assistant window:', e);
-    }
-  }
 
   setupGlobalHotkey() {
-    // Clear only the transcription hotkey
-    try { if (this.hotkey) globalShortcut.unregister(this.hotkey); } catch (_) {}
+    // Clear ALL previously registered hotkeys to prevent conflicts
+    try { 
+      globalShortcut.unregisterAll(); 
+      console.log('🧹 Cleared all previous hotkeys');
+    } catch (e) {
+      console.log('⚠️ Could not clear hotkeys:', e.message);
+    }
     
     // Validate and fix hotkey format
     let hotkey = this.hotkey;
     if (hotkey) {
-      // Fix common format issues
-      hotkey = hotkey.replace('Control+', 'Ctrl+').replace('Cmd+', 'CmdOrCtrl+');
+      // Fix common format issues for Electron compatibility
+      hotkey = hotkey.replace('Control+', 'Ctrl+')
+                     .replace('Cmd+', 'CmdOrCtrl+')
+                     .replace('Meta+', 'CmdOrCtrl+');
       
-      // If format is still invalid or incomplete, reset to default
-      const validHotkey = hotkey.match(/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/) || hotkey.match(/^F\d+$/);
+      // More flexible validation - support single keys, function keys, and modifier combinations
+      const validHotkey = hotkey.match(/^F\d+$/) || // Function keys like F6
+                          hotkey.match(/^[A-Z0-9]$/) || // Single letters/numbers like A, 1
+                          hotkey.match(/^(Space|Enter|Tab|Up|Down|Left|Right)$/) || // Special keys
+                          hotkey.match(/^(Ctrl|Alt|Shift|CmdOrCtrl)(\+(Ctrl|Alt|Shift|CmdOrCtrl))*\+[A-Z0-9]$/) || // Modifier + letter/number
+                          hotkey.match(/^(Ctrl|Alt|Shift|CmdOrCtrl)(\+(Ctrl|Alt|Shift|CmdOrCtrl))*\+(Space|Enter|Tab|Up|Down|Left|Right|F\d+)$/); // Modifier + special keys
+      
       if (!validHotkey || hotkey.endsWith('+')) {
-        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to Alt+Space`);
-        hotkey = 'Alt+Space';
+        console.log(`🔧 Invalid or incomplete hotkey "${this.hotkey}" → resetting to F6`);
+        hotkey = 'F6';
         this.hotkey = hotkey;
         this.store.set('hotkey', hotkey);
       }
     } else {
-      hotkey = 'Alt+Space';
+      hotkey = 'F6';
     }
     
     console.log(`🎯 Setting up transcription hotkey: ${hotkey}`);
@@ -613,65 +564,6 @@ class VoiceAssistant {
     }
   }
 
-  setupAssistantHotkey() {
-    try { if (this.assistantHotkey) globalShortcut.unregister(this.assistantHotkey); } catch (_) {}
-
-    let hotkey = this.assistantHotkey || 'F2';
-    if (!/^F\d+$/.test(hotkey) && !/^(Ctrl|Alt|Shift|CmdOrCtrl)\+\w+$/.test(hotkey)) {
-      hotkey = 'F2';
-      this.assistantHotkey = hotkey;
-      this.store.set('assistantHotkey', hotkey);
-    }
-
-    console.log(`🎯 Setting up assistant hotkey: ${hotkey}`);
-    let lastHotkeyTime = 0;
-    let isProcessing = false;
-    const debounceTime = 300;
-
-    let success = false;
-    try {
-      success = globalShortcut.register(hotkey, async () => {
-        const now = Date.now();
-        const timeSinceLastHotkey = now - lastHotkeyTime;
-        if (timeSinceLastHotkey < debounceTime) {
-          console.log(`🚫 Debounced assistant key: ignoring press (${timeSinceLastHotkey}ms ago)`);
-          return;
-        }
-        if (isProcessing || this.isRecording) {
-          console.log('🚫 Assistant hotkey ignored - other recording in progress');
-          return;
-        }
-        if (this.isRecordingDisabled) {
-          console.log('🚫 Assistant hotkey ignored - recording temporarily disabled (settings page open)');
-          return;
-        }
-        lastHotkeyTime = now;
-        isProcessing = true;
-        try {
-          if (this.isAssistantRecording) {
-            console.log('🛑 Assistant: stopping recording');
-            await this.stopAssistantRecording();
-          } else {
-            console.log('🎙️ Assistant: starting recording');
-            await this.startAssistantRecording();
-          }
-        } catch (err) {
-          console.error('Assistant hotkey error:', err);
-        } finally {
-          isProcessing = false;
-        }
-      });
-    } catch (error) {
-      console.error(`❌ Failed to register assistant hotkey "${hotkey}":`, error.message);
-    }
-
-    if (!success) {
-      console.error('Failed to register assistant global hotkey:', hotkey);
-    } else {
-      console.log('Assistant global hotkey registered successfully:', hotkey);
-      this.assistantHotkey = hotkey;
-    }
-  }
 
   setupIPC() {
     // Settings management
@@ -731,11 +623,10 @@ class VoiceAssistant {
     });
 
     ipcMain.handle('save-settings', (event, settings) => {
-      console.log('💾 Saving settings:', { ...settings, openaiApiKey: settings.openaiApiKey ? '[REDACTED]' : 'empty' });
+      console.log('💾 Saving settings:', settings);
       
-      // Save all settings (ignore any OpenAI fields)
+      // Save all settings
       Object.keys(settings).forEach(key => {
-        if (key === 'openaiApiKey') return;
         this.store.set(key, settings[key]);
         console.log(`📝 Stored ${key}:`, settings[key]);
       });
@@ -744,14 +635,6 @@ class VoiceAssistant {
       if (settings.hotkey !== this.hotkey) {
         this.hotkey = settings.hotkey;
         this.setupGlobalHotkey();
-      }
-      if (settings.assistantModel && settings.assistantModel !== this.assistantModel) {
-        this.assistantModel = settings.assistantModel;
-        this.store.set('assistantModel', this.assistantModel);
-      }
-      if (typeof settings.assistantMaxTokens === 'number') {
-        this.assistantMaxTokens = Math.max(128, Math.min(2048, settings.assistantMaxTokens));
-        this.store.set('assistantMaxTokens', this.assistantMaxTokens);
       }
 
       // OpenAI path removed
@@ -1287,7 +1170,6 @@ class VoiceAssistant {
     // Overlay window disabled per request (HUD only)
     // this.createOverlayWindow();
     this.createDesktopHUD();
-    this.createAssistantWindow();
     this.setupGlobalHotkey();
     
     // Initialize audio recorder and text processor
@@ -1342,7 +1224,6 @@ class VoiceAssistant {
     try { this.volumeManager && this.volumeManager.restore && this.volumeManager.restore(); } catch (_) {}
     // Destroy windows to ensure full process exit
     try { this.desktopHUD && !this.desktopHUD.isDestroyed() && this.desktopHUD.destroy(); } catch (_) {}
-    try { this.assistantWindow && !this.assistantWindow.isDestroyed() && this.assistantWindow.destroy(); } catch (_) {}
     try { this.overlayWindow && !this.overlayWindow.isDestroyed() && this.overlayWindow.destroy(); } catch (_) {}
     try { this.mainWindow && !this.mainWindow.isDestroyed() && this.mainWindow.destroy(); } catch (_) {}
   }

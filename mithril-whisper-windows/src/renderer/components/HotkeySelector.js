@@ -11,30 +11,17 @@ const HotkeySelector = ({
   const [selectedKey, setSelectedKey] = useState('');
   const inputRef = useRef(null);
 
-  // Parse existing hotkey value (extract key after "CmdOrCtrl+")
+  // Parse existing hotkey value
   useEffect(() => {
     if (value && !isCapturing) {
-      if (value.startsWith('CmdOrCtrl+')) {
-        const key = value.replace('CmdOrCtrl+', '');
-        setSelectedKey(key);
-      } else if (value.startsWith('Ctrl+')) {
-        const key = value.replace('Ctrl+', '');
-        setSelectedKey(key);
-      } else if (value.startsWith('Alt+')) {
-        const key = value.replace('Alt+', '');
-        setSelectedKey(key);
-      } else {
-        setSelectedKey('');
-      }
+      setSelectedKey(value);
     }
   }, [value, isCapturing]);
 
-  const updateHotkey = (key) => {
-    if (key) {
-      // Use Ctrl+ for Windows (CmdOrCtrl maps to Ctrl on Windows)
-      const hotkeyString = `CmdOrCtrl+${key}`;
+  const updateHotkey = (hotkeyString) => {
+    if (hotkeyString) {
       onChange(hotkeyString);
-      setSelectedKey(key);
+      setSelectedKey(hotkeyString);
     }
   };
 
@@ -52,34 +39,58 @@ const HotkeySelector = ({
     e.stopPropagation();
 
     const key = e.key;
-
-    // Normalize key name
-    let normalizedKey = key;
-    if (key === ' ') normalizedKey = 'Space';
-    else if (key === 'ArrowUp') normalizedKey = 'Up';
-    else if (key === 'ArrowDown') normalizedKey = 'Down';
-    else if (key === 'ArrowLeft') normalizedKey = 'Left';
-    else if (key === 'ArrowRight') normalizedKey = 'Right';
-    else if (key.length === 1) normalizedKey = key.toUpperCase();
-
-    // Only process if we have a valid key (not just modifiers)
-    if (!['Control', 'Alt', 'Shift', 'Meta', 'OS'].includes(key)) {
-      // Accept any key except Tab (since it's used for navigation)
-      if (key !== 'Tab') {
-        updateHotkey(normalizedKey);
-        setIsCapturing(false);
-        
-        if (inputRef.current) {
-          inputRef.current.blur();
-        }
-      }
-    }
+    const ctrl = e.ctrlKey;
+    const alt = e.altKey;
+    const shift = e.shiftKey;
+    const meta = e.metaKey;
 
     // Cancel on Escape
     if (key === 'Escape') {
       setIsCapturing(false);
       if (inputRef.current) {
         inputRef.current.blur();
+      }
+      return;
+    }
+
+    // Normalize key name - handle special cases and convert to base key
+    let normalizedKey = key;
+    if (key === ' ') normalizedKey = 'Space';
+    else if (key === 'ArrowUp') normalizedKey = 'Up';
+    else if (key === 'ArrowDown') normalizedKey = 'Down';
+    else if (key === 'ArrowLeft') normalizedKey = 'Left';
+    else if (key === 'ArrowRight') normalizedKey = 'Right';
+    else if (key.length === 1) {
+      // For single characters, always use the base key (not shifted version)
+      // This ensures Shift+W is captured as 'Shift+W' not 'Shift+W' where W is uppercase
+      normalizedKey = key.toLowerCase().toUpperCase();
+    }
+
+    // Only process if we have a valid key (not just modifiers)
+    if (!['Control', 'Alt', 'Shift', 'Meta', 'OS'].includes(key)) {
+      // Accept any key except Tab (since it's used for navigation)
+      if (key !== 'Tab') {
+        // Build hotkey string with modifiers (convert Meta to CmdOrCtrl for Electron)
+        let hotkeyParts = [];
+        if (ctrl) hotkeyParts.push('Ctrl');
+        if (alt) hotkeyParts.push('Alt');
+        if (shift) hotkeyParts.push('Shift');
+        if (meta) hotkeyParts.push('CmdOrCtrl'); // Convert Meta to CmdOrCtrl for Electron compatibility
+        
+        // For letters, always use uppercase in the hotkey string for consistency
+        if (key.length === 1 && key.match(/[a-zA-Z]/)) {
+          normalizedKey = key.toLowerCase().toUpperCase();
+        }
+        
+        hotkeyParts.push(normalizedKey);
+
+        const hotkeyString = hotkeyParts.join('+');
+        updateHotkey(hotkeyString);
+        setIsCapturing(false);
+        
+        if (inputRef.current) {
+          inputRef.current.blur();
+        }
       }
     }
   };
@@ -94,10 +105,10 @@ const HotkeySelector = ({
     }
     
     if (selectedKey) {
-      return `⊞${selectedKey}`;  // Windows key symbol
+      return selectedKey;
     }
     
-    return `⊞${placeholder}`;
+    return placeholder;
   };
 
   const clearHotkey = () => {
@@ -121,7 +132,7 @@ const HotkeySelector = ({
           readOnly
           disabled={disabled}
           className={`hotkey-input ${isCapturing ? 'capturing' : ''}`}
-          placeholder={`⊞${placeholder}`}
+          placeholder={placeholder}
         />
         
         {value && (
@@ -140,7 +151,7 @@ const HotkeySelector = ({
       {/* Help Text */}
       <div className="hotkey-help">
         <small>
-          ⊞ All hotkeys use Windows key + another key. Click to set your key.
+          Click to capture any key or key combination (e.g., F6, Ctrl+A, Alt+Space).
         </small>
       </div>
 

@@ -16,7 +16,7 @@
 
 # MITHRIL WHISPER
 
-Privacy-focused voice transcription for Windows
+Privacy-focused voice transcription for Windows - **100% Local & Offline**
 
 ## 🚀 **Quick Start**
 
@@ -32,201 +32,62 @@ npm install
 npm run dev
 ```
 
-**That's it!** No configuration files needed, no login required, no environment variables. The app works immediately with local transcription.
+**That's it!** No configuration files needed, no login required, no environment variables, no internet connection needed. The app works immediately with local transcription.
 
-**Features:**
-- ✅ **Local transcription** with Whisper.cpp
-- ✅ **No authentication required**
-- ✅ **Works completely offline**
-- ✅ **Zero usage tracking** - maximum privacy
-- ✅ **All processing on your device**
-- ✅ **System-wide voice recording** with global hotkeys
-- ✅ **Auto text injection** into any application
+## ✨ **Features**
 
-## ⚙️ **Configuration Guide**
+- ✅ **100% Local Processing** - All transcription happens on your device
+- ✅ **No Authentication Required** - No accounts, logins, or sign-ups
+- ✅ **Works Completely Offline** - No internet connection needed
+- ✅ **Zero Data Collection** - Maximum privacy, nothing leaves your device
+- ✅ **Global Hotkeys** - Record from anywhere with customizable key combinations
+- ✅ **Auto Text Injection** - Transcribed text automatically appears in active applications
+- ✅ **Desktop HUD** - Minimal overlay shows recording status
+- ✅ **Flexible Hotkeys** - Use any key combination (F6, Ctrl+A, Alt+Space, etc.)
+- ✅ **Audio Ducking** - Automatically reduces background volume during recording
+- ✅ **Text Cleanup** - Removes filler words and improves formatting
 
-### **Hotkey Settings:**
-- **Recording Hotkey**: Customizable (Windows key + any key)
-- **Simple Setup**: Click the hotkey field and press your preferred key
+## ⚙️ **Configuration**
 
-### **Audio Settings:**
-- **Voice Activity Detection**: Adjust sensitivity
-- **Audio Ducking**: Reduce background volume during recording
-- **Whisper Model**: Choose accuracy vs speed (tiny, base models available)
+### **Hotkey Settings**
+- **Default Recording Hotkey**: F6 (can be changed to any key combination)
+- **Flexible Setup**: Click the hotkey field in Settings and press your preferred key combination
+- **Examples**: F6, Ctrl+A, Alt+Space, Shift+F1, Ctrl+Alt+D
 
-### **Text Settings:**
+### **Audio Settings**
+- **Voice Activity Detection**: Adjust sensitivity for better recording detection
+- **Audio Ducking**: Reduce background volume during recording (0-100%)
+- **Whisper Model**: Choose between speed vs accuracy (tiny, base models included)
+
+### **Text Settings**
 - **Auto-inject**: Automatically paste transcribed text into active application
 - **Text Cleanup**: Remove filler words and improve formatting
 
-## 🔐 **Privacy & Security**
+## 🔧 **Development Setup**
 
-### **Data Processing**
-- **🔒 Local Transcription**: All voice-to-text processing uses open-source Whisper-CPP models running entirely on your device
-- **🗑️ Immediate Cleanup**: Audio files are automatically deleted after transcription completes
-- **🛡️ Zero Content Tracking**: Your spoken words and transcriptions are never stored or transmitted
+### **Prerequisites**
+- Node.js (v16 or higher)
+- npm (comes with Node.js)
 
-## About Mithril - Zero-Trust AI Solutions
-
-Mithril Whisper is part of the **Mithril** suite - our open-source, air-gapped, zero-trust LLM solutions designed for organizations with strict security requirements. Built by [Deploy Forward](https://www.deployforward.com/), we specialize in secure AI systems for government agencies and contractors.
-
-Our bundled systems allow productive use of LLMs in coding IDEs and chat assistants without internet connectivity. With a small hardware investment ($1,000-$2,000), organizations can run high-quality local models that never transmit data externally, providing all the benefits of modern AI in a completely isolated environment.
-
-Visit [deployforward.com](https://www.deployforward.com/) to book a demo and learn how we can build secure AI solutions tailored to your organization's needs.
-
-## Local Model Packaging
-
-Mithril Whisper keeps everything local by bundling Whisper.cpp directly into the application:
-
-### How Models Are Packaged:
-- **Whisper.cpp Binaries**: Pre-compiled binaries included in `whisper-cpp/` directory
-- **Bundled Model**: `ggml-tiny-q5_1.bin` (30MB) included for immediate functionality
-- **Additional Models**: Download larger models manually for better accuracy
-- **Auto-Detection**: App automatically finds all models in multiple locations:
-  - `extraResources/whisper-cpp/` (production builds)
-  - `app.asar.unpacked/whisper-cpp/` (fallback)
-  - Local `whisper-cpp/` (development)
-
-### Build Configuration:
-```json
-"extraResources": [
-  {
-    "from": "whisper-cpp",
-    "to": "whisper-cpp",
-    "filter": ["**/*"]
-  }
-],
-"asarUnpack": [
-  "whisper-cpp/**"
-]
-```
-
-This ensures all Whisper components are available offline without any downloads or API calls.
-
-## Quick Start
-
-### Installation Options
-
-#### Option 1: Local Development (Zero Data Collection)
-Perfect for maximum privacy - no account required, no telemetry:
-
+### **First-Time Setup**
 ```bash
 # Clone the repository
-git clone https://github.com/boshjerns/MITHRILWHISPER.git
-cd MITHRILWHISPER/mithril-whisper-windows
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-windows
 
 # Install dependencies
 npm install
 
-# Run in development mode
+# Start development server (this creates the necessary webpack configuration)
 npm run dev
 ```
 
-#### Option 2: Official Installer (With Usage Analytics)
-Download the official installer from our releases page. Requires Mithril account creation and includes minimal usage analytics to help improve the product.
+**Note**: The first `npm run dev` command automatically creates the required webpack configuration files (`webpack.renderer.config.js` and `webpack.main.config.js`) that are needed for the development server to work properly.
 
-### First-Time Setup
-
-1. **Launch the application**
-2. **Account Setup**:
-   - **Local development**: No account needed
-   - **Installer version**: Create Mithril account when prompted
-3. **Configure AI Assistant (Optional)**:
-   - Go to **Settings** tab
-   - Add your [OpenAI API key](https://platform.openai.com/api-keys) to enable AI features
-   - Select your preferred model (GPT-4o Mini recommended)
-4. **Configure Recording**:
-   - Set your preferred global hotkey (default: `Alt+Space`)
-   - Whisper models are already bundled - no additional setup needed
-
-## Usage
-
-### Recording Voice
-
-Press and hold your configured hotkey anywhere on your computer, speak clearly, then release. The transcribed text appears in the overlay and is automatically injected into the active application.
-
-### Using the AI Assistant
-
-Say "whisper [your request]" during recording to activate the AI assistant:
-- "whisper fix this code" (with text selected)
-- "whisper rewrite this professionally"
-- "whisper explain this"
-
-## Configuration
-
-### Model Selection
-
-**Bundled Model (no download required):**
-- **tiny-q5_1**: Fastest, basic accuracy (~16MB) - Quantized for optimal performance - **Included in repository**
-
-**Optional Models (manual download):**
-- **base.en**: Good balance (~140MB) - English-only model with better accuracy
-- **small**: Better accuracy (~250MB) - Supports multiple languages  
-- **medium**: High accuracy (~750MB) - Professional quality
-- **large**: Best accuracy (~1.5GB) - Maximum quality
-
-#### How to Download Additional Models
-
-1. **Download Models**:
-   ```bash
-   # Navigate to your whisper-cpp directory
-   cd MITHRILWHISPER/mithril-whisper-windows/whisper-cpp
-   
-   # Download base.en model (recommended)
-   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin -o ggml-base.en.bin
-   
-   # Or download small model
-   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin -o ggml-small.bin
-   ```
-
-2. **Alternative Download Sources**:
-   - **Hugging Face**: [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp/tree/main)
-   - **Direct Links**:
-     - [ggml-base.en.bin](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin) (140MB)
-     - [ggml-small.bin](https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin) (250MB)
-
-3. **Select Model in App**:
-   - Launch Mithril Whisper
-   - Go to **Settings** → **Model Selection**
-   - Choose your downloaded model from the dropdown
-
-### OpenAI Integration (Optional)
-
-For AI assistant features:
-1. Get API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-2. Add to Settings → OpenAI API Key
-3. Select model (GPT-4o Mini recommended for cost efficiency)
-
-**Cost Estimation:**
-- GPT-4o Mini: ~$0.001-0.01 per voice interaction
-- GPT-4o: ~$0.01-0.10 per voice interaction
-
-## Development
-
-### Project Structure
-
-```
-MITHRILWHISPER/mithril-whisper-windows/
-├── src/
-│   ├── main/                    # Electron main process
-│   │   ├── main.js             # Main application logic
-│   │   ├── audio-recorder.js   # Audio capture handling
-│   │   ├── text-processor.js   # Whisper integration & text cleanup
-│   │   └── whisper-local.js    # Local Whisper implementation
-│   ├── renderer/               # React frontend
-│   │   ├── App.js              # Main application component
-│   │   ├── components/         # React components
-│   │   └── styles.css          # Application styles
-│   └── shared/                 # Shared utilities
-├── whisper-cpp/                # Bundled Whisper.cpp binaries and models
-├── package.json               # Dependencies and scripts
-└── README.md                  # This file
-```
-
-### Available Scripts
-
+### **Available Scripts**
 ```bash
 # Development
-npm run dev              # Start development server
+npm run dev              # Start development server with hot reload
 
 # Building
 npm run build           # Build for production
@@ -237,146 +98,186 @@ npm run dist:portable   # Create portable Windows build
 npm test               # Run tests
 ```
 
-### Building from Source
+## 🔐 **Privacy & Security**
 
+### **Complete Privacy**
+- **🔒 Local Transcription**: All voice-to-text processing uses open-source Whisper.cpp models running entirely on your device
+- **🗑️ Immediate Cleanup**: Audio files are automatically deleted after transcription completes
+- **🛡️ Zero Data Transmission**: Your spoken words and transcriptions never leave your device
+- **🚫 No Telemetry**: No usage tracking, analytics, or data collection of any kind
+- **🔓 No Authentication**: No accounts, logins, or external services required
+
+### **How It Works**
+1. **Press hotkey** anywhere on your computer
+2. **Speak clearly** into your microphone
+3. **Release hotkey** when finished
+4. **Text appears** automatically in the active application
+
+Audio is processed locally using bundled Whisper.cpp models and immediately deleted after transcription.
+
+## 📁 **Project Structure**
+
+```
+mithril-whisper-windows/
+├── src/
+│   ├── main/                    # Electron main process
+│   │   ├── main.js             # Main application logic
+│   │   ├── audio-recorder.js   # Audio capture handling
+│   │   ├── text-processor.js   # Whisper integration & text cleanup
+│   │   ├── whisper-local.js    # Local Whisper implementation
+│   │   └── volume-manager.js   # Audio ducking functionality
+│   ├── renderer/               # React frontend
+│   │   ├── App.js              # Main application component
+│   │   ├── components/         # React components
+│   │   │   ├── Settings.js     # Settings configuration
+│   │   │   ├── DesktopHUD.js   # Recording status overlay
+│   │   │   ├── HotkeySelector.js # Hotkey configuration
+│   │   │   └── ...             # Other UI components
+│   │   └── styles.css          # Application styles
+│   └── shared/                 # Shared utilities
+│       └── text-utils.js       # Text processing utilities
+├── whisper-cpp/                # Bundled Whisper.cpp binaries and models
+│   ├── main.exe               # Whisper.cpp executable
+│   ├── ggml-tiny-q5_1.bin     # Tiny model (fast, basic accuracy)
+│   └── ...                    # Additional model files
+├── webpack.renderer.config.js  # Webpack config for renderer process (auto-created)
+├── webpack.main.config.js      # Webpack config for main process (auto-created)
+├── package.json               # Dependencies and scripts
+└── README.md                  # This file
+```
+
+## 🎯 **Model Selection**
+
+### **Bundled Models (No Download Required)**
+- **tiny-q5_1**: Fastest transcription, basic accuracy (~16MB) - **Included by default**
+
+### **Optional Models (Manual Download for Better Accuracy)**
+1. **Download additional models**:
+   ```bash
+   # Navigate to whisper-cpp directory
+   cd whisper-cpp
+   
+   # Download base model (recommended for better accuracy)
+   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin -o ggml-base.en.bin
+   ```
+
+2. **Select model in app**:
+   - Open Settings
+   - Choose model from dropdown
+   - Restart app to apply changes
+
+### **Model Comparison**
+- **tiny-q5_1** (16MB): Fast, basic accuracy - Good for quick notes
+- **base.en** (140MB): Better accuracy - Recommended for most users
+- **small** (250MB): High accuracy - Professional quality
+- **medium** (750MB): Very high accuracy - Best quality
+
+## 🛠️ **Troubleshooting**
+
+### **Common Issues**
+
+#### **Recording Not Working**
+- Check microphone permissions in Windows settings
+- Verify microphone works in other applications
+- Try different microphone in Windows sound settings
+- Restart the application
+
+#### **Hotkey Not Responding**
+- Check for conflicts with other applications
+- Try different key combination in Settings
+- Restart app after changing hotkey
+- Ensure app has focus or try running as administrator
+
+#### **Development Server Won't Start**
+- Ensure Node.js v16+ is installed
+- Delete `node_modules` and run `npm install` again
+- Check if ports 37843 is available
+- Webpack config files are auto-created on first run
+
+#### **Poor Transcription Quality**
+- Speak clearly and directly into microphone
+- Reduce background noise
+- Adjust VAD sensitivity in Settings
+- Try a larger Whisper model (base.en recommended)
+
+#### **App Won't Build/Package**
+- Run `npm run build` first to check for errors
+- Ensure all dependencies are installed
+- Check that whisper-cpp directory contains all required files
+
+## 🏗️ **Building from Source**
+
+### **Development Build**
 ```bash
-# Install dependencies
 npm install
+npm run dev
+```
 
+### **Production Build**
+```bash
 # Build the application
 npm run build
 
-# Create installer (Windows)
+# Create Windows installer
 npm run package:win
 
 # Create portable version
 npm run dist:portable
 ```
 
-## Troubleshooting
+### **Build Configuration**
+The app automatically bundles Whisper.cpp binaries and models:
 
-### Common Issues
+```json
+"extraResources": [
+  {
+    "from": "whisper-cpp",
+    "to": "whisper-cpp", 
+    "filter": ["**/*"]
+  }
+],
+"asarUnpack": [
+  "whisper-cpp/**"
+]
+```
 
-#### Recording Not Working
-- Check microphone permissions in system settings
-- Verify microphone works in other applications
-- Try different input device in app settings
+This ensures all Whisper components work offline without downloads.
 
-#### Hotkey Not Responding
-- Check for conflicts with other applications
-- Try different key combination in Settings
-- Restart app after changing hotkey
-
-#### AI Assistant Not Working
-- Ensure OpenAI API key is configured in Settings
-- Check internet connection (AI features require internet)
-- Verify API key has available credits
-
-#### Poor Transcription Quality
-- Speak clearly into microphone
-- Reduce background noise
-- Try larger Whisper model in Settings
-- Adjust VAD sensitivity
-
-## Architecture
-
-### Local vs Cloud Mode
-
-**Local Mode (Default)**
-- No external credentials required
-- All features work offline except AI assistant
-- AI assistant uses direct OpenAI API calls (if configured)
-- Perfect for personal use and privacy
-
-**Cloud Mode (Optional)**
-- Requires SUPABASE_URL and SUPABASE_ANON_KEY environment variables
-- Enables user authentication and cloud storage
-- Uses Supabase Edge Functions for AI (more secure)
-- Better for team/enterprise deployments
-
-### Privacy & Security
-
-- **Local Processing**: All audio processing happens on your device
-- **Bundled Dependencies**: Whisper models included - no downloads
-- **Secure Storage**: API keys stored locally in encrypted storage
-- **Transparent Data Practices**: See Data Collection section below for full details
-
-## Data Collection & Privacy Policy
-
-### Local Development Setup (No Data Collection)
-When running from source code locally:
-- **Zero Telemetry**: No usage data, analytics, or telemetry collected
-- **No Account Required**: Run completely anonymously
-- **Fully Offline**: Works without internet (except optional OpenAI assistant)
-- **Your Data Stays Local**: Audio, transcriptions, and settings never leave your device
-
-### Installer Version (Minimal Usage Analytics)
-When using the official installer:
-- **Account Required**: Create a Mithril account to use the application
-- **Usage Analytics Only**: We collect minimal usage statistics to improve the product:
-  - Number of recording sessions
-  - Session duration
-  - Whisper model used
-  - Assistant interaction counts (when used)
-- **AI Assistant Metrics** (if you use OpenAI integration):
-  - Character count of prompts sent
-  - Character count of responses received
-  - Word count statistics
-  - Model type used (e.g., GPT-4o-mini)
-- **What We DON'T Collect**:
-  - Audio recordings
-  - Transcribed text content
-  - Personal conversations
-  - File contents or code
-  - Specific prompts or responses
-
-### Why We Collect This Data
-Usage analytics help us:
-- Understand which features are most valuable
-- Optimize performance for common use cases
-- Plan future development priorities
-- Ensure assistant features meet user needs
-
-### Your Control
-- **Choose Your Privacy Level**: Use local setup for zero data collection
-- **Transparent Analytics**: All collected data is aggregated and anonymized
-- **Data Retention**: Usage statistics are retained for product improvement only
-- **No Selling**: We never sell or share user data with third parties
-
-## Developer
-
-**Josh Berns** - Software Developer  
-- GitHub: [@boshjerns](https://github.com/boshjerns)
-- Twitter: [@boshjerns](https://x.com/boshjerns)
-
-For enterprise solutions and consulting, visit [Deploy Forward](https://www.deployforward.com/).
-
-## Contributing
+## 🤝 **Contributing**
 
 We welcome contributions! Please ensure:
 - Code follows existing patterns
 - Tests pass: `npm test`
 - Build succeeds: `npm run build`
 
-### Development Setup
-
+### **Development Workflow**
 ```bash
-git clone https://github.com/boshjerns/MITHRILWHISPER.git
-cd MITHRILWHISPER/mithril-whisper-windows
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-windows
 npm install
 npm run dev
 ```
 
-## License
+## 📄 **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## 🙏 **Acknowledgments**
 
 - **[OpenAI Whisper](https://github.com/openai/whisper)** - Speech recognition model
 - **[whisper.cpp](https://github.com/ggerganov/whisper.cpp)** - C++ implementation of Whisper
 - **[Electron](https://electronjs.org/)** - Cross-platform app framework
 - **[React](https://reactjs.org/)** - UI framework
+
+## 📞 **About Mithril**
+
+Mithril Whisper is part of the **Mithril** suite - open-source, privacy-focused AI tools designed for maximum security and offline operation. Built by [Deploy Forward](https://www.deployforward.com/), we specialize in secure AI solutions for organizations with strict privacy requirements.
+
+**Developer**: Josh Berns  
+- GitHub: [@boshjerns](https://github.com/boshjerns)
+- Twitter: [@boshjerns](https://x.com/boshjerns)
+
+For enterprise solutions and consulting, visit [Deploy Forward](https://www.deployforward.com/).
 
 ---
 

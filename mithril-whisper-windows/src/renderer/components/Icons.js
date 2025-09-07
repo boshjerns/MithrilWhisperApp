@@ -117,6 +117,23 @@ export const InfoIcon = ({ size, className }) => (
   </Icon>
 );
 
+// File Icon
+export const FileIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="13 2 13 9 20 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
+// External Link Icon
+export const ExternalLinkIcon = ({ size, className }) => (
+  <Icon size={size} className={className}>
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="15 3 21 3 21 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Icon>
+);
+
 // Export all icons
 export default {
   MicrophoneIcon,
@@ -131,5 +148,7 @@ export default {
   CopyIcon,
   PasteIcon,
   PowerIcon,
-  InfoIcon
+  InfoIcon,
+  FileIcon,
+  ExternalLinkIcon
 }; 

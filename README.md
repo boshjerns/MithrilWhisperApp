@@ -29,11 +29,11 @@
 ### Core Capabilities
 
 - **Real-time Voice Transcription**: Convert speech to text as you speak
-- **Global Hotkey Integration**: Record from anywhere in your system with a simple key combination
-- **AI-Powered Text Processing**: Optional OpenAI integration for intelligent text enhancement
+- **Global Hotkey Integration**: Record from anywhere in your system with customizable key combinations
 - **Smart Text Cleanup**: Automatic removal of filler words and intelligent formatting
 - **Auto-Injection**: Seamlessly insert transcribed text into any application
 - **100% Local Processing**: All audio processing happens on your device
+- **Flexible Hotkeys**: Use any key combination (F6, Ctrl+A, Alt+Space, etc.)
 
 ### Privacy & Security First
 
@@ -63,18 +63,19 @@ Whether you're working with:
 Navigate to the appropriate folder for your operating system:
 
 ### 📁 [mithril-whisper-windows/](./mithril-whisper-windows/)
-Complete Windows implementation with:
+Streamlined Windows implementation with:
+- 100% local processing - no sign-in required
 - Bundled Whisper.cpp models and binaries
 - Windows-optimized audio processing
-- System integration and global hotkeys
-- Comprehensive setup and usage documentation
+- Flexible hotkey system (any key combination)
+- Zero external dependencies or configuration
 
 ### 📁 [mithril-whisper-mac/](./mithril-whisper-mac/)
 Complete macOS implementation featuring:
-- Native macOS integration
+- Native macOS integration with optional AI assistant
 - Optimized for Apple Silicon and Intel Macs
 - Seamless system-wide voice recognition
-- Comprehensive setup and usage documentation
+- Optional OpenAI integration for enhanced text processing
 
 ## Privacy & Telemetry Transparency
 
@@ -90,7 +91,8 @@ Run the application directly from source code without any installation:
 - ✅ **Voice Data Never Stored**: Audio files deleted immediately after transcription
 - ✅ **Local AI Processing**: All transcription happens on your device using bundled Whisper.cpp
 
-**Setup:** Clone repository → Install dependencies → Run locally
+**Windows Setup:** Clone repository → `cd mithril-whisper-windows` → `npm install` → `npm run dev`
+**macOS Setup:** Clone repository → `cd mithril-whisper-mac` → `npm install` → `npm run dev`
 
 ### 📦 **Installed Version** (Minimal Telemetry)
 Pre-built applications for easy installation and updates:
@@ -99,13 +101,14 @@ Pre-built applications for easy installation and updates:
 - Requires user login for application access
 - Login credentials managed through secure Supabase authentication
 
-**Telemetry (AI Assistant Only):**
-- **Voice Dictation**: Zero telemetry - completely private
-- **AI Assistant Feature**: Minimal telemetry when actively used
+**Telemetry (AI Assistant Only - macOS version):**
+- **Windows Version**: Zero telemetry - AI assistant removed for streamlined operation
+- **macOS Voice Dictation**: Zero telemetry - completely private
+- **macOS AI Assistant Feature**: Minimal telemetry when actively used
   - Character count of text sent to/from AI assistant
   - Session duration and timestamps  
   - Model used (e.g., whisper-tiny)
-  - Platform information (Windows/Mac)
+  - Platform information (macOS)
   - **Content is NEVER tracked** - only statistical metadata
 
 **What is NOT Tracked:**
@@ -116,10 +119,10 @@ Pre-built applications for easy installation and updates:
 - Usage outside of AI assistant feature
 
 ### Code Transparency
-Our telemetry implementation is fully transparent. Here's the actual code showing what data is collected:
+Our telemetry implementation is fully transparent. Here's the actual code showing what data is collected (macOS version only):
 
 ```javascript
-// From src/main/main.js - AI Assistant usage tracking only
+// From mithril-whisper-mac/src/main/main.js - AI Assistant usage tracking only
 const payload = {
   transcript_chars_original: userPrompt.length,     // Character count only
   transcript_chars_cleaned: assistantReply.length, // Character count only
@@ -128,15 +131,16 @@ const payload = {
     assistant_words: countWords(assistantReply),   // Word count only
   }
   // NOTE: Actual content is NEVER included in telemetry
+  // NOTE: Windows version has NO telemetry - this code removed
 };
 ```
 
 ### Data Flow Summary
 1. **Voice Input** → Local Whisper.cpp processing → **Transcribed Text** (100% local)
-2. **AI Assistant** (optional) → Character count metadata → Encrypted transmission to OpenAI
+2. **AI Assistant** (macOS only, optional) → Character count metadata → Encrypted transmission to OpenAI
 3. **File Cleanup** → Audio files immediately deleted after processing
 
-**Bottom Line:** Your voice never leaves your device. Only if you choose to use the AI assistant feature do we track minimal usage statistics (character counts, not content).
+**Bottom Line:** Your voice never leaves your device. Windows version has zero telemetry. macOS version only tracks minimal usage statistics if you use the AI assistant feature (character counts, not content).
 
 ## About Mithril - Zero-Trust AI Solutions
 
@@ -187,25 +191,26 @@ Passionate about building AI solutions that respect privacy and maintain securit
 
 ### Quick Setup - Local Development Mode (Maximum Privacy)
 
-**Windows:**
+**Windows (Streamlined - No Assistant):**
 ```bash
 git clone https://github.com/boshjerns/MithrilWhisperApp.git
 cd MithrilWhisperApp/mithril-whisper-windows
 npm install
-npm run dev  # No authentication required, zero telemetry
+npm run dev  # No authentication required, zero telemetry, no AI assistant
 ```
 
-**macOS:**
+**macOS (Full Features):**
 ```bash
 git clone https://github.com/boshjerns/MithrilWhisperApp.git
 cd MithrilWhisperApp/mithril-whisper-mac
 npm install
-npm run dev  # No authentication required, zero telemetry
+npm run dev  # No authentication required, zero telemetry for transcription
 ```
 
-**Optional AI Assistant Setup:**
+**Optional AI Assistant Setup (macOS only):**
 ```bash
-# Add OpenAI API key for enhanced text processing (optional)
+# Add OpenAI API key for enhanced text processing (macOS only)
+cd mithril-whisper-mac
 cp env.example .env
 # Edit .env and add: OPENAI_API_KEY=your_key_here
 ```
@@ -215,7 +220,11 @@ cp env.example .env
 1. **Choose Your Platform**: Navigate to the appropriate platform folder
 2. **Follow Detailed Setup**: Each platform has comprehensive documentation
 3. **Start Transcribing**: Begin using voice recognition immediately
-4. **Enhance (Optional)**: Add OpenAI integration for advanced text processing
+4. **Enhance (Optional - macOS only)**: Add OpenAI integration for advanced text processing
+
+**Platform Differences:**
+- **Windows**: Streamlined for pure voice transcription - no AI assistant, maximum privacy
+- **macOS**: Full feature set including optional AI assistant with OpenAI integration
 
 ## Open Source Commitment
 

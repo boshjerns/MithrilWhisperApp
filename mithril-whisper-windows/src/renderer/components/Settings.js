@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SettingsIcon, KeyIcon, BrainIcon, ShieldIcon, CheckIcon } from './Icons';
+import { SettingsIcon, KeyIcon, ShieldIcon, CheckIcon } from './Icons';
 import HotkeySelector from './HotkeySelector';
 
 const { ipcRenderer } = window.require('electron');
@@ -66,7 +66,7 @@ function Settings({ settings, onChange }) {
 
       <div className="settings-group">
         <h3>
-          <BrainIcon size={20} />
+          <SettingsIcon size={20} />
           mithril whisper Settings
         </h3>
         
@@ -155,46 +155,6 @@ function Settings({ settings, onChange }) {
         )}
       </div>
 
-      {/* OpenAI API Configuration - Only shown in local mode */}
-      {isLocalMode && (
-        <div className="settings-group">
-          <h3>
-            <BrainIcon size={20} />
-            OpenAI Assistant (Local Mode)
-          </h3>
-          <div className="setting-item">
-            <label htmlFor="openaiApiKey">OpenAI API Key:</label>
-            <input
-              id="openaiApiKey"
-              type="password"
-              value={localSettings.openaiApiKey || ''}
-              onChange={(e) => handleChange('openaiApiKey', e.target.value)}
-              placeholder="sk-..."
-              className="input-field"
-            />
-            <div className="setting-description">
-              Enter your OpenAI API key to enable the AI assistant features. Get yours from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">OpenAI Platform</a>.
-            </div>
-          </div>
-          
-          <div className="setting-item">
-            <label htmlFor="openaiModel">Assistant Model:</label>
-            <select
-              id="openaiModel"
-              value={localSettings.openaiModel || 'gpt-4o-mini'}
-              onChange={(e) => handleChange('openaiModel', e.target.value)}
-              className="input-field select-field"
-            >
-              <option value="gpt-4o-mini">GPT-4o Mini (Recommended)</option>
-              <option value="gpt-4o">GPT-4o</option>
-              <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            </select>
-            <div className="setting-description">
-              Select the OpenAI model for assistant responses. GPT-4o Mini offers the best balance of cost and performance.
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="settings-group">
         <h3>✨ Text Processing</h3>

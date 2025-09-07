@@ -6,63 +6,94 @@ function RecordingControls({
   onStartRecording, 
   onStopRecording, 
   onToggleRecording, 
-  hotkey,
-  disabled,
+  hotkey
 }) {
+  // ASCII art for the homepage
+  const mithrilAsciiArt = `███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
+████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
+██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
+██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
+██║ ╚═╝ ██║██║   ██║   ██║  ██║██║  ██║██║███████╗
+╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝
+
+██╗    ██╗██╗  ██╗██╗███████╗██████╗ ███████╗██████╗ 
+██║    ██║██║  ██║██║██╔════╝██╔══██╗██╔════╝██╔══██╗
+██║ █╗ ██║███████║██║███████╗██████╔╝█████╗  ██████╔╝
+██║███╗██║██╔══██║██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
+╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝`;
+
   return (
     <div className="recording-controls">
-      <div className="section-header">
-        <h2>Recording Controls</h2>
-      </div>
-      <p className="terminal-text">{disabled ? 'Sign in to start recording' : `Use the controls below or press [${hotkey}] to toggle recording`}</p>
-
-      <div className="glass-card" style={{ textAlign: 'center', marginTop: '32px' }}>
-        <button
-          className={`record-button ${isRecording ? 'recording' : ''}`}
-          onClick={disabled ? undefined : onToggleRecording}
-          disabled={disabled}
-        >
-          {isRecording ? (
-            <SoundWaveIcon size={60} />
-          ) : (
-            <MicrophoneIcon size={60} />
-          )}
-        </button>
-        
-        <h3 style={{ marginTop: '24px', fontSize: '16px' }}>
-          {isRecording ? 'Stop Recording' : 'Start Recording'}
-        </h3>
+      {/* ASCII Art Header */}
+      <div className="homepage-header">
+        <pre className="homepage-ascii">{mithrilAsciiArt}</pre>
+        <p className="homepage-subtitle">Enterprise-Grade Voice Transcription</p>
       </div>
 
-      <div className="glass-card" style={{ marginTop: '24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div>
-            <div className="input-label">Status:</div>
-            <div className={`terminal-text ${isRecording ? 'recording' : ''}`}>
-              {isRecording ? 'Recording...' : 'Ready'}
+      {/* Quick Status Overview */}
+      <div className="glass-card status-overview">
+        <div className="status-grid">
+          <div className="status-item">
+            <div className="status-label">STATUS:</div>
+            <div className={`status-value ${isRecording ? 'recording' : 'ready'}`}>
+              {isRecording ? '🔴 Recording...' : '🟢 Ready'}
             </div>
           </div>
           
-          <div>
-            <div className="input-label">Hotkey:</div>
-            <div className="terminal-text" style={{ fontFamily: 'JetBrains Mono', fontSize: '14px' }}>
-              {hotkey}
+          <div className="status-item">
+            <div className="status-label">RECORDING HOTKEY:</div>
+            <div className="status-value hotkey-display">
+              <kbd>{hotkey || 'Not Set'}</kbd>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="glass-card" style={{ marginTop: '24px' }}>
+      {/* Quick Start Instructions */}
+      <div className="glass-card instructions-card">
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
           <InfoIcon size={20} />
-          Tips
+          Quick Start Guide
         </h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li className="terminal-text" style={{ marginBottom: '8px' }}>Press {hotkey} to start recording</li>
-          <li className="terminal-text" style={{ marginBottom: '8px' }}>Press {hotkey} again to stop and process</li>
-          <li className="terminal-text" style={{ marginBottom: '8px' }}>Text will be automatically cleaned up</li>
-          <li className="terminal-text" style={{ marginBottom: '8px' }}>Cleaned text is injected into the active app</li>
-        </ul>
+        
+        <div className="instructions-grid">
+          <div className="instruction-section">
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <MicrophoneIcon size={16} />
+              Voice Recording
+            </h4>
+            <ul className="instruction-list">
+              <li>Press <kbd>{hotkey || 'hotkey'}</kbd> to start recording</li>
+              <li>Press <kbd>{hotkey || 'hotkey'}</kbd> again to stop and process</li>
+              <li>Text automatically cleans up and injects into active app</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Manual Record Button */}
+      <div className="glass-card manual-controls" style={{ textAlign: 'center', marginTop: '20px' }}>
+        <p className="manual-controls-label">Manual Control (Hotkeys Recommended)</p>
+        <button
+          className={`record-button-small ${isRecording ? 'recording' : ''}`}
+          onClick={onToggleRecording}
+        >
+          {isRecording ? (
+            <>
+              <SoundWaveIcon size={24} />
+              <span>Stop Recording</span>
+            </>
+          ) : (
+            <>
+              <MicrophoneIcon size={24} />
+              <span>Start Recording</span>
+            </>
+          )}
+        </button>
+        <p className="manual-controls-note">
+          Note: You'll still need to use <kbd>{hotkey}</kbd> to stop and inject text from other apps
+        </p>
       </div>
     </div>
   );

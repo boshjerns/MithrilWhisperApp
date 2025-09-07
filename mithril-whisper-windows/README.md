@@ -14,35 +14,56 @@
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
 ```
 
-# Mithril Whisper
+# MITHRIL WHISPER
 
-A powerful, privacy-focused voice-to-text application built with Electron and React. Features real-time transcription with bundled Whisper models, AI assistant integration, and runs completely locally on your computer.
+Privacy-focused voice transcription for Windows
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+## 🚀 **Quick Start**
 
-## Features
+### 1. **Clone & Install**
+```bash
+git clone https://github.com/boshjerns/MithrilWhisperApp.git
+cd MithrilWhisperApp/mithril-whisper-windows
+npm install
+```
 
-### Core Functionality
-- **Global Hotkey Recording**: Press `Alt+Space` (configurable) anywhere to start/stop recording
-- **Real-time Transcription**: Uses bundled Whisper.cpp models - no internet required
-- **Smart Text Cleanup**: Automatic removal of filler words, punctuation fixes, and capitalization
-- **Auto Text Injection**: Cleaned text is automatically pasted into the active application
-- **Live Overlay**: Floating transparent overlay shows transcription progress
-- **AI Assistant**: Optional OpenAI integration for text processing and coding help
+### 2. **Run Immediately**
+```bash
+npm run dev
+```
 
-### Privacy & Performance
-- **100% Local Processing**: All audio processing happens on your device
-- **Bundled Models**: Whisper.cpp binaries and models included - works offline
-- **Fast & Efficient**: Low CPU usage when idle, optimized for real-time processing
-- **Cross-platform**: Works on Windows, macOS, and Linux
+**That's it!** No configuration files needed, no login required, no environment variables. The app works immediately with local transcription.
 
-### User Interface
-- **Modern Dark UI**: Clean, professional interface with smooth animations
-- **Transcription History**: View, copy, and re-inject past transcriptions
-- **Flexible Settings**: Configure hotkeys, models, sensitivity, and cleanup rules
-- **System Tray Integration**: Runs quietly in the background
+**Features:**
+- ✅ **Local transcription** with Whisper.cpp
+- ✅ **No authentication required**
+- ✅ **Works completely offline**
+- ✅ **Zero usage tracking** - maximum privacy
+- ✅ **All processing on your device**
+- ✅ **System-wide voice recording** with global hotkeys
+- ✅ **Auto text injection** into any application
+
+## ⚙️ **Configuration Guide**
+
+### **Hotkey Settings:**
+- **Recording Hotkey**: Customizable (Windows key + any key)
+- **Simple Setup**: Click the hotkey field and press your preferred key
+
+### **Audio Settings:**
+- **Voice Activity Detection**: Adjust sensitivity
+- **Audio Ducking**: Reduce background volume during recording
+- **Whisper Model**: Choose accuracy vs speed (tiny, base models available)
+
+### **Text Settings:**
+- **Auto-inject**: Automatically paste transcribed text into active application
+- **Text Cleanup**: Remove filler words and improve formatting
+
+## 🔐 **Privacy & Security**
+
+### **Data Processing**
+- **🔒 Local Transcription**: All voice-to-text processing uses open-source Whisper-CPP models running entirely on your device
+- **🗑️ Immediate Cleanup**: Audio files are automatically deleted after transcription completes
+- **🛡️ Zero Content Tracking**: Your spoken words and transcriptions are never stored or transmitted
 
 ## About Mithril - Zero-Trust AI Solutions
 

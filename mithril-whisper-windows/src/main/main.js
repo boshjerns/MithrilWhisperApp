@@ -53,27 +53,13 @@ function resolveRendererFile(filename) {
 }
 async function handleAssistantQuery(userPrompt, context) {
   try {
-    // Check if we're in local mode
-    const supabaseUrl = process.env.SUPABASE_URL || '';
-    const jwt = this.accessToken || '';
-    const isLocalMode = !supabaseUrl;
-    
-    if (!isLocalMode && !jwt) {
+    // Local mode: check for OpenAI API key
+    const openaiApiKey = this.store.get('openaiApiKey');
+    if (!openaiApiKey) {
       if (this.assistantWindow) {
-        this.assistantWindow.webContents.send('assistant:error', 'Not authenticated');
+        this.assistantWindow.webContents.send('assistant:error', 'OpenAI API key not configured. Please add it in Settings.');
       }
       return;
-    }
-    
-    if (isLocalMode) {
-      // In local mode, check for OpenAI API key
-      const openaiApiKey = this.store.get('openaiApiKey');
-      if (!openaiApiKey) {
-        if (this.assistantWindow) {
-          this.assistantWindow.webContents.send('assistant:error', 'OpenAI API key not configured. Please add it in Settings.');
-        }
-        return;
-      }
     }
     const selection = (context && context.selectedText) ? String(context.selectedText) : '';
     let defaultAction = 'summarize';
@@ -110,56 +96,29 @@ async function handleAssistantQuery(userPrompt, context) {
     const model = this.store.get('openaiModel') || this.assistantModel || 'gpt-4o-mini';
     const maxTokens = this.assistantMaxTokens || 800;
 
-    let response;
-    if (isLocalMode) {
-      // Direct OpenAI API call in local mode
-      const openaiApiKey = this.store.get('openaiApiKey');
-      console.log('Assistant: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
-      
-      const messages = [
-        { role: 'system', content: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') },
-        { role: 'user', content: sanitizedUserPrompt }
-      ];
-      
-      response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          messages,
-          max_tokens: maxTokens,
-          stream: true,
-          temperature: 0.7
-        })
-      });
-    } else {
-      // Use Supabase Edge function
-      const assistantUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/assistant`;
-      console.log('Assistant: calling', assistantUrl, 'model=', model, 'maxTokens=', maxTokens);
-      response = await fetch(assistantUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          max_output_tokens: maxTokens,
-          input: [
-            { role: 'developer', content: [ { type: 'input_text', text: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') } ] },
-            { role: 'user', content: [ { type: 'input_text', text: sanitizedUserPrompt } ] }
-          ],
-          text: { format: { type: 'text' } },
-          reasoning: { effort: 'medium', summary: 'auto' },
-          tools: [],
-          store: true
-        })
-      });
-    }
+    // Direct OpenAI API call in local mode
+    const openaiApiKey = this.store.get('openaiApiKey');
+    console.log('Assistant: calling OpenAI directly, model=', model, 'maxTokens=', maxTokens);
+    
+    const messages = [
+      { role: 'system', content: systemPrompt + (selectionSnippet ? `\n\nSELECTION:\n${selectionSnippet}` : '') },
+      { role: 'user', content: sanitizedUserPrompt }
+    ];
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: maxTokens,
+        stream: true,
+        temperature: 0.7
+      })
+    });
 
     if (!response.ok || !response.body) {
       const text = await (response.text ? response.text() : Promise.resolve(''));
@@ -191,35 +150,6 @@ async function handleAssistantQuery(userPrompt, context) {
         // Immediately return HUD to idle after finalize
         this.updateHUDStatus('idle', { connected: true });
 
-        // Emit usage event to renderer (assistant session)
-        try {
-          const startedAt = new Date(this.recordingStartTime || Date.now());
-          const endedAt = new Date();
-          const durationMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
-          const { countWords } = require('../shared/text-utils');
-          const payload = {
-            started_at: startedAt.toISOString(),
-            ended_at: endedAt.toISOString(),
-            duration_ms: durationMs,
-            transcript_chars_original: sanitizedUserPrompt.length,
-            transcript_chars_cleaned: (finalText || '').length,
-            model: this.assistantModel || 'o4-mini',
-            platform: process.platform,
-            app_version: app.getVersion ? app.getVersion() : (process.env.APP_VERSION || '0.0.0'),
-            metadata: {
-              kind: 'assistant',
-              action: decidedAction,
-              selection_chars: (selection || '').length,
-              user_words: countWords(sanitizedUserPrompt),
-              assistant_words: countWords(finalText),
-            },
-          };
-          if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-            this.mainWindow.webContents.send('usage:session-completed', payload);
-          }
-        } catch (e) {
-          console.error('Assistant: failed to emit usage event:', e);
-        }
     };
 
     const contentType = response.headers.get('content-type') || '';
@@ -233,48 +163,22 @@ async function handleAssistantQuery(userPrompt, context) {
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           
-          if (isLocalMode) {
-            // OpenAI API streaming format
-            chunk.split('\n').forEach((line) => {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                if (data === '[DONE]') return;
-                try {
-                  const json = JSON.parse(data);
-                  const delta = json.choices?.[0]?.delta?.content || '';
-                  if (delta) {
-                    buffer += delta;
-                    if (buffer.length < 200) tryDecide();
-                    sendToken(delta);
-                  }
-                } catch (_) {}
-              }
-            });
-          } else {
-            // Supabase Edge function format
-            chunk.split(/\n\n/).forEach((block) => {
-              const trimmed = block.trim();
-              if (!trimmed) return;
-              const lines = trimmed.split(/\n/);
-              const eventLine = lines.find(l => l.startsWith('event:'));
-              if (eventLine) lastEvent = eventLine.replace(/^event:\s*/, '');
-              const dataLine = lines.find(l => l.startsWith('data:'));
-              if (!dataLine) return;
-              const data = dataLine.replace(/^data:\s*/, '');
+          // OpenAI API streaming format
+          chunk.split('\n').forEach((line) => {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
               if (data === '[DONE]') return;
               try {
                 const json = JSON.parse(data);
-                let delta = '';
-                if (json.type === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
-                else if (lastEvent === 'response.output_text.delta' && typeof json.delta === 'string') delta = json.delta;
+                const delta = json.choices?.[0]?.delta?.content || '';
                 if (delta) {
                   buffer += delta;
                   if (buffer.length < 200) tryDecide();
                   sendToken(delta);
                 }
               } catch (_) {}
-            });
-          }
+            }
+          });
         }
       } else {
         await new Promise((resolve, reject) => {
@@ -310,9 +214,8 @@ async function handleAssistantQuery(userPrompt, context) {
       }
     } else {
       const full = await response.json();
-      let content = '';
-      if (Array.isArray(full.output_text)) content = full.output_text.join('');
-      else if (typeof full.output_text === 'string') content = full.output_text;
+      // OpenAI format
+      const content = full.choices?.[0]?.message?.content || '';
       buffer = content || '';
       tryDecide();
       if (buffer) sendToken(buffer);
@@ -341,7 +244,6 @@ class VoiceAssistant {
     this.isAssistantRecording = false;
     this.isRecordingDisabled = false;
     this.hotkey = this.store.get('hotkey', 'F1');
-    this.assistantHotkey = this.store.get('assistantHotkey', 'F2');
     // Assistant model defaults/migration
     const storedAssistantModel = this.store.get('assistantModel');
     if (storedAssistantModel === 'gpt-o4-mini' || storedAssistantModel === 'gpt-4o-mini') {
@@ -349,9 +251,6 @@ class VoiceAssistant {
     }
     this.assistantModel = this.store.get('assistantModel', 'o4-mini');
     this.assistantMaxTokens = this.store.get('assistantMaxTokens', 800);
-    this.authUser = null;
-    this.accessToken = null;
-    try { console.log('Supabase URL (main env):', process.env.SUPABASE_URL || '(empty)'); } catch (_) {}
     // Stable device id
     try {
       let deviceId = this.store.get('deviceId');
@@ -819,7 +718,6 @@ class VoiceAssistant {
 
       return {
         hotkey: this.store.get('hotkey', 'Alt+Space'),
-        assistantHotkey: this.store.get('assistantHotkey', 'F2'),
         model: this.store.get('model', effectiveModel),
         sensitivity: this.store.get('sensitivity', 0.5),
         cleanup: this.store.get('cleanup', true),
@@ -846,11 +744,6 @@ class VoiceAssistant {
       if (settings.hotkey !== this.hotkey) {
         this.hotkey = settings.hotkey;
         this.setupGlobalHotkey();
-      }
-      if (settings.assistantHotkey && settings.assistantHotkey !== this.assistantHotkey) {
-        this.assistantHotkey = settings.assistantHotkey;
-        this.store.set('assistantHotkey', this.assistantHotkey);
-        this.setupAssistantHotkey();
       }
       if (settings.assistantModel && settings.assistantModel !== this.assistantModel) {
         this.assistantModel = settings.assistantModel;
@@ -895,20 +788,6 @@ class VoiceAssistant {
       this.isRecordingDisabled = false;
     });
 
-    // Auth state from renderer
-    ipcMain.on('auth:signed-in', (_event, payload) => {
-      this.authUser = payload && payload.user ? payload.user : null;
-      this.accessToken = payload && payload.accessToken ? payload.accessToken : null;
-      console.log('🔐 Auth signed in:', this.authUser ? this.authUser.email : 'unknown');
-      // On sign-in, fetch remote non-sensitive config from Edge Function
-      this.fetchRemoteConfigSafe();
-    });
-
-    ipcMain.on('auth:signed-out', () => {
-      console.log('🔐 Auth signed out');
-      this.authUser = null;
-      this.accessToken = null;
-    });
 
     // Recording controls
     ipcMain.handle('start-recording', () => {
@@ -987,35 +866,6 @@ class VoiceAssistant {
     });
   }
 
-  async fetchRemoteConfigSafe() {
-    try {
-      const supabaseUrl = process.env.SUPABASE_URL || '';
-      if (!supabaseUrl || !this.accessToken) return;
-      const url = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/get-config`;
-      console.log('Config: fetching remote config from', url);
-      const resp = await fetch(url, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${this.accessToken}` }
-      });
-      if (!resp.ok) {
-        const t = await resp.text().catch(() => '');
-        console.warn('Config: get-config failed', resp.status, t);
-        return;
-      }
-      const cfg = await resp.json();
-      if (cfg && typeof cfg === 'object') {
-        if (typeof cfg.model === 'string') {
-          this.assistantModel = cfg.model;
-          this.store.set('assistantModel', this.assistantModel);
-        }
-        if (typeof cfg.max_output_tokens === 'number') {
-          this.assistantMaxTokens = Math.max(128, Math.min(2048, cfg.max_output_tokens));
-          this.store.set('assistantMaxTokens', this.assistantMaxTokens);
-        }
-        console.log('Config: applied', { model: this.assistantModel, maxTokens: this.assistantMaxTokens });
-      }
-    } catch (_) {}
-  }
 
   async startRecording() {
     if (this.isRecording) {
@@ -1027,16 +877,6 @@ class VoiceAssistant {
       return false;
     }
     // Check if we're in local mode (no Supabase URL means local mode)
-    const supabaseUrl = process.env.SUPABASE_URL || '';
-    const isLocalMode = !supabaseUrl;
-    
-    if (!isLocalMode && !this.authUser) {
-      console.log('🚫 Recording blocked: user not authenticated');
-      if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-        this.mainWindow.webContents.send('recording-status', false);
-      }
-      return false;
-    }
     
     try {
       console.log('Starting recording...');
@@ -1208,28 +1048,6 @@ class VoiceAssistant {
       // Update HUD back to idle state
       this.updateHUDStatus('idle', { connected: true });
 
-      // Emit usage event to renderer for Supabase insert
-      try {
-        const startedAt = new Date(this.recordingStartTime || Date.now());
-        const endedAt = new Date();
-        const durationMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
-        const payload = {
-          started_at: startedAt.toISOString(),
-          ended_at: endedAt.toISOString(),
-          duration_ms: durationMs,
-          transcript_chars_original: transcriptSansMarkers ? transcriptSansMarkers.length : 0,
-          transcript_chars_cleaned: cleanedOutput ? cleanedOutput.length : 0,
-          model: this.store.get('whisperModel'),
-          platform: process.platform,
-          app_version: app.getVersion ? app.getVersion() : (process.env.APP_VERSION || '0.0.0'),
-          metadata: null,
-        };
-        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.webContents.send('usage:session-completed', payload);
-        }
-      } catch (e) {
-        console.error('Failed to emit usage event:', e);
-      }
       
     } catch (error) {
       console.error('Failed to process audio:', error);
@@ -1378,11 +1196,6 @@ class VoiceAssistant {
       console.log('🚫 Assistant recording blocked: temporarily disabled (settings page open)');
       return false;
     }
-    // Check if we're in local mode (no Supabase URL means local mode)
-    const supabaseUrl = process.env.SUPABASE_URL || '';
-    const isLocalMode = !supabaseUrl;
-    
-    if (!isLocalMode && !this.authUser) return false;
     try {
       this.isAssistantRecording = true;
       this.recordingStartTime = Date.now();
@@ -1476,7 +1289,6 @@ class VoiceAssistant {
     this.createDesktopHUD();
     this.createAssistantWindow();
     this.setupGlobalHotkey();
-    this.setupAssistantHotkey();
     
     // Initialize audio recorder and text processor
     await this.audioRecorder.init();
@@ -1497,8 +1309,6 @@ class VoiceAssistant {
       this.mainWindow.focus();
     }
 
-    // On startup, if already authenticated, fetch remote config
-    this.fetchRemoteConfigSafe();
   }
 
   setupSpeechRecognitionHandlers() {

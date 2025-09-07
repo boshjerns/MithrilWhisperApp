@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SettingsIcon, KeyIcon, BrainIcon, ShieldIcon, CheckIcon } from './Icons';
-import { isLocalMode } from '../auth/supabaseClient';
+import HotkeySelector from './HotkeySelector';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -12,11 +12,6 @@ function Settings({ settings, onChange }) {
     audioDucking: settings.audioDucking || { enabled: true, duckPercent: 90 }
   });
   const [availableModels, setAvailableModels] = useState(settings.availableModels || []);
-  const [isListeningForHotkey, setIsListeningForHotkey] = useState(false);
-  const [isListeningForAssistantHotkey, setIsListeningForAssistantHotkey] = useState(false);
-  const [capturedKeys, setCapturedKeys] = useState([]);
-  const hotkeyInputRef = useRef(null);
-  const assistantHotkeyInputRef = useRef(null);
 
   const handleChange = (key, value) => {
     const newSettings = { ...localSettings, [key]: value };
@@ -39,190 +34,7 @@ function Settings({ settings, onChange }) {
     };
   }, []);
 
-  // Track when any hotkey listening is active
-  const isAnyHotkeyListening = isListeningForHotkey || isListeningForAssistantHotkey;
 
-  const formatHotkey = (keys) => {
-    if (keys.length === 0) return '';
-    
-    const modifiers = [];
-    const regularKeys = [];
-    
-    keys.forEach(key => {
-      if (['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
-        // Map to Electron's expected format
-        if (key === 'Control') {
-          modifiers.push('Ctrl');
-        } else if (key === 'Meta') {
-          modifiers.push('Cmd');
-        } else {
-          modifiers.push(key); // Alt, Shift stay the same
-        }
-      } else {
-        regularKeys.push(key);
-      }
-    });
-    
-    return [...modifiers, ...regularKeys].join('+');
-  };
-
-  const handleHotkeyInputClick = () => {
-    console.log('🎯 Recording hotkey input clicked');
-    setIsListeningForHotkey(true);
-    setIsListeningForAssistantHotkey(false);
-    setCapturedKeys([]);
-    if (hotkeyInputRef.current) {
-      hotkeyInputRef.current.focus();
-    }
-  };
-
-  const handleAssistantHotkeyInputClick = () => {
-    console.log('🎯 Assistant hotkey input clicked');
-    setIsListeningForAssistantHotkey(true);
-    setIsListeningForHotkey(false);
-    setCapturedKeys([]);
-    if (assistantHotkeyInputRef.current) {
-      assistantHotkeyInputRef.current.focus();
-    }
-  };
-
-  const handleHotkeyKeyDown = (e) => {
-    if (!isListeningForHotkey && !isListeningForAssistantHotkey) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const key = e.key;
-    const pressedKeys = [];
-    
-    console.log('🎯 Key pressed:', key, 'Listening for:', isListeningForHotkey ? 'recording' : 'assistant');
-    
-    // Capture modifiers first
-    if (e.ctrlKey) pressedKeys.push('Control');
-    if (e.altKey) pressedKeys.push('Alt');
-    if (e.shiftKey) pressedKeys.push('Shift');
-    if (e.metaKey) pressedKeys.push('Meta');
-    
-    // Capture the main key (if it's not a modifier)
-    if (!['Control', 'Alt', 'Shift', 'Meta', 'OS'].includes(key)) {
-      // Normalize key names
-      let normalizedKey = key;
-      if (key === ' ') normalizedKey = 'Space';
-      else if (key === 'ArrowUp') normalizedKey = 'Up';
-      else if (key === 'ArrowDown') normalizedKey = 'Down';
-      else if (key === 'ArrowLeft') normalizedKey = 'Left';
-      else if (key === 'ArrowRight') normalizedKey = 'Right';
-      else if (key === 'Escape') normalizedKey = 'Esc';
-      
-      pressedKeys.push(normalizedKey);
-    }
-    
-    console.log('🎯 Captured keys:', pressedKeys);
-    setCapturedKeys([...pressedKeys]); // Force new array reference
-    
-    // Check validation conditions
-    const hasModifier = pressedKeys.some(k => ['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-    const hasRegularKey = pressedKeys.some(k => !['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-    const isFunctionKey = /^F(1[0-2]|[1-9])$/.test(key); // F1-F12
-    
-    // Complete hotkey conditions:
-    // 1. Function key alone (F1, F2, etc.)
-    // 2. Modifier(s) + regular key
-    // 3. Don't allow standalone modifier keys
-    if (isFunctionKey || (hasModifier && hasRegularKey)) {
-      const hotkeyString = formatHotkey(pressedKeys);
-      console.log('🎯 Valid hotkey captured:', hotkeyString, 'Keys:', pressedKeys);
-      
-      // Add a small delay to ensure the UI updates properly
-      setTimeout(() => {
-        if (isListeningForHotkey) {
-          console.log('🎯 Setting recording hotkey:', hotkeyString);
-          handleChange('hotkey', hotkeyString);
-          setIsListeningForHotkey(false);
-          setCapturedKeys([]);
-          if (hotkeyInputRef.current) {
-            hotkeyInputRef.current.blur();
-          }
-        } else if (isListeningForAssistantHotkey) {
-          console.log('🎯 Setting assistant hotkey:', hotkeyString);
-          handleChange('assistantHotkey', hotkeyString);
-          setIsListeningForAssistantHotkey(false);
-          setCapturedKeys([]);
-          if (assistantHotkeyInputRef.current) {
-            assistantHotkeyInputRef.current.blur();
-          }
-        }
-      }, 100);
-    } else if (key === 'Escape') {
-      // Cancel hotkey setting on Escape
-      console.log('🚫 Hotkey setting cancelled');
-      setIsListeningForHotkey(false);
-      setIsListeningForAssistantHotkey(false);
-      setCapturedKeys([]);
-      if (hotkeyInputRef.current) {
-        hotkeyInputRef.current.blur();
-      }
-      if (assistantHotkeyInputRef.current) {
-        assistantHotkeyInputRef.current.blur();
-      }
-    }
-  };
-
-  const handleHotkeyInputBlur = (e) => {
-    // Add a small delay to allow for the timeout in handleHotkeyKeyDown to complete
-    setTimeout(() => {
-      console.log('🚫 Hotkey input blur - cleaning up state');
-      setIsListeningForHotkey(false);
-      setIsListeningForAssistantHotkey(false);
-      setCapturedKeys([]);
-    }, 150);
-  };
-
-  const getHotkeyDisplayValue = () => {
-    if (isListeningForHotkey) {
-      if (capturedKeys.length === 0) {
-        return 'Press your hotkey...';
-      } else {
-        const preview = formatHotkey(capturedKeys);
-        const hasModifier = capturedKeys.some(k => ['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-        const hasRegularKey = capturedKeys.some(k => !['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-        const isFunctionKey = capturedKeys.some(k => /^F(1[0-2]|[1-9])$/.test(k));
-        
-        // Show feedback about whether the combination is valid
-        if (isFunctionKey || (hasModifier && hasRegularKey)) {
-          return preview + ' ✓';
-        } else if (hasModifier && !hasRegularKey) {
-          return preview + '+ ?';
-        } else {
-          return preview + '...';
-        }
-      }
-    }
-    return localSettings.hotkey || 'Alt+Space';
-  };
-
-  const getAssistantHotkeyDisplayValue = () => {
-    if (isListeningForAssistantHotkey) {
-      if (capturedKeys.length === 0) {
-        return 'Press your assistant hotkey...';
-      } else {
-        const preview = formatHotkey(capturedKeys);
-        const hasModifier = capturedKeys.some(k => ['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-        const hasRegularKey = capturedKeys.some(k => !['Control', 'Alt', 'Shift', 'Meta'].includes(k));
-        const isFunctionKey = capturedKeys.some(k => /^F(1[0-2]|[1-9])$/.test(k));
-        
-        // Show feedback about whether the combination is valid
-        if (isFunctionKey || (hasModifier && hasRegularKey)) {
-          return preview + ' ✓';
-        } else if (hasModifier && !hasRegularKey) {
-          return preview + '+ ?';
-        } else {
-          return preview + '...';
-        }
-      }
-    }
-    return localSettings.assistantHotkey || 'F2';
-  };
 
   return (
     <div className="settings">
@@ -239,60 +51,17 @@ function Settings({ settings, onChange }) {
           Hotkey Configuration
         </h3>
         <div className="setting-item">
-          <label htmlFor="hotkey">Recording Hotkey:</label>
-          <input
-            ref={hotkeyInputRef}
-            id="hotkey"
-            key="recording-hotkey"
-            type="text"
-            value={getHotkeyDisplayValue()}
-            onClick={handleHotkeyInputClick}
-            onKeyDown={handleHotkeyKeyDown}
-            onBlur={handleHotkeyInputBlur}
-            readOnly
-            placeholder="Click to set hotkey"
-            className={`input-field ${isListeningForHotkey ? 'listening' : ''}`}
-            style={{
-              cursor: 'pointer',
-              borderColor: isListeningForHotkey ? 'var(--primary)' : undefined,
-              boxShadow: isListeningForHotkey ? '0 0 0 3px rgba(0, 212, 255, 0.2)' : undefined
-            }}
+          <HotkeySelector
+            label="Recording Hotkey"
+            value={localSettings.hotkey}
+            onChange={(hotkey) => handleChange('hotkey', hotkey)}
+            placeholder="Press a key"
           />
           <div className="setting-description">
-            {isListeningForHotkey 
-              ? 'Press your desired key combination (e.g., Ctrl+Alt+S)'
-              : 'Click to change the global shortcut for voice recording'
-            }
+            Global shortcut to start/stop voice recording from any application
           </div>
         </div>
 
-        <div className="setting-item">
-          <label htmlFor="assistantHotkey">Assistant Hotkey:</label>
-          <input
-            ref={assistantHotkeyInputRef}
-            id="assistantHotkey"
-            key="assistant-hotkey"
-            type="text"
-            value={getAssistantHotkeyDisplayValue()}
-            onClick={handleAssistantHotkeyInputClick}
-            onKeyDown={handleHotkeyKeyDown}
-            onBlur={handleHotkeyInputBlur}
-            readOnly
-            placeholder="Click to set assistant hotkey"
-            className={`input-field ${isListeningForAssistantHotkey ? 'listening' : ''}`}
-            style={{
-              cursor: 'pointer',
-              borderColor: isListeningForAssistantHotkey ? 'var(--primary)' : undefined,
-              boxShadow: isListeningForAssistantHotkey ? '0 0 0 3px rgba(0, 212, 255, 0.2)' : undefined
-            }}
-          />
-          <div className="setting-description">
-            {isListeningForAssistantHotkey 
-              ? 'Press your desired key combination (e.g., F2, Ctrl+Alt+A)'
-              : 'Click to change the global shortcut for AI assistant activation'
-            }
-          </div>
-        </div>
       </div>
 
       <div className="settings-group">

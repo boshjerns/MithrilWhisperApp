@@ -50,7 +50,8 @@ const Navigation: React.FC = () => {
                 <span className="text-white">deploy</span> <span className="text-green-400">forward</span>
               </a>
               <a href="https://x.com/deployforward" target="_blank" 
-                 className="ml-1 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex">
+                 className="ml-1 p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex"
+                 aria-label="Deploy Forward on X">
                 <svg className="w-3 h-3" fill="url(#gradient-x-deploy)" viewBox="0 0 24 24">
                   <defs>
                     <linearGradient id="gradient-x-deploy" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -66,7 +67,7 @@ const Navigation: React.FC = () => {
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <button 
-                className="p-2 theme-toggle-nav group" 
+                className="p-3 theme-toggle-nav group" 
                 onClick={toggleTheme} 
                 aria-label="Toggle theme">
                 <svg 
@@ -87,7 +88,8 @@ const Navigation: React.FC = () => {
               <a 
                 href="https://github.com/boshjerns" 
                 target="_blank" 
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group">
+                className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group"
+                aria-label="Josh Berns on GitHub">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 
                   fill="currentColor" 
@@ -98,7 +100,8 @@ const Navigation: React.FC = () => {
               <a 
                 href="https://twitter.com/boshjerns" 
                 target="_blank" 
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group">
+                className="p-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group"
+                aria-label="Josh Berns on Twitter">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 
                   fill="currentColor" 

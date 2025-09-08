@@ -15,6 +15,11 @@
 .group:hover .group-hover\:text-white{color:#fff}
 @media(min-width:640px){.sm\:space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem*var(--tw-space-x-reverse));margin-left:calc(0.75rem*calc(1 - var(--tw-space-x-reverse)))}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:p-1\.5{padding:0.375rem}.sm\:w-3\.5{width:0.875rem}.sm\:h-3\.5{height:0.875rem}.sm\:w-4{width:1rem}.sm\:h-4{height:1rem}}
 
+/* Support for md: responsive utility used in JSX */
+@media(min-width:768px){
+  .md\:flex-row{flex-direction:row}
+}
+
 /* CSS Variables for theme switching */
 :root {
     --bg-primary: #0f172a;
@@ -677,7 +682,7 @@ body.light-mode .clean-download-windows {
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 640px) {
     .min-h-screen.flex {
         flex-direction: column;
         min-height: calc(100vh - 80px);

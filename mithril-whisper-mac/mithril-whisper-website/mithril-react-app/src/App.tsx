@@ -16,7 +16,7 @@ function App() {
           <MithrilWhisper />
           
           {/* Divider */}
-          <div className="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
+          <div className="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent hero-divider"></div>
           
           {/* Right Half - Local LM Suite */}
           <LocalLMSuite />

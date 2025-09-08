@@ -57,7 +57,7 @@ const MithrilWhisper: React.FC = () => {
   };
 
   return (
-    <div className="w-1/2 flex items-center justify-center px-4 py-4">
+    <div className="w-1/2 flex items-center justify-center px-4 py-4 hero-left">
       <div className="max-w-md w-full">
         {/* ASCII Art Logo */}
         <div className="ascii-title-card ascii-hero-card mb-4">

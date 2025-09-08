@@ -19,8 +19,8 @@ const LocalLMSuite: React.FC = () => {
         <picture>
           <source 
             type="image/webp"
-            srcSet="/images/frgerfge-450.webp 450w, /images/frgerfge-900.webp 900w"
-            sizes="(min-width: 1024px) 400px, (max-width: 640px) 90vw, 50vw"
+            srcSet="/images/frgerfge-450.webp 450w, /images/frgerfge-600.webp 600w, /images/frgerfge-900.webp 900w"
+            sizes="(max-width: 768px) 48vw, (min-width: 1280px) 420px, 360px"
           />
           <img 
             src="/frgerfge.png" 
@@ -35,8 +35,8 @@ const LocalLMSuite: React.FC = () => {
         <picture>
           <source 
             type="image/webp"
-            srcSet="/images/qwedfe-450.webp 450w, /images/qwedfe-900.webp 900w"
-            sizes="(min-width: 1024px) 400px, (max-width: 640px) 90vw, 50vw"
+            srcSet="/images/qwedfe-450.webp 450w, /images/qwedfe-600.webp 600w, /images/qwedfe-900.webp 900w"
+            sizes="(max-width: 768px) 48vw, (min-width: 1280px) 420px, 360px"
           />
           <img 
             src="/qwedfe.png" 

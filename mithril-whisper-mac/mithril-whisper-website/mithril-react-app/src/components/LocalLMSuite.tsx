@@ -15,7 +15,7 @@ const LocalLMSuite: React.FC = () => {
       </div>
 
       {/* Center Third - iPhone */}
-      <div className="flex-1 flex items-center justify-center gap-0 mb-4">
+      <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-0 mb-4">
         <picture>
           <source srcSet="/frgerfge.webp" type="image/webp" />
           <img 
@@ -23,7 +23,7 @@ const LocalLMSuite: React.FC = () => {
             alt="Mithril Local LLM Suite - Chat View" 
             className="h-[55vh] w-auto iphone-hero" 
             style={{ marginRight: 0 }}
-            loading="lazy"
+            fetchPriority="high"
           />
         </picture>
         <picture>
@@ -32,7 +32,7 @@ const LocalLMSuite: React.FC = () => {
             src="/qwedfe.png" 
             alt="Mithril Local LLM Suite - Model Manager" 
             className="h-[55vh] w-auto iphone-hero" 
-            loading="lazy"
+            fetchPriority="high"
           />
         </picture>
       </div>

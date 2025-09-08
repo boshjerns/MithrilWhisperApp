@@ -626,35 +626,75 @@
         
         /* iPhone and Mobile Phone Specific Optimizations */
         @media (max-width: 640px) {
-            /* Ensure ASCII art fits properly without cutoff */
+            /* Fix overall layout centering issues */
+            body, html {
+                overflow-x: hidden !important;
+            }
+            
+            /* Fix flex container for proper centering */
+            .min-h-screen.flex {
+                display: block !important;
+                width: 100vw !important;
+            }
+            
+            .min-h-\[calc\(100vh-5rem\)\] {
+                display: block !important;
+                width: 100vw !important;
+            }
+            
+            /* Ensure sections take full width and are properly aligned */
+            .w-1/2 {
+                width: 100vw !important;
+                display: block !important;
+                margin: 0 !important;
+                padding: 20px 0 !important;
+            }
+            
+            /* Ensure content containers are centered properly */
+            .max-w-md {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 10px !important;
+                box-sizing: border-box !important;
+            }
+            
+            /* Fix ASCII art centering and prevent cutoff */
             .ascii-art {
                 font-size: 0.35rem !important;
                 line-height: 0.35rem !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                padding: 0 1px !important;
+                padding: 0 5px !important;
                 margin: 0 auto !important;
                 text-align: center !important;
-                overflow-x: auto !important;
+                box-sizing: border-box !important;
+                overflow-x: hidden !important;
             }
             
-            /* Ensure download buttons are properly centered */
+            /* Ensure download buttons are centered */
             .space-y-2 {
-                width: 90% !important;
+                width: 100% !important;
                 max-width: 300px !important;
                 margin: 0 auto !important;
+                padding: 0 10px !important;
             }
             
-            /* Remove padding that might cause cutoff */
-            .px-4 {
-                padding-left: 5px !important;
-                padding-right: 5px !important;
+            /* Fix iPhone container centering */
+            .flex.items-center.justify-center.gap-0.scale-110 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
+                padding: 0 10px !important;
+                box-sizing: border-box !important;
             }
             
-            /* Ensure iPhone screenshots don't get cut off */
+            /* Ensure iPhone screenshots fit properly */
             .flex.items-center.justify-center.gap-0.scale-110 img {
-                width: 90vw !important;
-                max-width: 90vw !important;
+                width: 95vw !important;
+                max-width: 95vw !important;
+                margin: 0 auto !important;
+                display: block !important;
             }
             
             /* Ensure first section (Mithril Whisper) takes full height and width */

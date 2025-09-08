@@ -833,7 +833,7 @@ body.light-mode .clean-download-windows {
         box-sizing: border-box;
     }
     
-    /* ASCII art styling - mobile fit without clipping */
+    /* ASCII art styling - mobile fit without clipping and centered */
     .ascii-art {
         font-family: 'Courier New', monospace;
         line-height: 1;
@@ -846,7 +846,8 @@ body.light-mode .clean-download-windows {
         margin: 0 auto;
         width: 100%;
         max-width: 100%;
-        padding: 0 clamp(20px, 6vw, 32px); /* dynamic side-safe area */
+        padding-left: calc(env(safe-area-inset-left, 0px) + clamp(24px, 7vw, 40px));
+        padding-right: calc(env(safe-area-inset-right, 0px) + clamp(24px, 7vw, 40px));
         box-sizing: border-box;
         display: inline-block;
         transform: scale(0.88); /* balanced fit */
@@ -1063,13 +1064,13 @@ footer {
 }
 
 /* Mobile legibility: keep main ASCII >=12px; keep nav compact */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .ascii-art,
     .mithril-compact-ascii {
         font-size: 0.75rem !important; /* 12px minimum */
         line-height: 1 !important;
     }
-    .nav-solutions-text { /* avoid overlap with icon buttons */
+    nav .nav-solutions-text { /* avoid overlap with icon buttons */
         display: none !important;
     }
     .ascii-nav-card {

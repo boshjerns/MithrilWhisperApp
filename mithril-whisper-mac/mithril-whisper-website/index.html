@@ -48,12 +48,12 @@
         .nav-ascii-solutions {
             font-family: 'Courier New', monospace;
             line-height: 1;
-            font-size: clamp(4px, 0.8vw, 8px);
+            font-size: clamp(14px, 2.5vw, 18px);
             color: #3b82f6;
             text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-            white-space: pre;
+            white-space: nowrap;
             font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
             margin: 0;
             padding: 0;
         }
@@ -63,8 +63,8 @@
                 letter-spacing: 0.5px;
             }
             .nav-ascii-solutions {
-                font-size: 3px;
-                letter-spacing: 0.2px;
+                font-size: 12px;
+                letter-spacing: 1px;
             }
             .nav-attribution {
                 display: none;
@@ -302,7 +302,8 @@
         }
         @media (max-width: 768px) {
             .nav-ascii-solutions {
-                font-size: 2.5px;
+                font-size: 10px;
+                letter-spacing: 0.5px;
             }
             .w-1/2 {
                 padding: 1.5rem 1rem;
@@ -349,19 +350,7 @@
             <!-- Desktop Navigation -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <pre class="nav-ascii-solutions">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
-████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
-██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
-██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
-██║ ╚═╝ ██║██║   ██║   ██║  ██║██║  ██║██║███████╗
-╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝
-
-███████╗ ██████╗ ██╗     ██╗   ██╗████████╗██╗ ██████╗ ███╗   ███╗███████╗
-██╔════╝██╔═══██╗██║     ██║   ██║╚══██╔══╝██║██╔═══██╗████╗ ████║██╔════╝
-███████╗██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██╔████╔██║███████╗
-╚════██║██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██║╚██╔╝██║╚════██║
-███████║╚██████╔╝███████╗╚██████╔╝   ██║   ██║╚██████╔╝██║ ╚═╝ ██║███████║
-╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝</pre>
+                    <span class="nav-ascii-solutions">MITHRIL.SOLUTIONS</span>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <!-- Full attribution (desktop only) -->

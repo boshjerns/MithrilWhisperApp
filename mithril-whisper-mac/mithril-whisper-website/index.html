@@ -176,6 +176,19 @@
             transform: rotate(180deg);
         }
 
+        /* iPhone Container - Side by Side */
+        .iphone-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            transform: translateX(0);
+        }
+        
+        .iphone-container img:last-child {
+            margin-left: -80px;
+        }
+        
         /* iPhone Hero Styles */
         .iphone-hero {
             filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6));
@@ -248,14 +261,57 @@
             letter-spacing: 0.5px;
         }
         
-        /* MITHRIL ASCII Title - Orange like in the app */
-        .mithril-ascii-title {
+        /* Slim Title Card */
+        .ascii-title-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        /* Compact MITHRIL ASCII Art */
+        .mithril-compact-ascii {
             font-family: 'Courier New', 'Monaco', monospace;
-            font-size: clamp(1.8rem, 2.5vw, 2.2rem);
-            font-weight: 900;
+            font-size: clamp(0.35rem, 0.65vw, 0.55rem);
+            font-weight: bold;
             color: #FFA500;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+            text-shadow: 0 0 12px rgba(255, 165, 0, 0.6);
+            line-height: 1;
+            margin: 0 0 4px 0;
+            white-space: pre;
+        }
+        
+        /* Compact Subtitle */
+        .app-subtitle-compact {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            font-size: clamp(0.7rem, 0.85vw, 0.8rem);
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        
+        /* Compact Feature Text */
+        .simple-feature-text-compact {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            font-size: clamp(0.9rem, 1.1vw, 1rem);
+            font-weight: 400;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+        
+        /* Compact Coming Soon */
+        .coming-soon-compact {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+            font-weight: 600;
+            color: #3b82f6;
+            letter-spacing: 0.5px;
+            margin: 0;
         }
         
         /* App Subtitle - Clean minimal style */
@@ -334,8 +390,17 @@
                 font-size: clamp(0.7rem, 0.85vw, 0.8rem);
                 padding: 4px 10px;
             }
-            .mithril-ascii-title {
-                font-size: clamp(1.5rem, 2vw, 1.8rem);
+            .mithril-compact-ascii {
+                font-size: clamp(0.25rem, 0.5vw, 0.4rem);
+            }
+            .ascii-title-card {
+                padding: 6px 8px;
+            }
+            .simple-feature-text-compact {
+                font-size: clamp(0.8rem, 1vw, 0.9rem);
+            }
+            .coming-soon-compact {
+                font-size: clamp(0.9rem, 1.1vw, 1rem);
             }
             .simple-feature-text {
                 font-size: clamp(0.95rem, 1.2vw, 1.1rem);
@@ -360,9 +425,153 @@
                 padding: 1.5rem 1rem;
             }
         }
+        
+        /* iPhone and Mobile Phone Specific Optimizations */
+        @media (max-width: 640px) {
+            /* Stack layout vertically for mobile */
+            .min-h-screen.flex {
+                flex-direction: column !important;
+            }
+            
+            /* Full width sections on mobile */
+            .w-1/2, .w-1/3 {
+                width: 100% !important;
+                min-height: auto !important;
+            }
+            
+            /* Hide desktop divider */
+            .w-px {
+                display: none !important;
+            }
+            
+            /* Adjust main padding for fixed nav */
+            main.pt-20 {
+                padding-top: 60px !important;
+            }
+            
+            /* Mithril Whisper section adjustments */
+            .ascii-art {
+                font-size: 0.45rem !important;
+                line-height: 0.45rem !important;
+            }
+            
+            /* Stack iPhone screenshots vertically */
+            .flex.items-center.justify-center.gap-0.scale-125 {
+                flex-direction: column !important;
+                transform: scale(1) !important;
+                gap: 1.5rem !important;
+                margin-bottom: 2rem !important;
+            }
+            
+            .flex.items-center.justify-center.gap-0.scale-125 img {
+                margin-right: 0 !important;
+                height: auto !important;
+                max-height: 50vh !important;
+                width: 85% !important;
+                max-width: 320px !important;
+            }
+            
+            /* Mithril Local LM Suite title adjustments */
+            .mithril-compact-ascii {
+                font-size: 0.35rem !important;
+                line-height: 0.35rem !important;
+            }
+            
+            .app-subtitle-compact {
+                font-size: 0.85rem !important;
+            }
+            
+            .ascii-title-card {
+                margin-bottom: 1.5rem !important;
+                padding: 6px 10px !important;
+            }
+            
+            /* Download buttons full width */
+            .clean-download-mac, .clean-download-windows {
+                width: 100% !important;
+                font-size: 0.85rem !important;
+                padding: 0.75rem !important;
+            }
+            
+            /* Feature text adjustments */
+            .simple-feature-text-compact {
+                font-size: 0.9rem !important;
+            }
+            
+            .coming-soon-compact {
+                font-size: 0.85rem !important;
+            }
+            
+            /* Navigation adjustments for mobile */
+            .nav-attribution {
+                display: none !important;
+            }
+            
+            .nav-attribution-mobile {
+                display: block !important;
+            }
+            
+            /* Padding adjustments */
+            .px-4 {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            
+            .py-4 {
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+            
+            /* Footer adjustments */
+            footer {
+                padding: 1.5rem 1rem !important;
+            }
+        }
         body {
             background: linear-gradient(135deg, #0f172a, #1e293b);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Ensure content fits viewport */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        main {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Desktop viewport optimization */
+        @media (min-width: 1024px) {
+            .min-h-[calc(100vh-5rem)] {
+                display: flex;
+                align-items: stretch;
+            }
+            
+            /* Constrain iPhone images on very large screens */
+            .flex.items-center.justify-center.gap-0.scale-110 img {
+                max-height: min(55vh, 600px);
+            }
+        }
+        
+        /* Prevent overflow on all screen sizes */
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* Ensure footer stays at bottom */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        footer {
+            margin-top: auto;
         }
         .bounce-arrows {
             animation: bounce 2s infinite;
@@ -396,7 +605,7 @@
 </head>
 <body class="text-white">
     <!-- Navigation -->
-    <nav class="p-4 border-b border-gray-700">
+    <nav class="fixed top-0 left-0 right-0 z-50 p-4 border-b border-gray-700 bg-gray-900/95 backdrop-blur-sm">
         <div class="max-w-6xl mx-auto">
             <!-- Desktop Navigation -->
             <div class="flex items-center justify-between">
@@ -410,8 +619,22 @@
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <!-- Full attribution (desktop only) -->
-                    <div class="nav-attribution text-gray-300 hover:text-white transition-colors text-xs sm:text-sm">
-                        by <a href="https://deployforward.com/mithril" target="_blank" class="hover:text-white"><span class="text-white">deploy</span> <span class="text-green-400">forward</span></a>/<span class="text-blue-400">mithril solutions</span> & <span class="text-white">Josh Berns</span>
+                    <div class="nav-attribution text-gray-300 hover:text-white transition-colors text-xs sm:text-sm flex items-center">
+                        <span class="mr-2">by</span>
+                        <a href="https://deployforward.com/mithril" target="_blank" class="hover:text-white"><span class="text-white">deploy</span> <span class="text-green-400">forward</span></a>
+                        <a href="https://x.com/deployforward" target="_blank" class="ml-1 p-1 sm:p-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="url(#gradient-x-deploy)" viewBox="0 0 24 24">
+                                <defs>
+                                    <linearGradient id="gradient-x-deploy" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                        <span class="mx-2">|</span>
+                        <span class="text-white">Josh Berns</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <!-- GitHub Icon -->
@@ -437,8 +660,8 @@
     </nav>
 
     <!-- Split Hero Section -->
-    <main class="flex-1">
-        <div class="min-h-screen flex">
+    <main class="flex-1 pt-20">
+        <div class="min-h-[calc(100vh-5rem)] flex">
             <!-- Left Half - Mithril Whisper -->
             <div class="w-1/2 flex items-center justify-center px-4 py-4">
                 <div class="max-w-md w-full">
@@ -457,8 +680,8 @@
 ██║███╗██║██╔══██║██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
 ╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝</pre>
-                    </div>
-                    
+            </div>
+            
                     <h2 class="text-sm text-gray-300 mb-4 text-center">Privacy-First AI Voice Dictation</h2>
                     
                     <!-- Clean Download Buttons -->
@@ -468,62 +691,62 @@
                             <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-4 py-3 rounded-lg font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg text-sm">
                                 <div class="flex items-center space-x-3">
                                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                                    </svg>
-                                    <span>Download for Mac</span>
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>Download for Mac</span>
                                 </div>
-                                <svg class="w-4 h-4 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        <svg class="w-4 h-4 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="macDropdownContent" class="mac-dropdown-content">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                 </svg>
-                            </button>
-                            <div id="macDropdownContent" class="mac-dropdown-content">
-                                <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg">
-                                    <div class="flex items-center space-x-3">
-                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        <div>
-                                            <div class="font-semibold">🍎 Apple Silicon Macs</div>
-                                            <div class="text-sm text-gray-600">M1, M2, M3 chips (2020+) • 196MB</div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg">
-                                    <div class="flex items-center space-x-3">
-                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                                        </svg>
-                                        <div>
-                                            <div class="font-semibold">💻 Intel Macs</div>
-                                            <div class="text-sm text-gray-600">Intel processors (2019 and earlier) • 208MB</div>
-                                        </div>
-                                    </div>
-                                </a>
+                                <div>
+                                    <div class="font-semibold">🍎 Apple Silicon Macs</div>
+                                    <div class="text-sm text-gray-600">M1, M2, M3 chips (2020+) • 196MB</div>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Windows Download -->
+                        </a>
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                                </svg>
+                                <div>
+                                    <div class="font-semibold">💻 Intel Macs</div>
+                                    <div class="text-sm text-gray-600">Intel processors (2019 and earlier) • 208MB</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Windows Download -->
                         <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg text-sm">
                             <div class="flex items-center justify-center space-x-3">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
-                                </svg>
-                                <span>Download for Windows</span>
+                        <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
+                    </svg>
+                    <span>Download for Windows</span>
                             </div>
-                        </a>
-                    </div>
-                    
-                    <!-- GitHub Link -->
+                </a>
+            </div>
+            
+            <!-- GitHub Link -->
                     <div class="flex justify-center mb-3">
                         <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-colors text-sm">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-                            </svg>
-                            <span>View on GitHub</span>
+                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    <span>View on GitHub</span>
                             <span id="star-count" class="bg-gray-800 px-2 py-1 rounded text-xs"></span>
-                        </a>
-                    </div>
-                    
+                </a>
+            </div>
+
                     <!-- Privacy Link -->
                     <div class="flex justify-center">
                         <a href="privacy.html" class="text-gray-400 hover:text-white text-xs transition-colors underline">
@@ -537,36 +760,28 @@
             <div class="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
             
             <!-- Right Half - Local LM Suite -->
-            <div class="w-1/2 flex items-center px-4">
-                <div class="flex items-center justify-center w-full h-full gap-8">
-                    <!-- iPhone Screenshot - Large -->
-                    <div class="flex-shrink-0">
-                        <img src="asdasd.png" alt="Mithril Local LLM Suite iPhone App" class="max-h-[80vh] w-auto iphone-hero">
-                    </div>
-                    
-                <!-- App Title and Description - Styled like the App -->
-                <div class="flex flex-col justify-center max-w-xs">
-                    <!-- MITHRIL in Orange ASCII Style -->
-                    <div class="mb-3">
-                        <span class="mithril-ascii-title">MITHRIL</span>
-                    </div>
-                    
-                    <!-- Local LLM: Mithril subtitle -->
-                    <div class="mb-6">
-                        <span class="app-subtitle">LOCAL LLM: MITHRIL</span>
-                    </div>
-                    
-                    <!-- Simple feature text -->
-                    <div class="simple-features mb-8">
-                        <p class="simple-feature-text">100% on device</p>
-                        <p class="simple-feature-text">100% private</p>
-                    </div>
-                    
-                    <!-- Coming Soon -->
-                    <div class="coming-soon-simple">
-                        <span>Coming Soon</span>
-                    </div>
+            <div class="w-1/2 flex flex-col items-center justify-between px-4 py-4">
+                <!-- Slim Title Card -->
+                <div class="ascii-title-card mb-4">
+                    <pre class="mithril-compact-ascii">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
+████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
+██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
+██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
+██║ ╚═╝ ██║██║   ██║   ██║  ██║██║  ██║██║███████╗
+╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝</pre>
+                    <p class="app-subtitle-compact">LOCAL LLM SUITE</p>
+            </div>
+
+                <!-- Center Third - iPhone -->
+                <div class="flex-1 flex items-center justify-center gap-0 scale-110 mb-4">
+                    <img src="frgerfge.png" alt="Mithril Local LLM Suite - Chat View" class="h-[55vh] w-auto iphone-hero" style="margin-right: -40px; max-height: 600px;">
+                    <img src="qwedfe.png" alt="Mithril Local LLM Suite - Model Manager" class="h-[55vh] w-auto iphone-hero" style="max-height: 600px;">
                 </div>
+
+                <!-- Right Third - Local LM Suite Description -->
+                <div class="text-center">
+                    <p class="simple-feature-text-compact mb-1">100% on device • 100% private</p>
+                    <p class="coming-soon-compact">Coming Soon</p>
                 </div>
             </div>
         </div>
@@ -578,7 +793,7 @@
         <div class="max-w-6xl mx-auto text-center text-gray-400 text-sm">
             <div class="flex justify-center items-center space-x-4 mb-3">
                 <a href="https://deployforward.com/mithril" target="_blank" class="hover:text-white transition-colors">
-                    by <span class="text-white">deploy</span> <span class="text-green-400">forward</span>/<span class="text-blue-400">mithril solutions</span> & <span class="text-white">Josh Berns</span>
+                    by <span class="text-white">deploy</span> <span class="text-green-400">forward</span> | <span class="text-blue-400">mithril solutions</span> | <span class="text-white">Josh Berns</span>
                 </a>
             </div>
             <div class="mb-3 text-xs">
@@ -588,7 +803,7 @@
                 </a>
                 <span class="text-gray-300" style="font-family: 'Courier New', monospace;"> • Free for personal use • Commercial licensing available</span>
             </div>
-            <p>© 2025 deploy forward, mithril solutions & Josh Berns.</p>
+            <p>© 2025 deploy forward LLC</p>
         </div>
     </footer>
 

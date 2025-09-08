@@ -28,13 +28,7 @@
         /* Critical CSS - Minified Tailwind utilities */
         *,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:transparent;background-image:none}img,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}
         
-        /* Mobile specific box-sizing fix */
-        @media (max-width: 640px) {
-            *, ::after, ::before {
-                box-sizing: border-box !important;
-            }
-        }
-        .flex{display:flex}.hidden{display:none}.block{display:block}.inline-flex{display:inline-flex}.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0{gap:0}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-8{gap:2rem}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}
+                .flex{display:flex}.hidden{display:none}.block{display:block}.inline-flex{display:inline-flex}.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0{gap:0}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-8{gap:2rem}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}
         .w-full{width:100%}.w-auto{width:auto}.w-px{width:1px}.w-1\/2{width:50%}.w-1\/3{width:33.333333%}.w-3{width:0.75rem}.w-4{width:1rem}.w-5{width:1.25rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-5{height:1.25rem}.max-w-md{max-width:28rem}.max-w-6xl{max-width:72rem}.min-h-screen{min-height:100vh}
         .fixed{position:fixed}.relative{position:relative}.top-0{top:0}.left-0{left:0}.right-0{right:0}.bottom-20{bottom:5rem}.z-50{z-index:50}.z-100{z-index:100}
         .mx-1{margin-left:0.25rem;margin-right:0.25rem}.mx-2{margin-left:0.5rem;margin-right:0.5rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-8{margin-bottom:2rem}.ml-1{margin-left:0.25rem}.mr-2{margin-right:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}
@@ -632,51 +626,35 @@
         
         /* iPhone and Mobile Phone Specific Optimizations */
         @media (max-width: 640px) {
-            /* Remove all margins and padding from body and html */
-            body, html {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
-                overflow-x: hidden !important;
+            /* Ensure ASCII art fits properly without cutoff */
+            .ascii-art {
+                font-size: 0.35rem !important;
+                line-height: 0.35rem !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 1px !important;
+                margin: 0 auto !important;
+                text-align: center !important;
+                overflow-x: auto !important;
             }
             
-            /* Fix flex container for mobile */
-            .min-h-\[calc\(100vh-5rem\)\] {
-                display: flex !important;
-                flex-direction: column !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
-                align-items: stretch !important;
-                margin: 0 !important;
-                padding: 0 !important;
+            /* Ensure download buttons are properly centered */
+            .space-y-2 {
+                width: 90% !important;
+                max-width: 300px !important;
+                margin: 0 auto !important;
             }
             
-            /* Stack layout vertically for mobile and remove all width constraints */
-            .min-h-screen.flex {
-                flex-direction: column !important;
-                margin: 0 !important;
-                padding: 0 !important;
+            /* Remove padding that might cause cutoff */
+            .px-4 {
+                padding-left: 5px !important;
+                padding-right: 5px !important;
             }
             
-            /* Ensure all containers take full width and remove padding */
-            .w-1/2, .w-full, .max-w-md, .px-4, .px-8 {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                box-sizing: border-box !important;
-            }
-            
-            /* Fix main container */
-            main {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-sizing: border-box !important;
+            /* Ensure iPhone screenshots don't get cut off */
+            .flex.items-center.justify-center.gap-0.scale-110 img {
+                width: 90vw !important;
+                max-width: 90vw !important;
             }
             
             /* Ensure first section (Mithril Whisper) takes full height and width */

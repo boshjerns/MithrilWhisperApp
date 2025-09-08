@@ -29,7 +29,7 @@
         .ascii-art {
             font-family: 'Courier New', monospace;
             line-height: 1;
-            font-size: clamp(0.5rem, 2vw, 1rem);
+            font-size: clamp(0.3rem, 1.5vw, 0.75rem);
             color: #3b82f6;
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
             white-space: pre;
@@ -48,12 +48,12 @@
         .nav-ascii-solutions {
             font-family: 'Courier New', monospace;
             line-height: 1;
-            font-size: clamp(14px, 2.5vw, 18px);
+            font-size: clamp(8px, 1.5vw, 12px);
             color: #3b82f6;
             text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
             white-space: nowrap;
             font-weight: bold;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             margin: 0;
             padding: 0;
         }
@@ -63,8 +63,8 @@
                 letter-spacing: 0.5px;
             }
             .nav-ascii-solutions {
-                font-size: 12px;
-                letter-spacing: 1px;
+                font-size: 8px;
+                letter-spacing: 0.5px;
             }
             .nav-attribution {
                 display: none;
@@ -155,7 +155,7 @@
 
         /* iPhone Mockup Styles */
         .iphone-mockup {
-            max-width: 280px;
+            max-width: 200px;
         }
         .iphone-frame {
             background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
@@ -293,17 +293,17 @@
                 height: 1px;
             }
             .ascii-art {
-                font-size: clamp(0.3rem, 1.2vw, 0.7rem);
-                margin-bottom: 1.5rem;
+                font-size: clamp(0.25rem, 1vw, 0.6rem);
+                margin-bottom: 1rem;
             }
             .iphone-mockup {
-                max-width: 200px;
+                max-width: 150px;
             }
         }
         @media (max-width: 768px) {
             .nav-ascii-solutions {
-                font-size: 10px;
-                letter-spacing: 0.5px;
+                font-size: 6px;
+                letter-spacing: 0.2px;
             }
             .w-1/2 {
                 padding: 1.5rem 1rem;
@@ -350,7 +350,7 @@
             <!-- Desktop Navigation -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <span class="nav-ascii-solutions">MITHRIL.SOLUTIONS</span>
+                    <span class="nav-ascii-solutions">▀█▀▄▀█ █ ▀█▀ █▀▀█ █▀▀█ █   █ • █▀▀ █▀▀█ █  █ █ █ ▀█▀ █▀▀█ █▀▀█ █▀▀</span>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <!-- Full attribution (desktop only) -->
@@ -384,11 +384,11 @@
     <main class="flex-1">
         <div class="min-h-screen flex">
             <!-- Left Half - Mithril Whisper -->
-            <div class="w-1/2 flex items-center justify-center px-6 py-8">
-                <div class="max-w-lg w-full">
+            <div class="w-1/2 flex items-center justify-center px-4 py-4">
+                <div class="max-w-md w-full">
                     <!-- ASCII Art Logo -->
-                    <div class="mb-6">
-                        <pre class="ascii-art text-center">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
+                    <div class="mb-4">
+                        <pre class="ascii-art text-center text-xs">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
 ████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
 ██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
 ██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
@@ -403,13 +403,13 @@
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝</pre>
                     </div>
                     
-                    <h2 class="text-lg text-gray-300 mb-6 text-center">Privacy-First AI Voice Dictation</h2>
+                    <h2 class="text-sm text-gray-300 mb-4 text-center">Privacy-First AI Voice Dictation</h2>
                     
                     <!-- Clean Download Buttons -->
-                    <div class="space-y-3 mb-6">
+                    <div class="space-y-2 mb-4">
                         <!-- Mac Download -->
                         <div class="mac-dropdown w-full">
-                            <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-6 py-4 rounded-xl font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg">
+                            <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-4 py-3 rounded-lg font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg text-sm">
                                 <div class="flex items-center space-x-3">
                                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -447,7 +447,7 @@
                         </div>
                         
                         <!-- Windows Download -->
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-6 py-4 rounded-xl font-medium transition-all duration-200 hover:shadow-lg">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg text-sm">
                             <div class="flex items-center justify-center space-x-3">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
@@ -474,13 +474,13 @@
             <div class="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
             
             <!-- Right Half - Local LM Suite -->
-            <div class="w-1/2 flex items-center justify-center px-6 py-8">
-                <div class="max-w-lg w-full text-center">
-                    <h2 class="text-2xl font-bold text-white mb-3">Mithril Local LM Suite</h2>
-                    <p class="text-blue-400 text-base mb-4 font-medium">Coming Soon</p>
+            <div class="w-1/2 flex items-center justify-center px-4 py-4">
+                <div class="max-w-md w-full text-center">
+                    <h2 class="text-xl font-bold text-white mb-2">Mithril Local LM Suite</h2>
+                    <p class="text-blue-400 text-sm mb-3 font-medium">Coming Soon</p>
                     
                     <!-- iPhone Mockup -->
-                    <div class="iphone-mockup mx-auto mb-6">
+                    <div class="iphone-mockup mx-auto mb-4">
                         <div class="iphone-frame">
                             <div class="iphone-screen">
                                 <!-- Status Bar -->
@@ -526,7 +526,7 @@
                     </div>
                     
                     <!-- Features -->
-                    <div class="space-y-2 text-left max-w-sm mx-auto mb-6">
+                    <div class="space-y-1 text-left max-w-xs mx-auto mb-4">
                         <div class="flex items-center space-x-3 text-gray-300">
                             <div class="w-2 h-2 bg-green-400 rounded-full"></div>
                             <span class="text-sm">100% Local Processing</span>

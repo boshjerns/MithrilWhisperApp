@@ -639,6 +639,14 @@ body.light-mode .clean-download-windows {
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
+}
+/* Ensure the ASCII inside hero card truly centers */
+.ascii-hero-card .ascii-art {
+    display: inline-block;
+    width: auto;
+    margin: 0 auto;
+    transform: scale(0.88) !important; /* override any mobile nudge */
 }
 @media (max-width: 640px) {
     .ascii-hero-card {

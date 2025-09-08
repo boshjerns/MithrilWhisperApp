@@ -646,8 +646,10 @@ body.light-mode .clean-download-windows {
     display: inline-block;
     width: auto;
     margin: 0 auto;
-    transform: scale(0.88) !important; /* override any mobile nudge */
+    transform: translateX(-1%) scale(0.88) !important; /* slight left bias and fit */
+    overflow: hidden !important; /* never show internal scrollbar */
 }
+.ascii-hero-card .ascii-art::-webkit-scrollbar { display: none; }
 @media (max-width: 640px) {
     .ascii-hero-card {
         padding-left: clamp(12px, 5vw, 20px);

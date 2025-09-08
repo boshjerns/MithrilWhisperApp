@@ -51,7 +51,7 @@ const Navigation: React.FC = () => {
               </a>
               <a href="https://x.com/deployforward" target="_blank" 
                  rel="noopener noreferrer"
-                 className="ml-1 p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex"
+                 className="ml-1 p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex nav-icon-btn"
                  aria-label="Deploy Forward on X">
                 <svg className="w-3 h-3" fill="url(#gradient-x-deploy)" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <defs>
@@ -68,7 +68,7 @@ const Navigation: React.FC = () => {
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <button 
-                className="p-4 theme-toggle-nav group" 
+                className="p-4 theme-toggle-nav group"
                 onClick={toggleTheme} 
                 aria-label="Toggle theme">
                 <svg 
@@ -90,7 +90,7 @@ const Navigation: React.FC = () => {
                 href="https://github.com/boshjerns" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group"
+                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn"
                 aria-label="Josh Berns on GitHub">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 
@@ -105,7 +105,7 @@ const Navigation: React.FC = () => {
                 href="https://twitter.com/boshjerns" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group"
+                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn"
                 aria-label="Josh Berns on Twitter">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 

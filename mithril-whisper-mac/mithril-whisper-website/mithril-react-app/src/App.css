@@ -183,13 +183,36 @@ body.light-mode .bg-gradient-to-b {
 /* Theme toggle buttons in navigation */
 .theme-toggle-nav {
     background: var(--button-bg);
-    border: 1px solid var(--border-color);
+    border: none; /* remove outline/stroke around theme icon */
     border-radius: 0.5rem;
     transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .theme-toggle-nav:hover {
     background: var(--button-hover);
+}
+
+/* Icon buttons in nav (GitHub, X, etc.) */
+.nav-icon-btn {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    border: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.nav-icon-btn:focus,
+.nav-icon-btn:focus-visible,
+.theme-toggle-nav:focus,
+.theme-toggle-nav:focus-visible,
+.nav-icon-btn svg:focus,
+.theme-toggle-nav svg:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .nav-ascii {

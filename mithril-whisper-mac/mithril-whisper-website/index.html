@@ -45,26 +45,49 @@
             font-weight: bold;
             letter-spacing: 1px;
         }
-        .nav-ascii-solutions {
+        .ascii-nav-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-ascii-art {
             font-family: 'Courier New', monospace;
             line-height: 1;
-            font-size: clamp(8px, 1.5vw, 12px);
+            font-size: 8px;
             color: #3b82f6;
             text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-            white-space: nowrap;
+            white-space: pre;
             font-weight: bold;
-            letter-spacing: 1px;
             margin: 0;
             padding: 0;
+        }
+        .nav-solutions-text {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #3b82f6;
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+            font-weight: bold;
+            letter-spacing: 1px;
         }
         @media (max-width: 640px) {
             .nav-ascii {
                 font-size: 12px;
                 letter-spacing: 0.5px;
             }
-            .nav-ascii-solutions {
+            .nav-ascii-art {
+                font-size: 6px;
+            }
+            .nav-solutions-text {
                 font-size: 8px;
                 letter-spacing: 0.5px;
+            }
+            .ascii-nav-card {
+                padding: 6px 8px;
+                gap: 6px;
             }
             .nav-attribution {
                 display: none;
@@ -301,9 +324,16 @@
             }
         }
         @media (max-width: 768px) {
-            .nav-ascii-solutions {
-                font-size: 6px;
+            .nav-ascii-art {
+                font-size: 5px;
+            }
+            .nav-solutions-text {
+                font-size: 7px;
                 letter-spacing: 0.2px;
+            }
+            .ascii-nav-card {
+                padding: 4px 6px;
+                gap: 4px;
             }
             .w-1/2 {
                 padding: 1.5rem 1rem;
@@ -350,7 +380,12 @@
             <!-- Desktop Navigation -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <span class="nav-ascii-solutions">▀█▀▄▀█ █ ▀█▀ █▀▀█ █▀▀█ █   █ • █▀▀ █▀▀█ █  █ █ █ ▀█▀ █▀▀█ █▀▀█ █▀▀</span>
+                    <div class="ascii-nav-card">
+                        <pre class="nav-ascii-art">█▄█ █ ▀█▀ █▄█ █▀▄ █ █
+█ █ █  █  █▀█ █▀▄ █ █
+█ █ █  █  █ █ █▀▄ █ █▄</pre>
+                        <div class="nav-solutions-text">SOLUTIONS</div>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <!-- Full attribution (desktop only) -->

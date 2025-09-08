@@ -833,7 +833,7 @@ body.light-mode .clean-download-windows {
         box-sizing: border-box;
     }
     
-    /* ASCII art styling - match original HTML exactly */
+    /* ASCII art styling - mobile fit without clipping */
     .ascii-art {
         font-family: 'Courier New', monospace;
         line-height: 1;
@@ -846,10 +846,10 @@ body.light-mode .clean-download-windows {
         margin: 0 auto;
         width: 100%;
         max-width: 100%;
-        padding: 0 16px; /* extra breathing room to avoid right-edge crop */
+        padding: 0 clamp(20px, 6vw, 32px); /* dynamic side-safe area */
         box-sizing: border-box;
         display: inline-block;
-        transform: scale(0.84); /* slightly more room */
+        transform: scale(0.88); /* balanced fit */
         transform-origin: top center;
         will-change: transform;
     }
@@ -1062,14 +1062,15 @@ footer {
     border-top: 1px solid #374151;
 }
 
-/* Mobile legibility: keep ASCII visible but ensure >=12px */
+/* Mobile legibility: keep main ASCII >=12px; keep nav compact */
 @media (max-width: 640px) {
     .ascii-art,
-    .mithril-compact-ascii,
-    .nav-ascii-art,
-    .nav-solutions-text {
+    .mithril-compact-ascii {
         font-size: 0.75rem !important; /* 12px minimum */
         line-height: 1 !important;
+    }
+    .nav-solutions-text { /* avoid overlap with icon buttons */
+        display: none !important;
     }
     .ascii-nav-card {
         display: inline-flex !important;

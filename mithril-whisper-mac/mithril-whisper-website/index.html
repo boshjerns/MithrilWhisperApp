@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MITHRIL WHISPER - Privacy-First AI Voice Dictation and Assistant</title>
     
     <!-- Favicon -->
@@ -656,6 +656,28 @@
                 width: 100% !important;
                 overflow-x: hidden;
                 padding: 0 10px !important;
+            }
+            /* Override fixed width constraints for mobile */
+            .w-1/2 {
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+            /* Ensure main content container takes full width */
+            .w-full {
+                width: 100vw !important;
+                max-width: 100vw !important;
+            }
+            /* Ensure body takes full width */
+            body, html {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
+            }
+            /* Ensure main container takes full width */
+            main {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                overflow-x: hidden !important;
             }
             
             /* Full width sections on mobile */

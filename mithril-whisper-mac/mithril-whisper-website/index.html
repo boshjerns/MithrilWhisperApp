@@ -383,6 +383,10 @@
         /* iPhone Hero Styles */
         .iphone-hero {
             filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6));
+            object-fit: cover;
+            height: 72vh !important;
+            max-height: 780px !important;
+            width: auto !important;
         }
         
         /* Main App Title */
@@ -567,7 +571,8 @@
                 font-size: clamp(1.5rem, 2.5vw, 2rem);
             }
             .iphone-hero {
-                max-height: 70vh;
+                height: 72vh !important;
+                max-height: 80vh !important;
             }
             .feature-item {
                 font-size: clamp(0.9rem, 1.1vw, 1rem);
@@ -620,6 +625,12 @@
         
         /* iPhone and Mobile Phone Specific Optimizations */
         @media (max-width: 640px) {
+            /* Ensure iPhone screenshots have the same height */
+            .iphone-hero {
+                height: 60vh !important;
+                max-height: 60vh !important;
+                width: auto !important;
+            }
             /* Stack layout vertically for mobile */
             .min-h-screen.flex {
                 flex-direction: column !important;
@@ -657,10 +668,10 @@
             
             .flex.items-center.justify-center.gap-0.scale-110 img {
                 margin-right: 0 !important;
-                height: auto !important;
-                max-height: 50vh !important;
-                width: 85% !important;
-                max-width: 320px !important;
+                height: 60vh !important;
+                max-height: 60vh !important;
+                width: auto !important;
+                max-width: 85% !important;
             }
             
             /* Mithril Local LM Suite title adjustments */
@@ -1100,17 +1111,14 @@
                         <source srcset="frgerfge.webp" type="image/webp">
                         <img src="frgerfge.png" alt="Mithril Local LLM Suite - Chat View" 
                              class="h-[55vh] w-auto iphone-hero" 
-                             style="margin-right: -40px; max-height: 600px;"
-                             loading="lazy"
-                             width="1109" height="1700">
+                             style="margin-right: -40px;"
+                             loading="lazy">
                     </picture>
                     <picture>
                         <source srcset="qwedfe.webp" type="image/webp">
                         <img src="qwedfe.png" alt="Mithril Local LLM Suite - Model Manager" 
                              class="h-[55vh] w-auto iphone-hero" 
-                             style="max-height: 600px;"
-                             loading="lazy"
-                             width="1143" height="1720">
+                             loading="lazy">
                     </picture>
                 </div>
 

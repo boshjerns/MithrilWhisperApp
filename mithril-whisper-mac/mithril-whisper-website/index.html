@@ -665,14 +665,14 @@
             }
             
             /* Stack iPhone screenshots vertically */
-            .flex.items-center.justify-center.gap-0.scale-125 {
+            .flex.items-center.justify-center.gap-0.scale-110 {
                 flex-direction: column !important;
                 transform: scale(1) !important;
                 gap: 1.5rem !important;
                 margin-bottom: 2rem !important;
             }
             
-            .flex.items-center.justify-center.gap-0.scale-125 img {
+            .flex.items-center.justify-center.gap-0.scale-110 img {
                 margin-right: 0 !important;
                 height: auto !important;
                 max-height: 50vh !important;
@@ -734,6 +734,114 @@
             /* Footer adjustments */
             footer {
                 padding: 1.5rem 1rem !important;
+            }
+            
+            /* Ensure proper stacking of main sections */
+            .min-h-\[calc\(100vh-5rem\)\] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                min-height: auto !important;
+            }
+            
+            /* Add spacing between sections on mobile */
+            .w-1/2:first-child {
+                padding-bottom: 2rem !important;
+                border-bottom: 1px solid var(--border-color) !important;
+                margin-bottom: 2rem !important;
+            }
+            
+            /* Center content on mobile */
+            .max-w-md {
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            
+            /* Center ASCII art */
+            .ascii-art.text-center {
+                text-align: center !important;
+            }
+            
+            /* Center download buttons */
+            .space-y-2 {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            
+            .clean-download-mac, .clean-download-windows {
+                max-width: 300px !important;
+            }
+            
+            /* Center simple features */
+            .simple-features {
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            .simple-feature-text, .simple-feature-text-compact {
+                text-align: center !important;
+            }
+            
+            /* Ensure content is centered in main container */
+            main {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            
+            /* Center the main flex container */
+            .min-h-\[calc\(100vh-5rem\)\] {
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Center content in each half */
+            .w-1/2 {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            /* Center the download button container */
+            .space-y-2.mb-4 {
+                align-items: center !important;
+                width: 100% !important;
+                max-width: 300px !important;
+            }
+            
+            /* Center download button content */
+            .flex.items-center.space-x-3 {
+                justify-content: center !important;
+            }
+            
+            /* Center GitHub and Privacy links */
+            .flex.justify-center.mb-3, .flex.justify-center {
+                justify-content: center !important;
+            }
+            
+            /* Center the ASCII title card */
+            .ascii-title-card {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            /* Center the iPhone container */
+            .flex-1.flex.items-center.justify-center.gap-0.scale-110 {
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Center the text content */
+            .text-center {
+                text-align: center !important;
+                width: 100% !important;
             }
         }
         body {

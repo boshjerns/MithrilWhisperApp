@@ -64,76 +64,219 @@
                 display: none;
             }
         }
-        .download-mac {
-            background: linear-gradient(135deg, #c0c0c0, #f5f5f5);
-            border: 2px solid #a0a0a0;
-            box-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+        /* Clean Download Buttons */
+        .clean-download-mac {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        .download-mac:hover {
-            background: linear-gradient(135deg, #d0d0d0, #ffffff);
-            box-shadow: 0 6px 20px rgba(192, 192, 192, 0.6);
-            transform: translateY(-2px);
+        .clean-download-mac:hover {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+        .clean-download-windows {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid #1d4ed8;
+            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+            text-decoration: none;
+        }
+        .clean-download-windows:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
         }
         .mac-dropdown {
             position: relative;
-            display: inline-block;
+            display: block;
+            width: 100%;
         }
         .mac-dropdown-content {
             display: none;
             position: absolute;
-            background: linear-gradient(135deg, #f5f5f5, #ffffff);
-            min-width: 280px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border-radius: 8px;
-            z-index: 1;
+            background: #ffffff;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            z-index: 1000;
             top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 8px;
-            border: 2px solid #a0a0a0;
+            margin-top: 4px;
+            border: 1px solid #e2e8f0;
         }
         .mac-dropdown-content.show {
             display: block;
-            animation: dropdownSlide 0.3s ease-out;
+            animation: dropdownSlide 0.2s ease-out;
         }
         @keyframes dropdownSlide {
-            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .mac-dropdown-item {
             color: #374151;
-            padding: 12px 16px;
+            padding: 14px 16px;
             text-decoration: none;
             display: block;
-            border-bottom: 1px solid #e5e7eb;
-            transition: all 0.2s ease;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.15s ease;
         }
         .mac-dropdown-item:last-child {
             border-bottom: none;
-            border-radius: 0 0 6px 6px;
+            border-radius: 0 0 12px 12px;
         }
         .mac-dropdown-item:first-child {
-            border-radius: 6px 6px 0 0;
+            border-radius: 12px 12px 0 0;
         }
         .mac-dropdown-item:hover {
-            background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+            background: #f8fafc;
             padding-left: 20px;
         }
         .mac-dropdown-arrow {
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
         }
         .mac-dropdown.active .mac-dropdown-arrow {
             transform: rotate(180deg);
         }
-        .download-windows {
-            background: linear-gradient(135deg, #0078d4, #106ebe);
-            border: 2px solid #005a9e;
-            box-shadow: 0 4px 15px rgba(0, 120, 212, 0.4);
+
+        /* iPhone Mockup Styles */
+        .iphone-mockup {
+            max-width: 280px;
         }
-        .download-windows:hover {
-            background: linear-gradient(135deg, #1084d8, #2196f3);
-            box-shadow: 0 6px 20px rgba(0, 120, 212, 0.6);
-            transform: translateY(-2px);
+        .iphone-frame {
+            background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
+            border-radius: 45px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        .iphone-screen {
+            background: #000;
+            border-radius: 37px;
+            overflow: hidden;
+            aspect-ratio: 9/19.5;
+            position: relative;
+        }
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: #333;
+            border-radius: 3px;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .time {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .signal-bars {
+            display: flex;
+            gap: 2px;
+            align-items: end;
+        }
+        .signal-bars span {
+            width: 3px;
+            background: white;
+            border-radius: 1px;
+        }
+        .signal-bars span:nth-child(1) { height: 4px; }
+        .signal-bars span:nth-child(2) { height: 6px; }
+        .signal-bars span:nth-child(3) { height: 8px; }
+        .signal-bars span:nth-child(4) { height: 10px; }
+        .app-content {
+            padding: 0 16px 20px;
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 16px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            space-y: 12px;
+        }
+        .user-message {
+            background: #007AFF;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin: 8px 20px 8px 60px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .ai-message {
+            background: #2C2C2E;
+            color: #F2F2F7;
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin: 8px 60px 8px 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+            background: #1C1C1E;
+            border-radius: 25px;
+            padding: 8px 16px;
+            margin-top: 12px;
+        }
+        .chat-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #F2F2F7;
+            font-size: 14px;
+            padding: 8px 0;
+            outline: none;
+        }
+        .chat-input button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            font-size: 16px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .min-h-screen.flex {
+                flex-direction: column;
+            }
+            .w-1/2 {
+                width: 100%;
+                min-height: 50vh;
+            }
+            .w-px {
+                width: 100%;
+                height: 1px;
+            }
+            .ascii-art {
+                font-size: clamp(0.4rem, 1.5vw, 0.8rem);
+            }
         }
         body {
             background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -208,12 +351,15 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <main class="flex-1 flex items-center justify-center py-12">
-        <div class="max-w-6xl mx-auto text-center px-4">
-            <!-- ASCII Art Logo and Pixel Logo -->
-            <div class="flex items-center justify-center mb-8">
-                <pre class="ascii-art mr-6">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
+    <!-- Split Hero Section -->
+    <main class="flex-1">
+        <div class="min-h-screen flex">
+            <!-- Left Half - Mithril Whisper -->
+            <div class="w-1/2 flex items-center justify-center px-8 py-12">
+                <div class="max-w-lg w-full">
+                    <!-- ASCII Art Logo -->
+                    <div class="mb-8">
+                        <pre class="ascii-art text-center">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
 ████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
 ██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
 ██║╚██╔╝██║██║   ██║   ██╔══██║██╔══██╗██║██║     
@@ -226,78 +372,155 @@
 ██║███╗██║██╔══██║██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
 ╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝</pre>
-                <img src="https://gateway.pinata.cloud/ipfs/bafybeic6r5wmlus267lmorzm3i6urdwlrgvc764eam3pqn7rqfhrvx4woi" alt="MITHRIL Pixel Logo" class="h-24 w-auto object-contain">
-            </div>
-            
-            <h2 class="text-2xl text-gray-300 mb-8">100% Free, Privacy-First AI Voice Dictation and Assistant</h2>
-            
-            <!-- Download Buttons -->
-            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-                <!-- Mac Download Dropdown -->
-                <div class="mac-dropdown">
-                    <button onclick="toggleMacDropdown()" class="download-mac text-gray-800 px-8 py-4 rounded-lg font-semibold flex items-center space-x-3 transition-all duration-300">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                        </svg>
-                        <span>Download for Mac</span>
-                        <svg class="w-4 h-4 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div id="macDropdownContent" class="mac-dropdown-content">
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg">
-                            <div class="flex items-center space-x-3">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                <div>
-                                    <div class="font-semibold">🍎 Apple Silicon Macs</div>
-                                    <div class="text-sm text-gray-600">M1, M2, M3 chips (2020+) • 196MB</div>
+                    </div>
+                    
+                    <h2 class="text-xl text-gray-300 mb-8 text-center">Privacy-First AI Voice Dictation</h2>
+                    
+                    <!-- Clean Download Buttons -->
+                    <div class="space-y-4 mb-8">
+                        <!-- Mac Download -->
+                        <div class="mac-dropdown w-full">
+                            <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-6 py-4 rounded-xl font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                                    </svg>
+                                    <span>Download for Mac</span>
                                 </div>
+                                <svg class="w-4 h-4 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="macDropdownContent" class="mac-dropdown-content">
+                                <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0-arm64.pkg">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        <div>
+                                            <div class="font-semibold">🍎 Apple Silicon Macs</div>
+                                            <div class="text-sm text-gray-600">M1, M2, M3 chips (2020+) • 196MB</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                                        </svg>
+                                        <div>
+                                            <div class="font-semibold">💻 Intel Macs</div>
+                                            <div class="text-sm text-gray-600">Intel processors (2019 and earlier) • 208MB</div>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" class="mac-dropdown-item" download="MithrilWhisper-1.0.0.pkg">
-                            <div class="flex items-center space-x-3">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </div>
+                        
+                        <!-- Windows Download -->
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-6 py-4 rounded-xl font-medium transition-all duration-200 hover:shadow-lg">
+                            <div class="flex items-center justify-center space-x-3">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
                                 </svg>
-                                <div>
-                                    <div class="font-semibold">💻 Intel Macs</div>
-                                    <div class="text-sm text-gray-600">Intel processors (2019 and earlier) • 208MB</div>
-                                </div>
+                                <span>Download for Windows</span>
                             </div>
                         </a>
                     </div>
+                    
+                    <!-- GitHub Link -->
+                    <div class="flex justify-center">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-colors text-sm">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                            </svg>
+                            <span>View on GitHub</span>
+                            <span id="star-count" class="bg-gray-800 px-2 py-1 rounded text-xs"></span>
+                        </a>
+                    </div>
                 </div>
-                
-                <!-- Windows Download -->
-                <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="download-windows text-white px-8 py-4 rounded-lg font-semibold flex items-center space-x-3 transition-all duration-300">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
-                    </svg>
-                    <span>Download for Windows</span>
-                </a>
             </div>
             
-            <!-- GitHub Link -->
-            <div class="flex justify-center mb-8">
-                <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-3 hover:bg-gray-700 transition-colors">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-                    </svg>
-                    <span>View on GitHub</span>
-                    <span id="star-count" class="bg-gray-700 px-2 py-1 rounded text-sm"></span>
-                </a>
-            </div>
-
-            <!-- Learn More Arrows -->
-            <div class="flex flex-col items-center">
-                <div class="bounce-arrows text-gray-400 hover:text-white transition-colors cursor-pointer" onclick="document.getElementById('privacy-section').scrollIntoView({behavior: 'smooth'})">
-                    <div class="flex flex-col items-center space-y-1">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                        </svg>
-                        <span class="text-sm font-medium">Learn More</span>
+            <!-- Divider -->
+            <div class="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
+            
+            <!-- Right Half - Local LM Suite -->
+            <div class="w-1/2 flex items-center justify-center px-8 py-12">
+                <div class="max-w-lg w-full text-center">
+                    <h2 class="text-3xl font-bold text-white mb-4">Mithril Local LM Suite</h2>
+                    <p class="text-blue-400 text-lg mb-6 font-medium">Coming Soon</p>
+                    
+                    <!-- iPhone Mockup -->
+                    <div class="iphone-mockup mx-auto mb-8">
+                        <div class="iphone-frame">
+                            <div class="iphone-screen">
+                                <!-- Status Bar -->
+                                <div class="status-bar">
+                                    <span class="time">09:41</span>
+                                    <div class="status-icons">
+                                        <div class="signal-bars">
+                                            <span></span><span></span><span></span><span></span>
+                                        </div>
+                                        <div class="wifi-icon">📶</div>
+                                        <div class="battery">🔋</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- App Content -->
+                                <div class="app-content">
+                                    <div class="chat-header">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                                <span class="text-white text-sm font-bold">AI</span>
+                                            </div>
+                                            <span class="font-semibold text-white">Local Assistant</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chat-messages">
+                                        <div class="user-message">
+                                            Can you help me write a polite follow-up email?
+                                        </div>
+                                        <div class="ai-message">
+                                            I'd love to help! To give you the best response, please tell me a little more about the situation...
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chat-input">
+                                        <input type="text" placeholder="Ask anything..." disabled>
+                                        <button disabled>→</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="home-indicator"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div class="space-y-3 text-left max-w-sm mx-auto mb-8">
+                        <div class="flex items-center space-x-3 text-gray-300">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span class="text-sm">100% Local Processing</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-300">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span class="text-sm">100% Free Forever</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-300">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span class="text-sm">100% Private & Secure</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-300">
+                            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span class="text-sm">Open Source Models</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Link -->
+                    <div class="text-center">
+                        <a href="#privacy-section" class="text-gray-400 hover:text-white text-xs transition-colors underline">
+                            Privacy & Terms
+                        </a>
                     </div>
                 </div>
             </div>

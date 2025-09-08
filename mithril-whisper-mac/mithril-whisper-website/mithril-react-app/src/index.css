@@ -1,0 +1,40 @@
+/* Reset default styles that might conflict with our custom styling */
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Remove default styles that conflict with our layout */
+body, html {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Remove any default centering that conflicts with our layout */
+body {
+  display: block;
+  place-items: unset;
+}
+
+/* Ensure body takes full width but centers content */
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}

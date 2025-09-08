@@ -1057,3 +1057,17 @@ footer {
     background: linear-gradient(135deg, #1e293b, #0f172a);
     border-top: 1px solid #374151;
 }
+
+/* Mobile legibility: hide decorative ASCII and enforce >=12px text */
+@media (max-width: 640px) {
+    .ascii-art,
+    .mithril-compact-ascii,
+    .ascii-nav-card,
+    .nav-ascii-art,
+    .nav-solutions-text {
+        display: none !important;
+    }
+    .app-subtitle-compact {
+        font-size: 0.75rem !important; /* 12px minimum */
+    }
+}

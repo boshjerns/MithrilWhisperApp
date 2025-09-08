@@ -248,27 +248,49 @@
             letter-spacing: 0.5px;
         }
         
-        /* Coming Soon Banner */
-        .coming-soon-banner {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        /* MITHRIL ASCII Title - Orange like in the app */
+        .mithril-ascii-title {
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: clamp(1.8rem, 2.5vw, 2.2rem);
+            font-weight: 900;
+            color: #FFA500;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
         }
         
-        .coming-soon-label {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            font-size: clamp(1.1rem, 1.4vw, 1.3rem);
-            font-weight: 700;
-            color: #3b82f6;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .app-store-text {
+        /* App Subtitle - Clean minimal style */
+        .app-subtitle {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-            font-size: clamp(0.9rem, 1.1vw, 1rem);
-            color: #64748b;
-            font-weight: 500;
+            font-size: clamp(0.85rem, 1vw, 0.95rem);
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        
+        /* Simple Features */
+        .simple-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .simple-feature-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+            font-weight: 400;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+        
+        /* Coming Soon Simple */
+        .coming-soon-simple {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            font-size: clamp(1.2rem, 1.6vw, 1.5rem);
+            font-weight: 600;
+            color: #3b82f6;
+            letter-spacing: 0.5px;
         }
 
         /* Responsive Design */
@@ -312,8 +334,14 @@
                 font-size: clamp(0.7rem, 0.85vw, 0.8rem);
                 padding: 4px 10px;
             }
-            .coming-soon-label {
+            .mithril-ascii-title {
+                font-size: clamp(1.5rem, 2vw, 1.8rem);
+            }
+            .simple-feature-text {
                 font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+            }
+            .coming-soon-simple {
+                font-size: clamp(1rem, 1.3vw, 1.2rem);
             }
         }
         @media (max-width: 768px) {
@@ -408,14 +436,14 @@
         </div>
     </nav>
 
-    <!-- Three Column Hero Section -->
+    <!-- Split Hero Section -->
     <main class="flex-1">
         <div class="min-h-screen flex">
-            <!-- Left Third - Mithril Whisper -->
-            <div class="w-1/3 flex items-center justify-center px-4 py-4">
-                <div class="max-w-xs w-full">
+            <!-- Left Half - Mithril Whisper -->
+            <div class="w-1/2 flex items-center justify-center px-4 py-4">
+                <div class="max-w-md w-full">
                     <!-- ASCII Art Logo -->
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <pre class="ascii-art text-center text-xs">███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
 ████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
 ██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     
@@ -431,20 +459,20 @@
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝</pre>
                     </div>
                     
-                    <h2 class="text-xs text-gray-300 mb-3 text-center">Privacy-First AI Voice Dictation</h2>
+                    <h2 class="text-sm text-gray-300 mb-4 text-center">Privacy-First AI Voice Dictation</h2>
                     
                     <!-- Clean Download Buttons -->
-                    <div class="space-y-2 mb-3">
+                    <div class="space-y-2 mb-4">
                         <!-- Mac Download -->
                         <div class="mac-dropdown w-full">
-                            <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-3 py-2 rounded-lg font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg text-xs">
-                                <div class="flex items-center space-x-2">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <button onclick="toggleMacDropdown()" class="clean-download-mac w-full text-gray-800 px-4 py-3 rounded-lg font-medium flex items-center justify-between transition-all duration-200 hover:shadow-lg text-sm">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                                     </svg>
                                     <span>Download for Mac</span>
                                 </div>
-                                <svg class="w-3 h-3 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 mac-dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -475,9 +503,9 @@
                         </div>
                         
                         <!-- Windows Download -->
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg text-xs">
-                            <div class="flex items-center justify-center space-x-2">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp/archive/refs/tags/v1.0.2-windows.zip" class="clean-download-windows block w-full text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 hover:shadow-lg text-sm">
+                            <div class="flex items-center justify-center space-x-3">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3 12V6.75l6-1.32v6.48L3 12M3 17.25l6-1.32v-3.18L3 12v5.25M10.5 6.18l8.5-1.86V12l-8.5-1.86V6.18M10.5 17.82l8.5-1.86v-7.68L10.5 12v5.82Z"/>
                                 </svg>
                                 <span>Download for Windows</span>
@@ -486,13 +514,13 @@
                     </div>
                     
                     <!-- GitHub Link -->
-                    <div class="flex justify-center mb-2">
-                        <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors text-xs">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <div class="flex justify-center mb-3">
+                        <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-colors text-sm">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                             </svg>
                             <span>View on GitHub</span>
-                            <span id="star-count" class="bg-gray-800 px-1 py-0.5 rounded text-xs"></span>
+                            <span id="star-count" class="bg-gray-800 px-2 py-1 rounded text-xs"></span>
                         </a>
                     </div>
                     
@@ -505,34 +533,40 @@
                 </div>
             </div>
             
-            <!-- Center Third - iPhone -->
-            <div class="w-1/3 flex items-center justify-center">
-                <img src="asdasd.png" alt="Mithril Local LLM Suite iPhone App" class="max-h-[85vh] w-auto iphone-hero">
-            </div>
+            <!-- Divider -->
+            <div class="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
             
-            <!-- Right Third - Local LM Suite Description -->
-            <div class="w-1/3 flex items-center px-4">
+            <!-- Right Half - Local LM Suite -->
+            <div class="w-1/2 flex items-center px-4">
+                <div class="flex items-center justify-center w-full h-full gap-8">
+                    <!-- iPhone Screenshot - Large -->
+                    <div class="flex-shrink-0">
+                        <img src="asdasd.png" alt="Mithril Local LLM Suite iPhone App" class="max-h-[80vh] w-auto iphone-hero">
+                    </div>
+                    
+                <!-- App Title and Description - Styled like the App -->
                 <div class="flex flex-col justify-center max-w-xs">
-                    <h2 class="text-2xl font-bold text-white mb-4">Mithril Local LLM Suite</h2>
-                    
-                    <div class="promo-message-card mb-4">
-                        <p class="promo-text">Run Llama, Gemma, Qwen, and more on your iPhone and iPad.</p>
+                    <!-- MITHRIL in Orange ASCII Style -->
+                    <div class="mb-3">
+                        <span class="mithril-ascii-title">MITHRIL</span>
                     </div>
                     
-                    <div class="promo-message-card mb-6">
-                        <p class="promo-text">Everything runs privately and securely on your device, ensuring complete control over your data.</p>
+                    <!-- Local LLM: Mithril subtitle -->
+                    <div class="mb-6">
+                        <span class="app-subtitle">LOCAL LLM: MITHRIL</span>
                     </div>
                     
-                    <div class="feature-badge-container mb-6">
-                        <span class="feature-badge">100% Private</span>
-                        <span class="feature-badge">On-Device AI</span>
-                        <span class="feature-badge">Open Source</span>
+                    <!-- Simple feature text -->
+                    <div class="simple-features mb-8">
+                        <p class="simple-feature-text">100% on device</p>
+                        <p class="simple-feature-text">100% private</p>
                     </div>
                     
-                    <div class="coming-soon-banner">
-                        <span class="coming-soon-label">Coming Soon</span>
-                        <span class="app-store-text">App Store</span>
+                    <!-- Coming Soon -->
+                    <div class="coming-soon-simple">
+                        <span>Coming Soon</span>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

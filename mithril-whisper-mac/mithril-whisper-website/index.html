@@ -176,12 +176,28 @@
             transform: rotate(180deg);
         }
 
-        /* iPhone Screenshot Styles */
-        .iphone-screenshot {
-            max-width: 280px;
+        /* iPhone Display Styles */
+        .iphone-display img {
+            filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.4));
         }
-        .iphone-screenshot img {
-            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+        
+        /* App Title with Stroke Effect */
+        .app-title-stroke {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-shadow: 
+                -2px -2px 0 #3b82f6,
+                2px -2px 0 #3b82f6,
+                -2px 2px 0 #3b82f6,
+                2px 2px 0 #3b82f6,
+                -3px 0 0 #3b82f6,
+                3px 0 0 #3b82f6,
+                0 -3px 0 #3b82f6,
+                0 3px 0 #3b82f6,
+                0 0 20px rgba(59, 130, 246, 0.5);
         }
 
         /* Responsive Design */
@@ -203,8 +219,12 @@
                 font-size: clamp(0.25rem, 1vw, 0.6rem);
                 margin-bottom: 1rem;
             }
-            .iphone-screenshot {
-                max-width: 200px;
+            .app-title-stroke {
+                font-size: clamp(1.2rem, 2.5vw, 2rem);
+                letter-spacing: 2px;
+            }
+            .iphone-display img {
+                max-height: 50vh;
             }
         }
         @media (max-width: 768px) {
@@ -401,40 +421,13 @@
             
             <!-- Right Half - Local LM Suite -->
             <div class="w-1/2 flex items-center justify-center px-4 py-4">
-                <div class="max-w-md w-full text-center">
-                    <h2 class="text-xl font-bold text-white mb-2">Mithril Local LM Suite</h2>
-                    <p class="text-blue-400 text-sm mb-3 font-medium">Coming Soon</p>
+                <div class="flex flex-col items-center justify-center">
+                    <!-- App Title with Blue Stroke -->
+                    <h2 class="app-title-stroke mb-8">MITHRIL LOCAL LM</h2>
                     
-                    <!-- iPhone Screenshot -->
-                    <div class="iphone-screenshot mx-auto mb-4">
-                        <img src="asdasd.png" alt="Mithril Local LM Suite iPhone App Screenshot" class="w-full h-auto rounded-2xl shadow-2xl">
-                    </div>
-                    
-                    <!-- Features -->
-                    <div class="space-y-1 text-left max-w-xs mx-auto mb-4">
-                        <div class="flex items-center space-x-3 text-gray-300">
-                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span class="text-sm">100% Local Processing</span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-300">
-                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span class="text-sm">100% Free Forever</span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-300">
-                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span class="text-sm">100% Private & Secure</span>
-                        </div>
-                        <div class="flex items-center space-x-3 text-gray-300">
-                            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span class="text-sm">Open Source Models</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Privacy Link -->
-                    <div class="text-center">
-                        <a href="#privacy-section" class="text-gray-400 hover:text-white text-xs transition-colors underline">
-                            Privacy & Terms
-                        </a>
+                    <!-- iPhone Screenshot - Large and Clean -->
+                    <div class="iphone-display">
+                        <img src="asdasd.png" alt="Mithril Local LM Suite iPhone App" class="max-h-[60vh] w-auto">
                     </div>
                 </div>
             </div>

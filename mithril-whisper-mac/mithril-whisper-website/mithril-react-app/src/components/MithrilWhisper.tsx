@@ -60,7 +60,7 @@ const MithrilWhisper: React.FC = () => {
     <div className="w-1/2 flex items-center justify-center px-4 py-4">
       <div className="max-w-md w-full">
         {/* ASCII Art Logo */}
-        <div className="mb-4">
+        <div className="ascii-title-card ascii-hero-card mb-4">
           <pre className="ascii-art text-center text-xs">{`███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
 ████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
 ██╔████╔██║██║   ██║   ███████║██████╔╝██║██║     

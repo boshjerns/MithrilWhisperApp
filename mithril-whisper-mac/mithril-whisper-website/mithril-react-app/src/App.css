@@ -634,6 +634,19 @@ body.light-mode .clean-download-windows {
     transition: background 0.3s ease, border-color 0.3s ease;
 }
 
+/* Hero ASCII container (top title) */
+.ascii-hero-card {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+@media (max-width: 640px) {
+    .ascii-hero-card {
+        padding-left: clamp(12px, 5vw, 20px);
+        padding-right: clamp(12px, 5vw, 20px);
+    }
+}
+
 /* Compact MITHRIL ASCII Art */
 .mithril-compact-ascii {
     font-family: 'Courier New', 'Monaco', monospace;
@@ -1073,6 +1086,8 @@ footer {
     nav .nav-solutions-text { /* avoid overlap with icon buttons */
         display: none !important;
     }
+    nav .ascii-nav-card { padding: 4px 8px !important; gap: 6px !important; }
+    nav .theme-toggle-nav, nav .nav-icon-btn { margin-left: 2px; margin-right: 2px; }
     .ascii-nav-card {
         display: inline-flex !important;
     }

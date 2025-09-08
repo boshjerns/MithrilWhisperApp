@@ -198,7 +198,7 @@
         .ascii-art {
             font-family: 'Courier New', monospace;
             line-height: 1;
-            font-size: clamp(0.3rem, 1.5vw, 0.75rem);
+            font-size: clamp(0.25rem, 1.5vw, 0.75rem);
             color: var(--ascii-color);
             text-shadow: 0 0 10px var(--ascii-glow);
             white-space: pre;
@@ -635,6 +635,21 @@
             .min-h-screen.flex {
                 flex-direction: column !important;
             }
+            /* Ensure ASCII art fits on mobile screens */
+            .ascii-art {
+                font-size: 0.3rem !important;
+                line-height: 0.3rem !important;
+                max-width: 100vw;
+            }
+            /* Ensure ASCII art container doesn't overflow */
+            .mb-4 {
+                overflow-x: hidden;
+            }
+            /* Ensure ASCII art container fits on mobile */
+            .max-w-md {
+                max-width: 100vw !important;
+                overflow-x: hidden;
+            }
             
             /* Full width sections on mobile */
             .w-1/2, .w-1/3 {
@@ -654,8 +669,8 @@
             
             /* Mithril Whisper section adjustments */
             .ascii-art {
-                font-size: 0.45rem !important;
-                line-height: 0.45rem !important;
+                font-size: 0.35rem !important;
+                line-height: 0.35rem !important;
             }
             
             /* Stack iPhone screenshots vertically */

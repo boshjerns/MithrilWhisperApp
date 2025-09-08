@@ -176,128 +176,12 @@
             transform: rotate(180deg);
         }
 
-        /* iPhone Mockup Styles */
-        .iphone-mockup {
-            max-width: 200px;
+        /* iPhone Screenshot Styles */
+        .iphone-screenshot {
+            max-width: 280px;
         }
-        .iphone-frame {
-            background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
-            border-radius: 45px;
-            padding: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            position: relative;
-        }
-        .iphone-screen {
-            background: #000;
-            border-radius: 37px;
-            overflow: hidden;
-            aspect-ratio: 9/19.5;
-            position: relative;
-        }
-        .home-indicator {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 134px;
-            height: 5px;
-            background: #333;
-            border-radius: 3px;
-        }
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .time {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        .status-icons {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .signal-bars {
-            display: flex;
-            gap: 2px;
-            align-items: end;
-        }
-        .signal-bars span {
-            width: 3px;
-            background: white;
-            border-radius: 1px;
-        }
-        .signal-bars span:nth-child(1) { height: 4px; }
-        .signal-bars span:nth-child(2) { height: 6px; }
-        .signal-bars span:nth-child(3) { height: 8px; }
-        .signal-bars span:nth-child(4) { height: 10px; }
-        .app-content {
-            padding: 0 16px 20px;
-            height: calc(100% - 60px);
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-header {
-            padding: 12px 0;
-            border-bottom: 1px solid #333;
-            margin-bottom: 16px;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            space-y: 12px;
-        }
-        .user-message {
-            background: #007AFF;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 20px;
-            margin: 8px 20px 8px 60px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .ai-message {
-            background: #2C2C2E;
-            color: #F2F2F7;
-            padding: 12px 16px;
-            border-radius: 20px;
-            margin: 8px 60px 8px 20px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .chat-input {
-            display: flex;
-            align-items: center;
-            background: #1C1C1E;
-            border-radius: 25px;
-            padding: 8px 16px;
-            margin-top: 12px;
-        }
-        .chat-input input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #F2F2F7;
-            font-size: 14px;
-            padding: 8px 0;
-            outline: none;
-        }
-        .chat-input button {
-            background: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 8px;
-            font-size: 16px;
+        .iphone-screenshot img {
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
         }
 
         /* Responsive Design */
@@ -319,8 +203,8 @@
                 font-size: clamp(0.25rem, 1vw, 0.6rem);
                 margin-bottom: 1rem;
             }
-            .iphone-mockup {
-                max-width: 150px;
+            .iphone-screenshot {
+                max-width: 200px;
             }
         }
         @media (max-width: 768px) {
@@ -521,50 +405,9 @@
                     <h2 class="text-xl font-bold text-white mb-2">Mithril Local LM Suite</h2>
                     <p class="text-blue-400 text-sm mb-3 font-medium">Coming Soon</p>
                     
-                    <!-- iPhone Mockup -->
-                    <div class="iphone-mockup mx-auto mb-4">
-                        <div class="iphone-frame">
-                            <div class="iphone-screen">
-                                <!-- Status Bar -->
-                                <div class="status-bar">
-                                    <span class="time">09:41</span>
-                                    <div class="status-icons">
-                                        <div class="signal-bars">
-                                            <span></span><span></span><span></span><span></span>
-                                        </div>
-                                        <div class="wifi-icon">📶</div>
-                                        <div class="battery">🔋</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- App Content -->
-                                <div class="app-content">
-                                    <div class="chat-header">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                                <span class="text-white text-sm font-bold">AI</span>
-                                            </div>
-                                            <span class="font-semibold text-white">Local Assistant</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chat-messages">
-                                        <div class="user-message">
-                                            Can you help me write a polite follow-up email?
-                                        </div>
-                                        <div class="ai-message">
-                                            I'd love to help! To give you the best response, please tell me a little more about the situation...
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chat-input">
-                                        <input type="text" placeholder="Ask anything..." disabled>
-                                        <button disabled>→</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="home-indicator"></div>
-                        </div>
+                    <!-- iPhone Screenshot -->
+                    <div class="iphone-screenshot mx-auto mb-4">
+                        <img src="asdasd.png" alt="Mithril Local LM Suite iPhone App Screenshot" class="w-full h-auto rounded-2xl shadow-2xl">
                     </div>
                     
                     <!-- Features -->

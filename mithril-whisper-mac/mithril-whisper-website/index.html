@@ -493,13 +493,20 @@
                     </div>
                     
                     <!-- GitHub Link -->
-                    <div class="flex justify-center">
+                    <div class="flex justify-center mb-3">
                         <a href="https://github.com/boshjerns/MithrilWhisperApp" target="_blank" class="inline-flex items-center space-x-3 text-gray-400 hover:text-white transition-colors text-sm">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
                             </svg>
                             <span>View on GitHub</span>
                             <span id="star-count" class="bg-gray-800 px-2 py-1 rounded text-xs"></span>
+                        </a>
+                    </div>
+                    
+                    <!-- Privacy Link -->
+                    <div class="flex justify-center">
+                        <a href="privacy.html" class="text-gray-400 hover:text-white text-xs transition-colors underline">
+                            Privacy & Terms
                         </a>
                     </div>
                 </div>
@@ -591,140 +598,6 @@
         </div>
     </main>
 
-    <!-- Privacy & How It Works Section -->
-    <section id="privacy-section" class="privacy-section py-16">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-white mb-4">How It Works & Privacy</h2>
-                <p class="text-xl text-gray-300">Complete transparency about our data practices</p>
-            </div>
-
-            <!-- PROMINENT PRIVACY GUARANTEE -->
-            <div class="bg-gradient-to-r from-green-900/40 to-blue-900/40 border-2 border-green-400 rounded-xl p-8 mb-12 text-center">
-                <div class="flex justify-center mb-4">
-                    <svg class="w-16 h-16 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-3xl font-bold text-white mb-6" style="font-family: 'Courier New', monospace; letter-spacing: 2px;">ZERO DICTATION TRACKING GUARANTEE</h3>
-                <div class="text-xl text-white space-y-4 max-w-4xl mx-auto">
-                    <p class="font-bold text-2xl" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">YOUR DICTATION CONTENT IS NEVER TRACKED, SAVED, OR STORED</p>
-                    <div class="grid md:grid-cols-2 gap-6 mt-8">
-                        <div class="bg-black/30 rounded-lg p-6">
-                            <h4 class="text-lg font-bold text-green-400 mb-3" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[INSTALLED VERSION]</h4>
-                            <p class="text-gray-200" style="font-family: 'Courier New', monospace;">Dictation content never leaves your device. Zero tracking. Zero storage.</p>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-6">
-                            <h4 class="text-lg font-bold text-green-400 mb-3" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[LOCAL VERSION]</h4>
-                            <p class="text-gray-200" style="font-family: 'Courier New', monospace;">100% offline. Dictation content never touches the internet.</p>
-                        </div>
-                    </div>
-                    <p class="text-lg text-yellow-200 font-semibold mt-6" style="font-family: 'Courier New', monospace; line-height: 1.6;">
-                        <strong>Even when using AI Assistant features, your dictation is processed in real-time and NEVER saved permanently anywhere. When using the AI Assistant (that means you're using our OpenAI keys), we will keep track of only the character count and never the content being exchanged with OpenAI.</strong>
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8 mb-12">
-                <!-- Local Transcription -->
-                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center mb-4">
-                        <svg class="w-8 h-8 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <h3 class="text-xl font-semibold text-white" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[LOCAL TRANSCRIPTION]</h3>
-                    </div>
-                    <p class="text-gray-300 mb-4">All voice-to-text processing uses open-source <strong>Whisper-CPP</strong> models running entirely on your device. Your voice recordings never leave your computer.</p>
-                    <p class="text-gray-300 mb-4"><strong>Bundled Model:</strong> Whisper Tiny (Q5_1 quantized) - Fast, lightweight transcription with excellent accuracy for most use cases.</p>
-                    <ul class="text-gray-300 space-y-2">
-                        <li style="font-family: 'Courier New', monospace;">[✓] 100% offline processing</li>
-                        <li style="font-family: 'Courier New', monospace;">[✓] Open-source models from <a href="https://github.com/openai/whisper" target="_blank" class="text-blue-400 hover:text-blue-300 underline">OpenAI Whisper</a></li>
-                        <li style="font-family: 'Courier New', monospace;">[✓] Optimized with <a href="https://github.com/ggerganov/whisper.cpp" target="_blank" class="text-blue-400 hover:text-blue-300 underline">whisper.cpp</a> for fast CPU inference</li>
-                        <li style="font-family: 'Courier New', monospace;">[✓] Audio files deleted immediately</li>
-                    </ul>
-                </div>
-
-                <!-- Privacy Modes -->
-                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center mb-4">
-                        <svg class="w-8 h-8 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                        <h3 class="text-xl font-semibold text-white" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[PRIVACY MODES]</h3>
-                    </div>
-                    <div class="space-y-3">
-                        <div>
-                            <h4 class="font-medium text-white" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[INSTALLED VERSION]</h4>
-                            <p class="text-gray-300 text-sm" style="font-family: 'Courier New', monospace;">Requires login. Only tracks character count for AI assistant (not content).</p>
-                        </div>
-                        <div>
-                            <h4 class="font-medium text-white" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[LOCAL SETUP]</h4>
-                            <p class="text-gray-300 text-sm" style="font-family: 'Courier New', monospace;">No login required. Zero telemetry. Complete privacy.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Telemetry Transparency -->
-            <div class="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-8">
-                <h3 class="text-xl font-semibold text-white mb-4 flex items-center" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">
-                    <svg class="w-6 h-6 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    [AI ASSISTANT TELEMETRY] - VOICE DICTATION HAS ZERO TELEMETRY
-                </h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="font-medium text-white mb-2" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[WHAT WE TRACK] (Installed Version Only)</h4>
-                        <ul class="text-gray-300 space-y-1 text-sm">
-                            <li style="font-family: 'Courier New', monospace;">[-] Character count when using AI assistant</li>
-                            <li style="font-family: 'Courier New', monospace;">[-] Session duration and timestamps</li>
-                            <li style="font-family: 'Courier New', monospace;">[-] Model used (e.g., whisper-tiny)</li>
-                            <li style="font-family: 'Courier New', monospace;">[-] Platform (Mac/Windows)</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-medium text-white mb-2" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[WHAT WE DON'T TRACK]</h4>
-                        <ul class="text-gray-300 space-y-1 text-sm">
-                            <li style="font-family: 'Courier New', monospace;">[X] Voice recordings</li>
-                            <li style="font-family: 'Courier New', monospace;">[X] Transcription content</li>
-                            <li style="font-family: 'Courier New', monospace;">[X] What you say to the AI assistant</li>
-                            <li style="font-family: 'Courier New', monospace;">[X] Any personally identifiable content</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Code Example -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-white mb-4" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">[CODE TRANSPARENCY]</h3>
-                <p class="text-gray-300 mb-4">Here's the exact code showing our minimal telemetry (character count only):</p>
-                <div class="code-snippet">
-<pre>// From src/main/main.js - AI Assistant usage tracking
-const payload = {
-  transcript_chars_original: userPrompt.length,    // Character count only
-  transcript_chars_cleaned: assistantReply.length, // Character count only
-  metadata: {
-    user_words: countWords(userPrompt),           // Word count only
-    assistant_words: countWords(assistantReply), // Word count only
-  }
-  // NOTE: Actual content is NEVER included in telemetry
-};</pre>
-                </div>
-            </div>
-
-            <!-- File Cleanup -->
-            <div class="bg-red-900/20 border border-red-800 rounded-lg p-6">
-                <h3 class="text-xl font-semibold text-white mb-4 flex items-center" style="font-family: 'Courier New', monospace; letter-spacing: 1px;">
-                    <svg class="w-6 h-6 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    [IMMEDIATE FILE DELETION]
-                </h3>
-                <p class="text-gray-300">All audio files are automatically deleted immediately after transcription completes. This happens locally on your device and ensures no voice data persists anywhere in our system.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- Footer -->
     <footer class="p-6 border-t border-gray-700">

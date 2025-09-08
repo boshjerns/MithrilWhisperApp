@@ -625,30 +625,37 @@
         
         /* iPhone and Mobile Phone Specific Optimizations */
         @media (max-width: 640px) {
-            /* Ensure iPhone screenshots have the same height */
+            /* Ensure iPhone screenshots have the same height and stack properly */
             .iphone-hero {
-                height: 60vh !important;
-                max-height: 60vh !important;
-                width: auto !important;
+                height: 50vh !important;
+                max-height: 50vh !important;
+                width: 90vw !important;
+                object-fit: contain;
             }
             /* Stack layout vertically for mobile */
             .min-h-screen.flex {
                 flex-direction: column !important;
             }
-            /* Ensure ASCII art fits on mobile screens */
+            /* Ensure ASCII art fits on mobile screens and takes more width */
             .ascii-art {
-                font-size: 0.3rem !important;
-                line-height: 0.3rem !important;
-                max-width: 100vw;
+                font-size: 0.35rem !important;
+                line-height: 0.35rem !important;
+                width: 95vw !important;
+                max-width: 95vw !important;
+                overflow-x: auto;
             }
-            /* Ensure ASCII art container doesn't overflow */
+            /* Ensure ASCII art container doesn't overflow and takes more space */
             .mb-4 {
                 overflow-x: hidden;
+                width: 100% !important;
+                max-width: 100vw !important;
             }
-            /* Ensure ASCII art container fits on mobile */
+            /* Ensure ASCII art container fits on mobile and takes full width */
             .max-w-md {
                 max-width: 100vw !important;
+                width: 100% !important;
                 overflow-x: hidden;
+                padding: 0 10px !important;
             }
             
             /* Full width sections on mobile */
@@ -679,14 +686,18 @@
                 transform: scale(1) !important;
                 gap: 1.5rem !important;
                 margin-bottom: 2rem !important;
+                width: 100% !important;
+                max-width: 100vw !important;
+                padding: 0 5px !important;
             }
             
             .flex.items-center.justify-center.gap-0.scale-110 img {
                 margin-right: 0 !important;
-                height: 60vh !important;
-                max-height: 60vh !important;
-                width: auto !important;
-                max-width: 85% !important;
+                height: 50vh !important;
+                max-height: 50vh !important;
+                width: 90vw !important;
+                max-width: 90vw !important;
+                object-fit: contain;
             }
             
             /* Mithril Local LM Suite title adjustments */

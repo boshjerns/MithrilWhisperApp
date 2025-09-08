@@ -178,25 +178,47 @@
 
         /* iPhone Hero Styles */
         .iphone-hero {
-            filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6));
         }
         
-        /* Minimal App Title */
-        .app-title-minimal {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            font-size: clamp(1.75rem, 2.5vw, 2.25rem);
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        /* Main App Title */
+        .app-title-main {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -2px;
             color: #ffffff;
-            line-height: 1.2;
+            line-height: 1;
         }
         
-        /* Feature Text */
-        .feature-text {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+        /* Sub Title */
+        .app-title-sub {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: clamp(2rem, 3vw, 2.75rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+        
+        /* Feature Items */
+        .feature-item {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
             font-weight: 500;
             letter-spacing: 0.5px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+        
+        /* Coming Soon */
+        .coming-soon-text {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: clamp(1.25rem, 1.75vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #3b82f6;
+            text-transform: uppercase;
         }
 
         /* Responsive Design */
@@ -218,14 +240,20 @@
                 font-size: clamp(0.25rem, 1vw, 0.6rem);
                 margin-bottom: 1rem;
             }
-            .app-title-minimal {
-                font-size: clamp(1.25rem, 2vw, 1.75rem);
+            .app-title-main {
+                font-size: clamp(2rem, 3vw, 2.5rem);
+            }
+            .app-title-sub {
+                font-size: clamp(1.5rem, 2.5vw, 2rem);
             }
             .iphone-hero {
-                max-height: 60vh;
+                max-height: 70vh;
             }
-            .feature-text {
-                font-size: clamp(0.85rem, 1vw, 1rem);
+            .feature-item {
+                font-size: clamp(0.9rem, 1.1vw, 1rem);
+            }
+            .coming-soon-text {
+                font-size: clamp(1rem, 1.3vw, 1.25rem);
             }
         }
         @media (max-width: 768px) {
@@ -421,22 +449,23 @@
             <div class="w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
             
             <!-- Right Half - Local LM Suite -->
-            <div class="w-1/2 flex items-center px-4 py-4">
-                <div class="flex items-center justify-center w-full h-full">
-                    <!-- iPhone Screenshot - 2/3 width -->
-                    <div class="w-2/3 flex justify-center items-center">
-                        <img src="asdasd.png" alt="Mithril Local LLM Suite iPhone App" class="max-h-[75vh] w-auto iphone-hero">
+            <div class="w-1/2 flex items-center px-2">
+                <div class="flex items-center justify-center w-full h-full gap-4">
+                    <!-- iPhone Screenshot - Much Larger -->
+                    <div class="flex-shrink-0">
+                        <img src="asdasd.png" alt="Mithril Local LLM Suite iPhone App" class="max-h-[85vh] w-auto iphone-hero">
                     </div>
                     
-                    <!-- Text Content - 1/3 width -->
-                    <div class="w-1/3 px-6">
-                        <h2 class="app-title-minimal mb-6">Mithril Local LLM Suite</h2>
-                        <div class="space-y-3 text-gray-300">
-                            <p class="feature-text">Open source models</p>
-                            <p class="feature-text">100% on device</p>
-                            <p class="feature-text">100% private</p>
-                            <p class="text-blue-400 font-bold text-lg mt-6">Coming Soon</p>
+                    <!-- Text Content - Better Styled -->
+                    <div class="flex flex-col items-center justify-center text-center px-4">
+                        <h2 class="app-title-main mb-2">Mithril</h2>
+                        <h3 class="app-title-sub mb-8">Local LLM<br/>Suite</h3>
+                        <div class="space-y-4">
+                            <p class="feature-item">Open source<br/>models</p>
+                            <p class="feature-item">100% on device</p>
+                            <p class="feature-item">100% private</p>
                         </div>
+                        <p class="coming-soon-text mt-8">Coming Soon</p>
                     </div>
                 </div>
             </div>

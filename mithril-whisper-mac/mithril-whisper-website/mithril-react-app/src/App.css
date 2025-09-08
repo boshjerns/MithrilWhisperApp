@@ -1058,14 +1058,17 @@ footer {
     border-top: 1px solid #374151;
 }
 
-/* Mobile legibility: hide decorative ASCII and enforce >=12px text */
+/* Mobile legibility: keep ASCII visible but ensure >=12px */
 @media (max-width: 640px) {
     .ascii-art,
     .mithril-compact-ascii,
-    .ascii-nav-card,
     .nav-ascii-art,
     .nav-solutions-text {
-        display: none !important;
+        font-size: 0.75rem !important; /* 12px minimum */
+        line-height: 1 !important;
+    }
+    .ascii-nav-card {
+        display: inline-flex !important;
     }
     .app-subtitle-compact {
         font-size: 0.75rem !important; /* 12px minimum */

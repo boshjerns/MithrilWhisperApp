@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MITHRIL WHISPER - Privacy-First AI Voice Dictation and Assistant</title>
     
     <!-- Favicon -->
@@ -625,59 +625,82 @@
         
         /* iPhone and Mobile Phone Specific Optimizations */
         @media (max-width: 640px) {
-            /* Ensure iPhone screenshots have the same height and stack properly */
-            .iphone-hero {
-                height: 50vh !important;
-                max-height: 50vh !important;
-                width: 90vw !important;
-                object-fit: contain;
+            /* Fix flex container for mobile */
+            .min-h-\[calc\(100vh-5rem\)\] {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                align-items: stretch !important;
             }
-            /* Stack layout vertically for mobile */
+            /* Stack layout vertically for mobile and remove all width constraints */
             .min-h-screen.flex {
                 flex-direction: column !important;
             }
-            /* Ensure ASCII art fits on mobile screens and takes more width */
+            
+            /* Ensure all containers take full width */
+            .w-1/2, .w-full, .max-w-md {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            
+            /* Ensure ASCII art takes full width */
             .ascii-art {
                 font-size: 0.35rem !important;
                 line-height: 0.35rem !important;
-                width: 95vw !important;
-                max-width: 95vw !important;
-                overflow-x: auto;
-            }
-            /* Ensure ASCII art container doesn't overflow and takes more space */
-            .mb-4 {
-                overflow-x: hidden;
-                width: 100% !important;
-                max-width: 100vw !important;
-            }
-            /* Ensure ASCII art container fits on mobile and takes full width */
-            .max-w-md {
-                max-width: 100vw !important;
-                width: 100% !important;
-                overflow-x: hidden;
-                padding: 0 10px !important;
-            }
-            /* Override fixed width constraints for mobile */
-            .w-1/2 {
-                width: 100% !important;
-                max-width: 100vw !important;
-            }
-            /* Ensure main content container takes full width */
-            .w-full {
                 width: 100vw !important;
                 max-width: 100vw !important;
+                padding: 0 5px !important;
             }
+            
+            /* Ensure iPhone screenshots stack properly and take appropriate width */
+            .flex.items-center.justify-center.gap-0.scale-110 {
+                flex-direction: column !important;
+                transform: scale(1) !important;
+                gap: 1.5rem !important;
+                margin-bottom: 2rem !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                padding: 0 10px !important;
+            }
+            
+            .flex.items-center.justify-center.gap-0.scale-110 img {
+                margin-right: 0 !important;
+                height: 50vh !important;
+                max-height: 50vh !important;
+                width: 95vw !important;
+                max-width: 95vw !important;
+                object-fit: contain;
+            }
+            
+            /* Remove all padding constraints that might cause cutoff */
+            .px-4, .px-8 {
+                padding-left: 5px !important;
+                padding-right: 5px !important;
+            }
+            
             /* Ensure body takes full width */
             body, html {
                 width: 100vw !important;
                 max-width: 100vw !important;
                 overflow-x: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
+            
             /* Ensure main container takes full width */
             main {
                 width: 100vw !important;
                 max-width: 100vw !important;
                 overflow-x: hidden !important;
+                padding: 0 !important;
+            }
+            
+            /* Remove divider on mobile */
+            .w-px {
+                display: none !important;
             }
             
             /* Full width sections on mobile */

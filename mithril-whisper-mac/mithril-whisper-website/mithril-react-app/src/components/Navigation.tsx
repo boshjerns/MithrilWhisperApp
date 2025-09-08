@@ -43,7 +43,7 @@ const Navigation: React.FC = () => {
               <div className="nav-solutions-text">SOLUTIONS</div>
             </div>
           </div>
-          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 flex-nowrap">
+          <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 flex-nowrap">
             <div className="nav-attribution text-gray-300 hover:text-white transition-colors text-xs flex items-center flex-nowrap">
               <span className="mr-1 sm:mr-2">by</span>
               <a href="https://deployforward.com/mithril" target="_blank" rel="noopener noreferrer" className="hover:text-white">
@@ -51,7 +51,7 @@ const Navigation: React.FC = () => {
               </a>
               <a href="https://x.com/deployforward" target="_blank" 
                  rel="noopener noreferrer"
-                 className="ml-1 p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex nav-icon-btn"
+                 className="ml-2 p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors inline-flex nav-icon-btn touch-48"
                  aria-label="Deploy Forward on X">
                 <svg className="w-3 h-3" fill="url(#gradient-x-deploy)" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <defs>
@@ -66,9 +66,9 @@ const Navigation: React.FC = () => {
               <span className="mx-1 sm:mx-2">|</span>
               <span className="text-white">Josh Berns</span>
             </div>
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <button 
-                className="p-4 theme-toggle-nav group"
+                className="p-4 theme-toggle-nav group touch-48"
                 onClick={toggleTheme} 
                 aria-label="Toggle theme">
                 <svg 
@@ -90,7 +90,7 @@ const Navigation: React.FC = () => {
                 href="https://github.com/boshjerns" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn"
+                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn touch-48"
                 aria-label="Josh Berns on GitHub">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 
@@ -105,7 +105,7 @@ const Navigation: React.FC = () => {
                 href="https://twitter.com/boshjerns" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn"
+                className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors group nav-icon-btn touch-48"
                 aria-label="Josh Berns on Twitter">
                 <svg 
                   className="w-3 h-3 text-gray-300 group-hover:text-white" 

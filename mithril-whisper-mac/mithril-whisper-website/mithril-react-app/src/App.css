@@ -215,6 +215,15 @@ body.light-mode .bg-gradient-to-b {
     box-shadow: none !important;
 }
 
+/* Minimum 48x48 touch target size */
+.touch-48 {
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .nav-ascii {
     font-family: 'Courier New', monospace;
     line-height: 1;

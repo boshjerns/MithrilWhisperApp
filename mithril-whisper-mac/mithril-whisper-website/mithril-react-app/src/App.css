@@ -846,11 +846,12 @@ body.light-mode .clean-download-windows {
         margin: 0 auto;
         width: 100%;
         max-width: 100%;
-        padding: 0 5px;
+        padding: 0 12px; /* add breathing room to avoid right-edge crop */
         box-sizing: border-box;
         display: inline-block;
-        transform: scaleX(0.9); /* fit without cutting right edge */
+        transform: scale(0.88); /* uniform scale to fit */
         transform-origin: top center;
+        will-change: transform;
     }
     
     /* Compact ASCII art styling */

@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [
     react(),
     critical({
-      criticalUrl: './dist/index.html',
+      // Use dist directory as base; plugin appends page uri
+      criticalUrl: './dist/',
       criticalBase: './dist',
       criticalPages: [
         { uri: 'index.html', template: 'index' }

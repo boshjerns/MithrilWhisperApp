@@ -841,15 +841,15 @@ body.light-mode .clean-download-windows {
         color: var(--ascii-color);
         text-shadow: 0 0 10px var(--ascii-glow);
         white-space: pre;
-        overflow-x: auto;
+        overflow-x: visible; /* avoid clipping last column on iOS */
         text-align: center;
         margin: 0 auto;
         width: 100%;
         max-width: 100%;
-        padding: 0 12px; /* add breathing room to avoid right-edge crop */
+        padding: 0 16px; /* extra breathing room to avoid right-edge crop */
         box-sizing: border-box;
         display: inline-block;
-        transform: scale(0.88); /* uniform scale to fit */
+        transform: scale(0.84); /* slightly more room */
         transform-origin: top center;
         will-change: transform;
     }

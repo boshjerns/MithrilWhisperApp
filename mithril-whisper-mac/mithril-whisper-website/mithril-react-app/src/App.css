@@ -837,7 +837,7 @@ body.light-mode .clean-download-windows {
     .ascii-art {
         font-family: 'Courier New', monospace;
         line-height: 1;
-        font-size: 0.35rem;
+        font-size: 0.75rem !important; /* keep legible */
         color: var(--ascii-color);
         text-shadow: 0 0 10px var(--ascii-glow);
         white-space: pre;
@@ -848,6 +848,9 @@ body.light-mode .clean-download-windows {
         max-width: 100%;
         padding: 0 5px;
         box-sizing: border-box;
+        display: inline-block;
+        transform: scaleX(0.9); /* fit without cutting right edge */
+        transform-origin: top center;
     }
     
     /* Compact ASCII art styling */

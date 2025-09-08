@@ -17,31 +17,24 @@ const LocalLMSuite: React.FC = () => {
       {/* Center Third - iPhone */}
       <div className="flex-1 flex flex-col md:flex-row items-center justify-center gap-0 mb-4">
         <picture>
-          <source 
-            type="image/jpeg" 
-            srcSet="/images/frgerfge-450.jpg 450w, /images/frgerfge-900.jpg 900w" 
-            sizes="(min-width: 1024px) 450px, (max-width: 640px) 90vw, 50vw" 
-          />
+          <source srcSet="/frgerfge.webp" type="image/webp" />
           <img 
-            src="/images/frgerfge-900.jpg" 
+            src="/frgerfge.png" 
             alt="Mithril Local LLM Suite - Chat View" 
             className="h-[55vh] w-auto iphone-hero" 
-            style={{ marginRight: 0 }}
+            style={{ marginRight: 0, backgroundColor: 'transparent' }}
             fetchPriority="high"
             decoding="async"
             loading="eager"
           />
         </picture>
         <picture>
-          <source 
-            type="image/jpeg" 
-            srcSet="/images/qwedfe-450.jpg 450w, /images/qwedfe-900.jpg 900w" 
-            sizes="(min-width: 1024px) 450px, (max-width: 640px) 90vw, 50vw" 
-          />
+          <source srcSet="/qwedfe.webp" type="image/webp" />
           <img 
-            src="/images/qwedfe-900.jpg" 
+            src="/qwedfe.png" 
             alt="Mithril Local LLM Suite - Model Manager" 
             className="h-[55vh] w-auto iphone-hero" 
+            style={{ backgroundColor: 'transparent' }}
             fetchPriority="low"
             decoding="async"
             loading="lazy"

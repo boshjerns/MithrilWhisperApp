@@ -22,13 +22,11 @@ const LocalLMSuite: React.FC = () => {
             className="inline-block"
           >
             <img
+              className="app-store-badge"
               src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&releaseDate=1725494400"
               alt="Download on the App Store"
-              width="250"
-              height="83"
               loading="eager"
               decoding="async"
-              style={{ display: 'block' }}
             />
           </a>
         </div>

@@ -59,7 +59,7 @@ const MithrilWhisper: React.FC = () => {
   return (
     <div className="w-1/2 flex items-center justify-center px-4 py-4 hero-left">
       <div className="max-w-md w-full">
-        {/* ASCII Art Logo */}
+        {/* ASCII Art Logo with Title */}
         <div className="ascii-title-card ascii-hero-card mb-4">
           <pre className="ascii-art text-center text-xs">{`███╗   ███╗██╗████████╗██╗  ██╗██████╗ ██╗██╗     
 ████╗ ████║██║╚══██╔══╝██║  ██║██╔══██╗██║██║     
@@ -74,9 +74,8 @@ const MithrilWhisper: React.FC = () => {
 ██║███╗██║██╔══██║██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
 ╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║
  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝`}</pre>
+          <h2 className="text-sm text-gray-300 mt-3 mb-0 text-center">Privacy-First AI Voice Dictation</h2>
         </div>
-        
-        <h2 className="text-sm text-gray-300 mb-4 text-center">Privacy-First AI Voice Dictation</h2>
         
         {/* Clean Download Buttons */}
         <div className="space-y-2 mb-4">

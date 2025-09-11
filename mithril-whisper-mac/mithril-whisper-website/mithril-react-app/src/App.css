@@ -652,8 +652,18 @@ body.light-mode .clean-download-windows {
 .ascii-hero-card .ascii-art::-webkit-scrollbar { display: none; }
 @media (max-width: 640px) {
     .ascii-hero-card {
-        padding-left: clamp(12px, 5vw, 20px);
-        padding-right: clamp(12px, 5vw, 20px);
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+    .ascii-hero-card .ascii-art {
+        transform: scale(0.72) !important; /* slightly bigger but still fits */
+        transform-origin: center !important;
+        max-width: 100%;
+        font-size: 0.38rem !important; /* slightly larger font */
+        white-space: pre;
+        overflow-x: hidden !important;
     }
 }
 
@@ -699,6 +709,25 @@ body.light-mode .clean-download-windows {
     color: #3b82f6;
     letter-spacing: 0.5px;
     margin: 0;
+}
+
+/* App Store Button */
+.app-store-button {
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+    color: #ffffff;
+    border: 1px solid #333333;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.app-store-button:hover {
+    background: linear-gradient(135deg, #1a1a1a, #333333);
+    transform: translateY(-1px);
+}
+
+body.light-mode .app-store-button {
+    background: linear-gradient(135deg, #000000, #1a1a1a) !important;
+    color: #ffffff !important;
 }
 
 /* App Subtitle - Clean minimal style */
@@ -865,22 +894,20 @@ body.light-mode .clean-download-windows {
     .ascii-art {
         font-family: 'Courier New', monospace;
         line-height: 1;
-        font-size: 0.75rem !important; /* keep legible */
+        font-size: 0.4rem !important; /* balanced size for readability */
         color: var(--ascii-color);
         text-shadow: 0 0 10px var(--ascii-glow);
         white-space: pre;
-        overflow-x: visible; /* avoid clipping last column on iOS */
+        overflow-x: hidden; /* hide overflow */
         text-align: center;
         margin: 0 auto;
         width: 100%;
         max-width: 100%;
-        padding-left: calc(env(safe-area-inset-left, 0px) + clamp(24px, 7vw, 40px));
-        padding-right: calc(env(safe-area-inset-right, 0px) + clamp(24px, 7vw, 40px));
+        padding: 0; /* remove padding that causes overflow */
         box-sizing: border-box;
-        display: inline-block;
-        transform: translateX(-2%) scale(0.88); /* slight left nudge to balance visual weight */
-        transform-origin: top center;
-        will-change: transform;
+        display: block;
+        transform: scale(0.95); /* slightly larger scale */
+        transform-origin: center;
     }
     
     /* Compact ASCII art styling */

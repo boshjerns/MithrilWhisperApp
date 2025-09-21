@@ -100,9 +100,9 @@ const MithrilWhisper: React.FC = () => {
             </button>
             <div className={`mac-dropdown-content ${isDropdownOpen ? 'show' : ''}`}>
               <a 
-                href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0-arm64.pkg" 
+                href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.3/MithrilWhisper-macOS-AppleSilicon-v1.0.2.pkg" 
                 className={`mac-dropdown-item ${highlightedMacOption === 0 ? 'bg-gradient-to-r from-blue-50 to-cyan-50' : ''}`}
-                download="MithrilWhisper-1.0.0-arm64.pkg"
+                download="MithrilWhisper-macOS-AppleSilicon-v1.0.2.pkg"
                 onClick={() => handleMacDownload('Apple Silicon')}>
                 <div className="flex items-center space-x-3">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,24 +112,24 @@ const MithrilWhisper: React.FC = () => {
                     <div className="font-semibold">
                       {highlightedMacOption === 0 ? '🍎✨ Apple Silicon Macs' : '🍎 Apple Silicon Macs'}
                     </div>
-                    <div className="text-sm text-gray-600">M1, M2, M3 chips (2020+) • 196MB</div>
+                    <div className="text-sm text-gray-600">M1, M2, M3, M4 chips (2020+) • 196MB</div>
                   </div>
                 </div>
               </a>
               <a 
-                href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.1/MithrilWhisper-1.0.0.pkg" 
+                href="https://github.com/boshjerns/MithrilWhisperApp/releases/download/v1.0.3/MithrilWhisper-macOS-Intel-v1.0.2.pkg" 
                 className={`mac-dropdown-item ${highlightedMacOption === 1 ? 'bg-gradient-to-r from-gray-50 to-gray-100' : ''}`}
-                download="MithrilWhisper-1.0.0.pkg"
+                download="MithrilWhisper-macOS-Intel-v1.0.2.pkg"
                 onClick={() => handleMacDownload('Intel')}>
                 <div className="flex items-center space-x-3">
                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                   </svg>
                   <div>
                     <div className="font-semibold">
                       {highlightedMacOption === 1 ? '💻✨ Intel Macs' : '💻 Intel Macs'}
                     </div>
-                    <div className="text-sm text-gray-600">Intel processors (2019 and earlier) • 208MB</div>
+                    <div className="text-sm text-gray-600">Intel processors (2019 and earlier) • 202MB</div>
                   </div>
                 </div>
               </a>
